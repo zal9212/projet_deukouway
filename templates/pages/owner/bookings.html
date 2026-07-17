@@ -1,0 +1,88 @@
+{% extends "layouts/dashboard.html" %}
+
+{% block title %}Réservations Reçues - DEKOUWAY{% endblock %}
+{% block dashboard_title %}Réservations Reçues{% endblock %}
+
+{% block content %}
+<div class="space-y-6">
+    <div>
+        <h1 class="text-xl font-bold text-[#1F2937]">Suivi des réservations reçues</h1>
+        <p class="text-xs text-[#6B7280]">Gérez les demandes de location pour vos biens.</p>
+    </div>
+
+    <!-- Booking Requests list -->
+    <div class="bg-white border border-[#E5E7EB] rounded-2xl overflow-hidden shadow-sm">
+        <div class="overflow-x-auto">
+            <table class="w-full text-left border-collapse text-xs">
+                <thead>
+                    <tr class="bg-[#FAFAFA] border-b border-[#E5E7EB] text-[#6B7280] font-bold uppercase tracking-wider">
+                        <th class="p-4">Logement</th>
+                        <th class="p-4">Client</th>
+                        <th class="p-4">Dates</th>
+                        <th class="p-4">Total</th>
+                        <th class="p-4">Statut</th>
+                        <th class="p-4 text-right">Actions</th>
+                    </tr>
+                </thead>
+                <tbody class="divide-y divide-[#E5E7EB] text-[#1F2937]">
+                    {% for booking in bookings %}
+                        <tr>
+                            <td class="p-4 font-bold max-w-[150px] truncate">{{ booking.property.title }}</td>
+                            <td class="p-4 font-semibold">
+                                <span class="block">{{ booking.client.get_full_name }}</span>
+                                <span class="text-[10px] text-[#6B7280] block mt-0.5">{{ booking.client.phone }}</span>
+                            </td>
+                            <td class="p-4 font-semibold text-slate-600">
+                                {{ booking.check_in|date:"d M Y" }} - {{ booking.check_out|date:"d M Y" }}
+                            </td>
+                            <td class="p-4 font-bold text-[#8B1E24]">{{ booking.total_price }} F</td>
+                            <td class="p-4">
+                                <span class="inline-flex items-center px-2 py-0.5 rounded text-[10px] font-bold 
+                                    {% if booking.status == 'pending' %} bg-yellow-50 text-[#F59E0B] border border-yellow-100
+                                    {% elif booking.status == 'approved' %} bg-blue-50 text-[#2563EB] border border-blue-100
+                                    {% elif booking.status == 'confirmed' %} bg-emerald-50 text-[#16A34A] border border-emerald-100
+                                    {% elif booking.status == 'rejected' %} bg-red-50 text-[#DC2626] border border-red-100
+                                    {% elif booking.status == 'cancelled' %} bg-gray-50 text-[#6B7280] border border-[#E5E7EB] {% endif %}">
+                                    {{ booking.get_status_display }}
+                                </span>
+                            </td>
+                            <td class="p-4 text-right whitespace-nowrap">
+                                {% if booking.status == 'pending' %}
+                                    <div class="flex justify-end space-x-1">
+                                        <form action="{% url 'booking_action' booking.id %}" method="POST" class="inline">
+                                            {% csrf_token %}
+                                            <input type="hidden" name="action" value="approve">
+                                            <input type="hidden" name="next" value="{% url 'owner_bookings' %}">
+                                            <button type="submit" class="px-2 py-1 bg-[#16A34A] text-white text-[10px] font-bold rounded hover:bg-[#15803D]">
+                                                Accepter
+                                            </button>
+                                        </form>
+                                        <form action="{% url 'booking_action' booking.id %}" method="POST" class="inline">
+                                            {% csrf_token %}
+                                            <input type="hidden" name="action" value="reject">
+                                            <input type="hidden" name="next" value="{% url 'owner_bookings' %}">
+                                            <button type="submit" class="px-2 py-1 border border-red-200 text-[#DC2626] text-[10px] font-bold rounded hover:bg-red-50">
+                                                Refuser
+                                            </button>
+                                        </form>
+                                    </div>
+                                {% elif booking.status == 'confirmed' %}
+                                    <a href="{% url 'payment_receipt' booking.id %}" class="px-2.5 py-1.5 bg-[#FAFAFA] border border-[#E5E7EB] rounded text-[10px] font-bold text-[#1F2937] hover:bg-[#8B1E24] hover:text-white transition-all">Reçu</a>
+                                {% else %}
+                                    <span class="text-gray-400">-</span>
+                                {% endif %}
+                            </td>
+                        </tr>
+                    {% empty %}
+                        <tr>
+                            <td colspan="6" class="p-8 text-center text-[#9CA3AF]">
+                                Aucune réservation reçue.
+                            </td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+{% endblock %}

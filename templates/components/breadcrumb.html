@@ -1,0 +1,11 @@
+<nav class="flex text-xs font-semibold text-[#6B7280] space-x-2 {{ extra_class }}">
+    <a href="{% url 'home' %}" class="hover:text-[#8B1E24] transition-colors">Accueil</a>
+    {% for item in items %}
+        <span>/</span>
+        {% if item.url %}
+            <a href="{{ item.url }}" class="hover:text-[#8B1E24] transition-colors">{{ item.label }}</a>
+        {% else %}
+            <span class="text-[#1F2937] truncate">{{ item.label }}</span>
+        {% endif %}
+    {% endfor %}
+</nav>

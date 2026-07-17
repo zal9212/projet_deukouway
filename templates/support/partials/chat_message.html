@@ -1,0 +1,18 @@
+<!-- User Message Bubble -->
+<div class="flex items-start space-x-2.5 max-w-[85%] ml-auto justify-end">
+    <div class="p-3 bg-[#8B1E24] text-white rounded-2xl rounded-tr-none text-xs shadow-sm leading-relaxed text-right">
+        <p class="font-bold text-[9px] text-white/75 mb-1">Vous</p>
+        <p>{{ user_message }}</p>
+    </div>
+</div>
+
+<!-- Bot Message Bubble -->
+<div class="flex items-start space-x-2.5 max-w-[85%]">
+    <div class="w-8 h-8 rounded-full bg-[#8B1E24] text-white flex items-center justify-center flex-shrink-0 font-bold text-xs select-none shadow-sm">
+        DK
+    </div>
+    <div class="p-3 bg-white rounded-2xl rounded-tl-none border border-[#E5E7EB] text-xs shadow-sm leading-relaxed">
+        <p class="font-bold text-[10px] text-[#6B7280] mb-1">Assistant DEKOUWAY</p>
+        <p>{{ bot_reply|safe }}</p>
+    </div>
+</div>

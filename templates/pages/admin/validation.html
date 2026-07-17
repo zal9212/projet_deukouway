@@ -1,0 +1,103 @@
+{% extends "layouts/dashboard.html" %}
+
+{% block title %}Validations en attente - DEKOUWAY{% endblock %}
+{% block dashboard_title %}Validations en attente{% endblock %}
+
+{% block content %}
+<div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+    
+    <!-- Owners validations list -->
+    <div class="space-y-4">
+        <h2 class="text-sm font-bold text-[#1F2937] uppercase tracking-wider flex items-center border-b border-[#E5E7EB] pb-2">
+            <i data-lucide="shield-check" class="w-4 h-4 text-[#F59E0B] mr-2"></i>
+            Propriétaires ({{ pending_owners|length }})
+        </h2>
+
+        <div class="space-y-4">
+            {% for owner in pending_owners %}
+                <div class="bg-white border border-[#E5E7EB] rounded-2xl p-5 shadow-sm space-y-4">
+                    <div>
+                        <h4 class="font-bold text-sm text-[#1F2937]">{{ owner.get_full_name }}</h4>
+                        <p class="text-[10px] text-[#6B7280] mt-0.5">Tél : {{ owner.phone }} | Email : {{ owner.email }}</p>
+                    </div>
+
+                    {% if owner.id_card %}
+                        <div class="p-3 bg-[#FAFAFA] border border-[#E5E7EB] rounded-xl flex items-center justify-between text-[10px]">
+                            <span class="font-semibold text-[#1F2937]">Pièce d'identité</span>
+                            <a href="{{ owner.id_card.url }}" target="_blank" class="text-[#8B1E24] hover:underline font-bold">Télécharger</a>
+                        </div>
+                    {% endif %}
+
+                    <div class="flex items-center justify-end space-x-2 pt-2 border-t border-[#E5E7EB]">
+                        <form action="{% url 'moderation_action' %}" method="POST" class="inline">
+                            {% csrf_token %}
+                            <input type="hidden" name="target_type" value="owner">
+                            <input type="hidden" name="target_id" value="{{ owner.id }}">
+                            <input type="hidden" name="action" value="approve">
+                            <button type="submit" class="px-3 py-1.5 bg-[#16A34A] hover:bg-[#15803D] text-white text-[10px] font-bold rounded shadow-sm">
+                                Approuver
+                            </button>
+                        </form>
+                        <form action="{% url 'moderation_action' %}" method="POST" class="inline">
+                            {% csrf_token %}
+                            <input type="hidden" name="target_type" value="owner">
+                            <input type="hidden" name="target_id" value="{{ owner.id }}">
+                            <input type="hidden" name="action" value="reject">
+                            <button type="submit" class="px-3 py-1.5 border border-red-200 text-[#DC2626] hover:bg-red-50 text-[10px] font-bold rounded">
+                                Rejeter
+                            </button>
+                        </form>
+                    </div>
+                </div>
+            {% empty %}
+                {% include "components/empty_state.html" with title="Aucun propriétaire" description="Tous les comptes propriétaires ont été validés." icon="shield" %}
+            {% endfor %}
+        </div>
+    </div>
+
+    <!-- Properties validations list -->
+    <div class="space-y-4">
+        <h2 class="text-sm font-bold text-[#1F2937] uppercase tracking-wider flex items-center border-b border-[#E5E7EB] pb-2">
+            <i data-lucide="home" class="w-4 h-4 text-[#8B1E24] mr-2"></i>
+            Logements ({{ pending_properties|length }})
+        </h2>
+
+        <div class="space-y-4">
+            {% for prop in pending_properties %}
+                <div class="bg-white border border-[#E5E7EB] rounded-2xl p-5 shadow-sm space-y-4">
+                    <div>
+                        <h4 class="font-bold text-sm text-[#1F2937]">{{ prop.title }}</h4>
+                        <p class="text-[10px] text-[#6B7280] mt-0.5">Propriétaire : {{ prop.owner.get_full_name }}</p>
+                        <p class="text-[10px] text-[#8B1E24] font-bold mt-1.5">{{ prop.price_per_night }} F / nuit | {{ prop.city }}</p>
+                    </div>
+
+                    <div class="flex items-center justify-end space-x-2 pt-2 border-t border-[#E5E7EB]">
+                        <a href="{% url 'property_detail' prop.id %}" target="_blank" class="px-3 py-1.5 border border-[#E5E7EB] hover:bg-[#FAFAFA] text-[#1F2937] text-[10px] font-bold rounded mr-auto">Inspecter</a>
+                        <form action="{% url 'moderation_action' %}" method="POST" class="inline">
+                            {% csrf_token %}
+                            <input type="hidden" name="target_type" value="property">
+                            <input type="hidden" name="target_id" value="{{ prop.id }}">
+                            <input type="hidden" name="action" value="approve">
+                            <button type="submit" class="px-3 py-1.5 bg-[#16A34A] hover:bg-[#15803D] text-white text-[10px] font-bold rounded shadow-sm">
+                                Publier
+                            </button>
+                        </form>
+                        <form action="{% url 'moderation_action' %}" method="POST" class="inline">
+                            {% csrf_token %}
+                            <input type="hidden" name="target_type" value="property">
+                            <input type="hidden" name="target_id" value="{{ prop.id }}">
+                            <input type="hidden" name="action" value="reject">
+                            <button type="submit" class="px-3 py-1.5 border border-red-200 text-[#DC2626] hover:bg-red-50 text-[10px] font-bold rounded">
+                                Rejeter
+                            </button>
+                        </form>
+                    </div>
+                </div>
+            {% empty %}
+                {% include "components/empty_state.html" with title="Aucun logement" description="Toutes les annonces ont été modérées." icon="home" %}
+            {% endfor %}
+        </div>
+    </div>
+
+</div>
+{% endblock %}

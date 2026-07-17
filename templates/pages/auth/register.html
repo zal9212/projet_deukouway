@@ -1,0 +1,107 @@
+{% extends "layouts/auth.html" %}
+
+{% block title %}Inscription - DEKOUWAY{% endblock %}
+
+{% block content %}
+<div class="sm:mx-auto sm:w-full sm:max-w-md">
+    <div class="bg-white border border-[#E5E7EB] py-8 px-4 rounded-2xl shadow-sm sm:px-10" x-data="{ selectedRole: 'client' }">
+        
+        <div class="text-center mb-6">
+            <span class="inline-flex p-2.5 bg-[#8B1E24] text-white rounded-lg mb-2">
+                <i data-lucide="user-plus" class="w-5 h-5"></i>
+            </span>
+            <h2 class="text-xl font-bold text-[#1F2937]">Créer votre compte</h2>
+            <p class="text-xs text-[#6B7280] mt-1">Rejoignez la plateforme DEKOUWAY</p>
+        </div>
+
+        <form class="space-y-4" action="{% url 'register' %}" method="POST" enctype="multipart/form-data">
+            {% csrf_token %}
+
+            {% if form.errors %}
+                <div class="p-3 bg-red-50 border border-red-200 text-[#DC2626] rounded-lg text-xs font-semibold">
+                    Veuillez corriger les erreurs ci-dessous.
+                </div>
+            {% endif %}
+
+            <!-- Role Selector -->
+            <div>
+                <label class="block text-xs font-bold text-[#6B7280] uppercase tracking-wider mb-2">Quel type de compte ?</label>
+                <div class="grid grid-cols-2 gap-2">
+                    <label class="flex items-center justify-center p-3 border rounded-xl cursor-pointer transition-all text-xs font-semibold" :class="selectedRole === 'client' ? 'border-[#8B1E24] bg-[#8B1E24]/5 text-[#8B1E24]' : 'border-[#E5E7EB] text-[#6B7280] hover:bg-[#FAFAFA]'">
+                        <input type="radio" name="role" value="client" x-model="selectedRole" class="sr-only">
+                        <span>Client</span>
+                    </label>
+                    <label class="flex items-center justify-center p-3 border rounded-xl cursor-pointer transition-all text-xs font-semibold" :class="selectedRole === 'owner' ? 'border-[#8B1E24] bg-[#8B1E24]/5 text-[#8B1E24]' : 'border-[#E5E7EB] text-[#6B7280] hover:bg-[#FAFAFA]'">
+                        <input type="radio" name="role" value="owner" x-model="selectedRole" class="sr-only">
+                        <span>Propriétaire</span>
+                    </label>
+                </div>
+            </div>
+
+            <!-- Username -->
+            <div>
+                <label for="id_username" class="block text-xs font-bold text-[#6B7280] uppercase tracking-wider mb-1.5">Nom d'utilisateur</label>
+                <input id="id_username" name="username" type="text" required value="{{ form.username.value|default:'' }}" class="w-full px-3 py-2 bg-white border border-[#E5E7EB] rounded-lg text-sm focus:ring-1 focus:ring-[#8B1E24] text-[#1F2937] focus:outline-none">
+            </div>
+
+            <!-- Names -->
+            <div class="grid grid-cols-2 gap-2">
+                <div>
+                    <label for="id_first_name" class="block text-xs font-bold text-[#6B7280] uppercase tracking-wider mb-1.5">Prénom</label>
+                    <input id="id_first_name" name="first_name" type="text" required value="{{ form.first_name.value|default:'' }}" class="w-full px-3 py-2 bg-white border border-[#E5E7EB] rounded-lg text-sm focus:ring-1 focus:ring-[#8B1E24] text-[#1F2937] focus:outline-none">
+                </div>
+                <div>
+                    <label for="id_last_name" class="block text-xs font-bold text-[#6B7280] uppercase tracking-wider mb-1.5">Nom</label>
+                    <input id="id_last_name" name="last_name" type="text" required value="{{ form.last_name.value|default:'' }}" class="w-full px-3 py-2 bg-white border border-[#E5E7EB] rounded-lg text-sm focus:ring-1 focus:ring-[#8B1E24] text-[#1F2937] focus:outline-none">
+                </div>
+            </div>
+
+            <!-- Email -->
+            <div>
+                <label for="id_email" class="block text-xs font-bold text-[#6B7280] uppercase tracking-wider mb-1.5">Email</label>
+                <input id="id_email" name="email" type="email" required value="{{ form.email.value|default:'' }}" class="w-full px-3 py-2 bg-white border border-[#E5E7EB] rounded-lg text-sm focus:ring-1 focus:ring-[#8B1E24] text-[#1F2937] focus:outline-none">
+            </div>
+
+            <!-- Phone -->
+            <div>
+                <label for="id_phone" class="block text-xs font-bold text-[#6B7280] uppercase tracking-wider mb-1.5">Téléphone</label>
+                <input id="id_phone" name="phone" type="text" required value="{{ form.phone.value|default:'' }}" class="w-full px-3 py-2 bg-white border border-[#E5E7EB] rounded-lg text-sm focus:ring-1 focus:ring-[#8B1E24] text-[#1F2937] focus:outline-none" placeholder="+221770000000">
+            </div>
+
+            <!-- Passwords -->
+            {% for field in form %}
+                {% if "password" in field.name and field.name != "role" %}
+                <div>
+                    <label for="{{ field.id_for_label }}" class="block text-xs font-bold text-[#6B7280] uppercase tracking-wider mb-1.5">{{ field.label }}</label>
+                    <input id="{{ field.id_for_label }}" name="{{ field.html_name }}" type="password" required class="w-full px-3 py-2 bg-white border border-[#E5E7EB] rounded-lg text-sm focus:ring-1 focus:ring-[#8B1E24] text-[#1F2937] focus:outline-none">
+                </div>
+                {% endif %}
+            {% endfor %}
+
+            <!-- ID upload for owners -->
+            <div x-show="selectedRole === 'owner'" x-transition class="p-4 bg-[#FAFAFA] border border-[#E5E7EB] rounded-xl space-y-3">
+                <p class="text-[10px] text-[#6B7280] leading-relaxed">
+                    Les propriétaires doivent charger un justificatif d'identité valide (CNI/Passeport).
+                </p>
+                <div>
+                    <label for="id_id_card" class="block text-[10px] font-bold text-[#6B7280] uppercase tracking-wider mb-1.5">Pièce d'identité (PDF/Image)</label>
+                    <input id="id_id_card" name="id_card" type="file" class="text-xs text-[#6B7280] file:mr-2 file:py-1 file:px-2 file:rounded file:border file:border-[#E5E7EB] file:bg-[#FAFAFA] file:text-xs">
+                </div>
+            </div>
+
+            <div>
+                <button type="submit" class="w-full py-3 bg-[#8B1E24] hover:bg-[#6F171C] text-white text-sm font-semibold rounded-lg shadow-sm transition-colors">
+                    S'inscrire
+                </button>
+            </div>
+        </form>
+
+        <div class="text-center mt-6 pt-4 border-t border-[#E5E7EB]">
+            <p class="text-xs text-[#6B7280]">
+                Déjà inscrit ? 
+                <a href="{% url 'login' %}" class="font-bold text-[#8B1E24] hover:underline">Se connecter</a>
+            </p>
+        </div>
+    </div>
+</div>
+{% endblock %}

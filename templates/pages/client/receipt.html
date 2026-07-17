@@ -1,0 +1,128 @@
+{% extends "base.html" %}
+
+{% block title %}Reçu de Paiement - DEKOUWAY{% endblock %}
+
+{% block extra_head %}
+<style>
+    @media print {
+        header, footer, .no-print, button, iframe, [data-lucide="message-square"] {
+            display: none !important;
+        }
+        body {
+            background-color: white !important;
+            color: black !important;
+        }
+        .print-container {
+            border: none !important;
+            box-shadow: none !important;
+            padding: 0 !important;
+            margin: 0 !important;
+            max-width: 100% !important;
+        }
+    }
+</style>
+{% endblock %}
+
+{% block layout %}
+<section class="max-w-3xl mx-auto py-12 px-4 sm:px-6 lg:px-8 bg-[#FAFAFA]">
+    
+    <!-- Receipt Box -->
+    <div class="print-container bg-white border border-[#E5E7EB] rounded-2xl p-8 sm:p-12 shadow-sm relative">
+        <!-- Top border stripe (solid colors) -->
+        <div class="absolute top-0 inset-x-0 h-1.5 bg-[#8B1E24]"></div>
+
+        <!-- Header -->
+        <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center border-b border-[#E5E7EB] pb-6 mb-8 gap-4">
+            <div>
+                <span class="text-xl font-bold tracking-tight text-[#1F2937]">DEKOUWAY</span>
+                <p class="text-[10px] text-[#6B7280] mt-0.5">Dakar, Sénégal | contact@dekouway.sn</p>
+            </div>
+            
+            <div class="text-left sm:text-right">
+                <h2 class="text-base font-bold uppercase tracking-wider text-[#8B1E24]">Facture acquittée</h2>
+                <p class="text-[10px] text-[#6B7280] mt-0.5">Date : {{ payment.created_at|date:"d M Y H:i" }}</p>
+                <p class="text-xs text-[#1F2937] font-bold mt-1">Transaction : {{ payment.transaction_id }}</p>
+            </div>
+        </div>
+
+        <!-- Actors details -->
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-8 mb-8 text-xs">
+            <div>
+                <span class="text-[10px] font-bold text-[#6B7280] uppercase tracking-wider block mb-1.5">Locataire</span>
+                <p class="font-bold text-[#1F2937]">{{ booking.client.get_full_name }}</p>
+                <p class="text-[#6B7280] mt-0.5">Tél : {{ booking.client.phone }}</p>
+            </div>
+            <div>
+                <span class="text-[10px] font-bold text-[#6B7280] uppercase tracking-wider block mb-1.5">Hôte</span>
+                <p class="font-bold text-[#1F2937]">{{ booking.property.owner.get_full_name }}</p>
+                <p class="text-[#6B7280] mt-0.5">Tél : {{ booking.property.owner.phone }}</p>
+            </div>
+        </div>
+
+        <!-- Stay summary -->
+        <div class="bg-[#FAFAFA] border border-[#E5E7EB] rounded-xl p-5 mb-8 text-xs space-y-3">
+            <h4 class="font-bold text-[#1F2937]">Description du séjour</h4>
+            
+            <div class="grid grid-cols-2 gap-3 text-[#6B7280]">
+                <div>
+                    <span class="text-[10px] block">Hébergement</span>
+                    <span class="font-bold text-[#1F2937]">{{ booking.property.title }}</span>
+                </div>
+                <div>
+                    <span class="text-[10px] block">Type</span>
+                    <span class="font-bold text-[#1F2937]">{{ booking.property.get_property_type_display }}</span>
+                </div>
+                <div>
+                    <span class="text-[10px] block">Arrivée</span>
+                    <span class="font-bold text-[#1F2937]">{{ booking.check_in|date:"d M Y" }}</span>
+                </div>
+                <div>
+                    <span class="text-[10px] block">Départ</span>
+                    <span class="font-bold text-[#1F2937]">{{ booking.check_out|date:"d M Y" }}</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Financial info -->
+        <div class="space-y-3 mb-8 text-xs text-[#6B7280]">
+            <h4 class="font-bold text-sm text-[#1F2937] border-b border-[#E5E7EB] pb-2 mb-3">Règlement</h4>
+            
+            <div class="flex justify-between">
+                <span>{{ booking.property.price_per_night }} F x {{ days }} nuits</span>
+                <span class="font-semibold text-[#1F2937]">{{ booking.total_price }} FCFA</span>
+            </div>
+            <div class="flex justify-between">
+                <span>Mode de paiement</span>
+                <span class="font-semibold text-[#1F2937]">{{ payment.get_payment_method_display }}</span>
+            </div>
+            <div class="flex justify-between border-t border-[#E5E7EB] pt-3 font-extrabold text-base text-[#1F2937]">
+                <span>Montant Réglé</span>
+                <span class="text-[#8B1E24]">{{ booking.total_price }} FCFA</span>
+            </div>
+        </div>
+
+        <!-- Safe seal badge (Solid Green) -->
+        <div class="p-3 bg-[#16A34A]/5 border border-[#16A34A]/20 text-[#16A34A] text-xs font-semibold rounded-lg flex items-center space-x-2">
+            <i data-lucide="check-circle" class="w-4 h-4 flex-shrink-0"></i>
+            <span>Paiement validé par la plateforme DEKOUWAY. Document officiel faisant office de preuve d'achat.</span>
+        </div>
+
+    </div>
+
+    <!-- Actions no print -->
+    <div class="no-print mt-8 flex justify-center space-x-3">
+        <a href="{% url 'bookings_list' %}" class="px-5 py-2.5 border border-[#E5E7EB] hover:bg-[#FAFAFA] rounded-lg text-xs font-bold text-[#1F2937] transition-all">
+            Retour
+        </a>
+        <button onclick="window.print()" class="px-6 py-2.5 bg-[#8B1E24] hover:bg-[#6F171C] text-white text-xs font-bold rounded-lg shadow-sm transition-colors flex items-center space-x-2">
+            <i data-lucide="printer" class="w-4 h-4"></i>
+            <span>Imprimer</span>
+        </button>
+    </div>
+</section>
+
+<!-- Force Lucide render -->
+<script>
+    lucide.createIcons();
+</script>
+{% endblock %}

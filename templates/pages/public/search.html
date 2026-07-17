@@ -1,0 +1,160 @@
+{% extends "layouts/public.html" %}
+
+{% block title %}Rechercher un logement - DEKOUWAY{% endblock %}
+
+{% block content %}
+<div class="max-w-7xl mx-auto py-8 px-4 sm:px-6 lg:px-8" 
+     x-data="{ showMap: false, showMobileFilters: false }"
+     @open-filters.window="showMobileFilters = true">
+    
+    <!-- 1. Breadcrumbs section -->
+    <div class="mb-4">
+        {% include "components/breadcrumb.html" with items=breadcrumbs %}
+    </div>
+
+    <!-- 2. Global search bar component -->
+    <div class="mb-6">
+        {% include "components/search_bar.html" %}
+    </div>
+
+    <!-- 3. Summary & Toolbar actions -->
+    <div class="flex items-center justify-between flex-wrap gap-4 border-b border-[#E5E7EB] pb-4 mb-6">
+        <div>
+            <h1 class="text-xl font-bold text-[#1F2937] tracking-tight">Résultats de recherche</h1>
+            <p class="text-xs text-[#6B7280] mt-0.5">
+                Trouvez les meilleures locations de vacances et hébergements meublés.
+            </p>
+        </div>
+        <!-- Load indicator status -->
+        <div id="loading-indicator" class="htmx-indicator flex items-center space-x-2 text-[#8B1E24] font-bold">
+            <span class="w-3.5 h-3.5 rounded-full border-2 border-[#8B1E24] border-t-transparent animate-spin"></span>
+            <span class="text-xs uppercase tracking-wider text-[10px]">Actualisation...</span>
+        </div>
+        <!-- Controls buttons -->
+        <div class="flex items-center space-x-3">
+            <!-- Mobile Filters trigger -->
+            <button @click="showMobileFilters = true" 
+                    aria-label="Ouvrir les filtres de recherche"
+                    class="lg:hidden flex items-center space-x-1.5 px-3.5 py-2.5 bg-white border border-[#E5E7EB] rounded-xl text-xs font-bold text-[#1F2937] hover:bg-[#FAFAFA] transition-colors focus:outline-none focus:ring-1 focus:ring-[#8B1E24] cursor-pointer">
+                <i data-lucide="sliders" class="w-4 h-4 text-[#8B1E24]"></i>
+                <span>Filtres</span>
+            </button>
+            {% include "components/sort_dropdown.html" %}
+            {% include "components/map_toggle.html" %}
+        </div>
+    </div>
+
+    <!-- 4. Mobile Filters Slide-out Drawer Panel -->
+    <div x-show="showMobileFilters" x-cloak class="relative z-50 lg:hidden" role="dialog" aria-modal="true">
+        <!-- Backdrop -->
+        <div class="fixed inset-0 bg-black/40" @click="showMobileFilters = false"></div>
+        <!-- Drawer content -->
+        <div class="fixed inset-y-0 left-0 w-full max-w-xs bg-white p-6 shadow-xl flex flex-col h-full overflow-y-auto"
+             x-transition:enter="transition ease-in-out duration-300 transform"
+             x-transition:enter-start="-translate-x-full"
+             x-transition:enter-end="translate-x-0"
+             x-transition:leave="transition ease-in-out duration-300 transform"
+             x-transition:leave-start="translate-x-0"
+             x-transition:leave-end="-translate-x-full">
+            <div class="flex items-center justify-between mb-5">
+                <span class="text-xs font-bold text-[#1F2937] uppercase tracking-wider">Filtres</span>
+                <button @click="showMobileFilters = false" class="text-slate-400 hover:text-slate-500 cursor-pointer">
+                    <i data-lucide="x" class="w-5 h-5"></i>
+                </button>
+            </div>
+            {% include "components/filter_panel.html" %}
+        </div>
+    </div>
+
+    <!-- 5. Main results search workspace -->
+    <div class="flex gap-8">
+        <!-- Desktop fixed left filters panel -->
+        <aside class="hidden lg:block w-72 flex-shrink-0">
+            <div class="sticky top-24">
+                {% include "components/filter_panel.html" %}
+            </div>
+        </aside>
+
+        <!-- Right content area: listings & map layout -->
+        <div class="flex-grow flex flex-col space-y-6">
+            <div class="grid grid-cols-1 transition-all duration-300" :class="showMap ? 'lg:grid-cols-2 gap-6' : ''">
+                
+                <!-- Listings Column container -->
+                <div :class="showMap ? 'block' : 'w-full'" id="property-cards-container">
+                    <!-- Results stats -->
+                    <div class="mb-4">
+                        <p class="text-xs font-bold text-[#6B7280] uppercase tracking-wider">
+                            {{ properties|length }} logement{{ properties|length|pluralize:"s" }} trouvé{{ properties|length|pluralize }}
+                        </p>
+                    </div>
+
+                    <!-- Cards Grid loop -->
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-6">
+                        {% for property in properties %}
+                            {% include "components/property_card.html" with property=property %}
+                        {% empty %}
+                            <div class="col-span-full">
+                                {% include "components/empty_state.html" with title="Aucun logement trouvé" description="Essayez de modifier vos critères de recherche ou réinitialisez les filtres." icon="home" %}
+                            </div>
+                        {% endfor %}
+                    </div>
+                </div>
+
+                <!-- Leaflet map panel (Visible when showMap is toggled) -->
+                <div x-show="showMap" x-cloak 
+                     x-init="$watch('showMap', value => { if(value) { setTimeout(() => { map.invalidateSize() }, 300) } })"
+                     class="h-[400px] lg:h-[600px] lg:sticky lg:top-24 border border-[#E5E7EB] bg-white p-1 rounded-2xl shadow-sm overflow-hidden z-10">
+                    <div id="properties-map" class="w-full h-full rounded-xl"></div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+</div>
+
+{{ map_properties_json|json_script:"map-properties-data" }}
+
+<!-- Leaflet Map Setup Script -->
+<script>
+    var map = L.map('properties-map').setView([14.7167, -17.4677], 11);
+    
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        attribution: '&copy; OpenStreetMap'
+    }).addTo(map);
+
+    var markersGroup = L.layerGroup().addTo(map);
+
+    function updateMapMarkers(properties) {
+        markersGroup.clearLayers();
+        if (properties.length === 0) return;
+
+        var bounds = [];
+        properties.forEach(function(prop) {
+            if (prop.lat && prop.lng) {
+                var popupContent = `
+                    <div class="font-sans w-40 text-xs">
+                        ${prop.image ? `<img src="${prop.image}" class="w-full h-20 object-cover rounded-md mb-1.5" />` : ''}
+                        <h4 class="m-0 font-bold text-gray-800">${prop.title}</h4>
+                        <p class="my-0.5 text-gray-500">${prop.neighborhood}</p>
+                        <div class="flex justify-between items-center mt-1">
+                            <span class="font-bold text-primary">${prop.price.toLocaleString()} F</span>
+                            <a href="${prop.detail_url}" class="text-primary font-bold no-underline">Voir</a>
+                        </div>
+                    </div>
+                `;
+                var marker = L.marker([prop.lat, prop.lng]).bindPopup(popupContent);
+                markersGroup.addLayer(marker);
+                bounds.push([prop.lat, prop.lng]);
+            }
+        });
+
+        if (bounds.length > 0) {
+            map.fitBounds(bounds, { padding: [20, 20] });
+        }
+    }
+
+    // Load initial map pins data
+    var initialProps = JSON.parse(document.getElementById('map-properties-data').textContent);
+    updateMapMarkers(initialProps);
+</script>
+{% endblock %}

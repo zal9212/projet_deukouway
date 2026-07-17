@@ -1,0 +1,194 @@
+{% load static property_tags %}
+<!-- DESKTOP LAYOUT (hidden md:block) -->
+<div class="hidden md:block max-w-7xl mx-auto py-8 px-4 sm:px-6 lg:px-8 space-y-6">
+    <!-- Breadcrumbs -->
+    {% include "components/breadcrumb.html" with items=breadcrumbs %}
+
+    <!-- Gallery grid -->
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-4 rounded-2xl overflow-hidden border border-[#E5E7EB] bg-white p-2">
+        <div class="md:col-span-2 h-96 bg-[#FAFAFA] relative rounded-xl overflow-hidden border border-[#E5E7EB]">
+            {% if property.images.all %}
+                <img src="{{ property.images.first.image.url }}" alt="{{ property.title }}" class="w-full h-full object-cover" loading="lazy">
+            {% else %}
+                {% placeholder_image property.id as ph_img %}
+                <img src="{% static ph_img %}" alt="{{ property.title }}" class="w-full h-full object-cover" loading="lazy">
+            {% endif %}
+        </div>
+        
+        <div class="hidden md:grid grid-rows-2 gap-4 h-96">
+            {% if property.images.all %}
+                {% for img in property.images.all|slice:"1:3" %}
+                    <div class="bg-[#FAFAFA] rounded-xl overflow-hidden border border-[#E5E7EB]">
+                        <img src="{{ img.image.url }}" alt="thumbnail" class="w-full h-full object-cover" loading="lazy">
+                    </div>
+                {% endfor %}
+            {% else %}
+                {% placeholder_image property.id as ph_img2 %}
+                <div class="bg-[#FAFAFA] rounded-xl overflow-hidden border border-[#E5E7EB]">
+                    <img src="{% static ph_img2 %}" alt="thumbnail" class="w-full h-full object-cover" loading="lazy">
+                </div>
+                <div class="bg-[#FAFAFA] rounded-xl overflow-hidden border border-[#E5E7EB]">
+                    <img src="{% static ph_img2 %}" alt="thumbnail" class="w-full h-full object-cover" loading="lazy">
+                </div>
+            {% endif %}
+        </div>
+    </div>
+
+    <!-- Details and booking container -->
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-8 pt-4">
+        
+        <!-- Left details panel -->
+        <div class="lg:col-span-2 space-y-8">
+            
+            <!-- Headline titles -->
+            <div>
+                <div class="flex items-center space-x-2 mb-2">
+                    <span class="px-2.5 py-0.5 rounded bg-[#8B1E24]/5 border border-[#8B1E24]/20 text-[#8B1E24] text-[10px] font-bold uppercase tracking-wider">
+                        {{ property.get_property_type_display }}
+                    </span>
+                    <span class="px-2.5 py-0.5 rounded bg-[#16A34A]/5 border border-[#16A34A]/20 text-[#16A34A] text-[10px] font-bold uppercase tracking-wider">
+                        Vérifié
+                    </span>
+                </div>
+                <h1 class="text-2xl font-bold text-[#1F2937] leading-tight">{{ property.title }}</h1>
+                <p class="text-xs text-[#6B7280] mt-1.5 flex items-center">
+                    <i data-lucide="map-pin" class="w-4 h-4 mr-1 text-[#9CA3AF]"></i>
+                    {{ property.address }}, {{ property.neighborhood }}, {{ property.city }}
+                </p>
+            </div>
+
+            <!-- Rooms details grids -->
+            <div class="grid grid-cols-3 gap-4 border border-[#E5E7EB] bg-white p-4 rounded-xl text-center">
+                <div>
+                    <span class="text-[10px] text-[#6B7280] uppercase tracking-wider font-bold">Capacité</span>
+                    <span class="text-sm font-bold text-[#1F2937] block mt-1">{{ property.capacity }} Voyageurs</span>
+                </div>
+                <div>
+                    <span class="text-[10px] text-[#6B7280] uppercase tracking-wider font-bold">Chambres</span>
+                    <span class="text-sm font-bold text-[#1F2937] block mt-1">{{ property.bedrooms }} Chambres</span>
+                </div>
+                <div>
+                    <span class="text-[10px] text-[#6B7280] uppercase tracking-wider font-bold">Salles de bain</span>
+                    <span class="text-sm font-bold text-[#1F2937] block mt-1">{{ property.bathrooms }} Salle{{ property.bathrooms|pluralize:"s" }}</span>
+                </div>
+            </div>
+
+            <!-- Description -->
+            <div class="space-y-2">
+                <h3 class="text-base font-bold text-[#1F2937]">À propos de cet hébergement</h3>
+                <p class="text-xs text-[#6B7280] leading-relaxed text-justify whitespace-pre-line">
+                    {{ property.description }}
+                </p>
+            </div>
+
+            <!-- Amenities checkboxes -->
+            <div class="space-y-3">
+                <h3 class="text-base font-bold text-[#1F2937]">Équipements</h3>
+                <div class="grid grid-cols-2 sm:grid-cols-3 gap-3">
+                    {% for am in property.amenities.all %}
+                        <div class="flex items-center space-x-2.5 p-3 bg-white border border-[#E5E7EB] rounded-xl">
+                            <span class="p-1.5 bg-[#FAFAFA] border border-[#E5E7EB] rounded text-[#8B1E24]">
+                                <i data-lucide="{{ am.icon }}" class="w-4 h-4"></i>
+                            </span>
+                            <span class="text-xs font-semibold text-[#1F2937]">{{ am.name }}</span>
+                        </div>
+                    {% empty %}
+                        <p class="text-xs text-[#9CA3AF]">Aucun équipement.</p>
+                    {% endfor %}
+                </div>
+            </div>
+
+            <!-- Map location -->
+            <div class="space-y-3">
+                <h3 class="text-base font-bold text-[#1F2937]">Localisation</h3>
+                <div class="bg-white border border-[#E5E7EB] rounded-2xl p-1 shadow-sm h-72">
+                    <div id="desktop-detail-map" class="w-full h-full rounded-xl z-10"></div>
+                </div>
+            </div>
+
+        </div>
+
+        <!-- Right Side: Booking box form -->
+        <div class="lg:sticky lg:top-24 h-fit">
+            <div class="bg-white border border-[#E5E7EB] rounded-2xl p-6 shadow-sm space-y-6"
+                 x-data="{
+                     pricePerNight: {{ property.price_per_night }},
+                     checkIn: '',
+                     checkOut: '',
+                     getDays() {
+                          if (!this.checkIn || !this.checkOut) return 0;
+                          const start = new Date(this.checkIn);
+                          const end = new Date(this.checkOut);
+                          const diff = end - start;
+                          return diff > 0 ? Math.ceil(diff / (1000 * 60 * 60 * 24)) : 0;
+                     },
+                     getTotal() {
+                          return this.getDays() * this.pricePerNight;
+                     }
+                 }">
+                <div class="flex items-end justify-between border-b border-[#E5E7EB] pb-4">
+                    <div>
+                        <span class="text-xl font-extrabold text-[#1F2937]">{{ property.price_per_night }} FCFA</span>
+                        <span class="text-[10px] text-[#6B7280] font-semibold block">par nuit</span>
+                    </div>
+                    <span class="text-xs font-bold text-[#6B7280] flex items-center">
+                        <i data-lucide="star" class="w-3.5 h-3.5 text-[#C89B3C] fill-[#C89B3C] mr-1"></i>
+                        4.8 (9 avis)
+                    </span>
+                </div>
+
+                <form action="{% url 'booking_create' property.id %}" method="POST" class="space-y-4">
+                    {% csrf_token %}
+                    <div>
+                        <label class="block text-[10px] font-bold text-[#6B7280] uppercase tracking-wider mb-1">Date d'arrivée</label>
+                        <input type="date" required name="check_in" x-model="checkIn" class="w-full px-3 py-2.5 bg-white border border-[#E5E7EB] rounded-lg text-xs focus:ring-1 focus:ring-[#8B1E24] text-[#1F2937] focus:outline-none">
+                    </div>
+                    <div>
+                        <label class="block text-[10px] font-bold text-[#6B7280] uppercase tracking-wider mb-1">Date de départ</label>
+                        <input type="date" required name="check_out" x-model="checkOut" class="w-full px-3 py-2.5 bg-white border border-[#E5E7EB] rounded-lg text-xs focus:ring-1 focus:ring-[#8B1E24] text-[#1F2937] focus:outline-none">
+                    </div>
+
+                    <!-- Price breakdown -->
+                    <div x-show="getDays() > 0" x-transition class="p-3 bg-[#FAFAFA] border border-[#E5E7EB] rounded-lg text-xs space-y-2">
+                        <div class="flex justify-between font-semibold">
+                            <span class="text-[#6B7280]" x-text="pricePerNight.toLocaleString() + ' F x ' + getDays() + ' nuits'"></span>
+                            <span class="text-[#1F2937]" x-text="(pricePerNight * getDays()).toLocaleString() + ' F'"></span>
+                        </div>
+                        <div class="flex justify-between border-t border-[#E5E7EB] pt-2 font-bold text-sm">
+                            <span>Total</span>
+                            <span class="text-[#8B1E24]" x-text="getTotal().toLocaleString() + ' FCFA'"></span>
+                        </div>
+                    </div>
+
+                    {% if user.is_authenticated %}
+                        {% if user.role == 'client' %}
+                            <button type="submit" class="w-full py-3 bg-[#8B1E24] hover:bg-[#6F171C] text-white text-xs font-bold rounded-lg shadow-sm transition-colors uppercase tracking-wider">
+                                Réserver maintenant
+                            </button>
+                        {% else %}
+                            <div class="text-center p-3 bg-[#FAFAFA] border border-[#E5E7EB] rounded-lg text-[10px] text-[#6B7280] font-semibold">
+                                Réservé aux comptes Client.
+                            </div>
+                        {% endif %}
+                    {% else %}
+                        <a href="{% url 'login' %}" class="block text-center w-full py-3 bg-[#8B1E24] hover:bg-[#6F171C] text-white text-xs font-bold rounded-lg shadow-sm transition-colors uppercase tracking-wider">
+                            Se connecter pour réserver
+                        </a>
+                    {% endif %}
+                </form>
+
+                <!-- Owner brief details -->
+                <div class="pt-4 border-t border-[#E5E7EB] flex items-center space-x-3">
+                    <div class="w-8 h-8 rounded-full bg-[#8B1E24] text-white flex items-center justify-center font-bold text-xs select-none">
+                        {{ property.owner.first_name|slice:":1"|upper }}
+                    </div>
+                    <div>
+                        <span class="text-[10px] text-[#6B7280] font-semibold block">Hôte</span>
+                        <span class="text-xs font-bold text-[#1F2937]">{{ property.owner.get_full_name }}</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+</div>

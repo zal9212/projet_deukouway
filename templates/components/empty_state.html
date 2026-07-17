@@ -1,0 +1,16 @@
+<div class="py-16 text-center bg-white border border-dashed border-[#E5E7EB] rounded-2xl p-8 {{ extra_class }}">
+    {% if icon %}
+        <span class="inline-flex p-3 bg-[#FAFAFA] rounded-xl text-[#9CA3AF] mb-4">
+            <i data-lucide="{{ icon }}" class="w-8 h-8"></i>
+        </span>
+    {% endif %}
+    <h3 class="text-base font-bold text-[#1F2937]">{{ title }}</h3>
+    <p class="text-xs text-[#6B7280] mt-1.5 max-w-sm mx-auto leading-relaxed">{{ description }}</p>
+    {% if action_url %}
+        <div class="mt-6">
+            <a href="{{ action_url }}" class="px-5 py-2.5 bg-[#8B1E24] hover:bg-[#6F171C] text-white text-xs font-bold rounded-lg shadow-sm transition-colors inline-block">
+                {{ action_label }}
+            </a>
+        </div>
+    {% endif %}
+</div>

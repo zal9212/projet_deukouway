@@ -1,0 +1,15 @@
+<div x-data="{ show: true }" 
+     x-show="show" 
+     x-init="setTimeout(() => show = false, 5000)" 
+     x-transition:leave="transition ease-in duration-200" 
+     x-transition:leave-start="opacity-100" 
+     x-transition:leave-end="opacity-0"
+     class="flex items-center space-x-3 p-4 rounded-xl bg-white border border-[#E5E7EB] shadow-md max-w-sm pointer-events-auto {{ extra_class }}">
+    <span class="p-1 rounded bg-[#8B1E24] text-white">
+        <i data-lucide="info" class="w-4 h-4"></i>
+    </span>
+    <span class="text-sm font-semibold text-[#1F2937]">{{ message }}</span>
+    <button @click="show = false" class="text-[#9CA3AF] hover:text-[#1F2937] focus:outline-none">
+        <i data-lucide="x" class="w-4 h-4"></i>
+    </button>
+</div>

@@ -1,0 +1,53 @@
+{% extends "layouts/public.html" %}
+
+{% block title %}Assistance Chat - DEKOUWAY{% endblock %}
+
+{% block content %}
+<section class="max-w-4xl mx-auto py-12 px-4 sm:px-6 lg:px-8 space-y-8">
+    
+    <div>
+        <h1 class="text-2xl font-bold text-[#1F2937]">Assistance Client</h1>
+        <p class="text-xs text-[#6B7280]">Consultez notre FAQ ou posez des questions à notre assistant intelligent.</p>
+    </div>
+
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+        
+        <!-- Left: Accordion FAQ (Alpine) -->
+        <div class="md:col-span-1 space-y-4" x-data="{ active: null }">
+            <h3 class="text-xs font-bold text-[#6B7280] uppercase tracking-wider mb-2">Sujets récurrents</h3>
+            
+            <div class="bg-white border border-[#E5E7EB] rounded-xl overflow-hidden shadow-sm text-xs">
+                <button @click="active = active === 1 ? null : 1" class="w-full text-left p-4 font-bold text-[#1F2937] flex justify-between items-center focus:outline-none">
+                    <span>Comment réserver ?</span>
+                    <i data-lucide="chevron-down" class="w-4 h-4 text-[#6B7280] transition-transform" :class="active === 1 ? 'rotate-180 text-[#8B1E24]' : ''"></i>
+                </button>
+                <div x-show="active === 1" x-collapse x-cloak class="px-4 pb-4 text-[#6B7280] border-t border-[#E5E7EB] pt-2 leading-relaxed">
+                    Sélectionnez vos dates d'arrivée et départ sur la fiche du logement puis validez. Le propriétaire répondra sous 24 heures.
+                </div>
+            </div>
+
+            <div class="bg-white border border-[#E5E7EB] rounded-xl overflow-hidden shadow-sm text-xs">
+                <button @click="active = active === 2 ? null : 2" class="w-full text-left p-4 font-bold text-[#1F2937] flex justify-between items-center focus:outline-none">
+                    <span>Moyens de paiement ?</span>
+                    <i data-lucide="chevron-down" class="w-4 h-4 text-[#6B7280] transition-transform" :class="active === 2 ? 'rotate-180 text-[#8B1E24]' : ''"></i>
+                </button>
+                <div x-show="active === 2" x-collapse x-cloak class="px-4 pb-4 text-[#6B7280] border-t border-[#E5E7EB] pt-2 leading-relaxed">
+                    Nous acceptons Wave, Orange Money, et les cartes bancaires internationales (Visa/Mastercard).
+                </div>
+            </div>
+        </div>
+
+        <!-- Right: Chat interface (Iframe embedded) -->
+        <div class="md:col-span-2">
+            <div class="bg-white border border-[#E5E7EB] rounded-2xl overflow-hidden shadow-sm h-[500px] flex flex-col">
+                <div class="p-4 border-b border-[#E5E7EB] bg-[#FAFAFA] flex items-center space-x-2">
+                    <span class="w-2.5 h-2.5 rounded-full bg-[#16A34A] animate-pulse"></span>
+                    <span class="text-xs font-bold text-[#1F2937]">Assistant intelligent DEKOUWAY</span>
+                </div>
+                <iframe src="{% url 'chatbot_widget' %}" class="flex-grow w-full border-none"></iframe>
+            </div>
+        </div>
+
+    </div>
+</section>
+{% endblock %}

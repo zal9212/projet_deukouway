@@ -1,0 +1,45 @@
+{% extends "base.html" %}
+
+{% block layout %}
+<div class="min-h-full flex flex-col md:flex-row bg-[#F8FAFC] pb-16 md:pb-0">
+    
+    <!-- Sidebar component -->
+    {% include "components/sidebar.html" %}
+
+    <!-- Right-side content container -->
+    <div class="flex-grow flex flex-col min-h-screen">
+        <!-- Top bar for profile details & mobile menu trigger -->
+        <header class="bg-white border-b border-[#E5E7EB] h-16 flex items-center justify-between px-6 md:px-8">
+            <div class="flex items-center">
+                <!-- Mobile sidebar trigger -->
+                <button type="button" @click="$dispatch('toggle-sidebar')" class="md:hidden p-2 rounded hover:bg-[#FAFAFA] text-[#6B7280]">
+                    <i data-lucide="menu" class="w-6 h-6"></i>
+                </button>
+                <h2 class="text-lg font-bold text-[#1F2937] ml-2 md:ml-0">
+                    {% block dashboard_title %}Tableau de bord{% endblock %}
+                </h2>
+            </div>
+            
+            <!-- Quick user nav -->
+            <div class="flex items-center space-x-4">
+                <span class="text-sm font-semibold text-[#1F2937]">{{ user.first_name }}</span>
+                {% if user.avatar %}
+                    <img src="{{ user.avatar.url }}" alt="avatar" class="w-8 h-8 rounded-full object-cover">
+                {% else %}
+                    <div class="w-8 h-8 rounded-full bg-[#8B1E24] text-white flex items-center justify-center font-bold text-xs">
+                        {{ user.first_name|slice:":1"|upper }}
+                    </div>
+                {% endif %}
+            </div>
+        </header>
+
+        <!-- Main dashboard content space -->
+        <main class="flex-grow p-6 md:p-8">
+            {% block content %}{% endblock %}
+        </main>
+    </div>
+    
+    <!-- Mobile bottom navigation bar -->
+    {% include "components/mobile_nav.html" %}
+</div>
+{% endblock %}

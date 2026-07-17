@@ -1,0 +1,31 @@
+{% extends "layouts/public.html" %}
+
+{% block title %}{{ property.title }} - DEKOUWAY{% endblock %}
+
+{% block content %}
+<!-- Inclusion of mobile and desktop sub-layouts to ensure file is under 300 lines limit -->
+{% include "pages/public/partials/property_detail_mobile.html" %}
+{% include "pages/public/partials/property_detail_desktop.html" %}
+
+<!-- Maps integration script -->
+<script>
+    document.addEventListener("DOMContentLoaded", function() {
+        var lat = {{ property.latitude|stringformat:".6f" }};
+        var lng = {{ property.longitude|stringformat:".6f" }};
+        
+        // Initialise desktop map if visible
+        if (document.getElementById('desktop-detail-map')) {
+            var desktopMap = L.map('desktop-detail-map').setView([lat, lng], 14);
+            L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png').addTo(desktopMap);
+            L.marker([lat, lng]).addTo(desktopMap);
+        }
+
+        // Initialise mobile map if active
+        if (document.getElementById('mobile-detail-map')) {
+            var mobileMap = L.map('mobile-detail-map').setView([lat, lng], 14);
+            L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png').addTo(mobileMap);
+            L.marker([lat, lng]).addTo(mobileMap);
+        }
+    });
+</script>
+{% endblock %}

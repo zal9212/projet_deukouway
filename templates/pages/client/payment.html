@@ -1,0 +1,133 @@
+{% extends "layouts/public.html" %}
+
+{% block title %}Règlement Sécurisé - DEKOUWAY{% endblock %}
+
+{% block content %}
+<section class="max-w-5xl mx-auto py-12 px-4 sm:px-6 lg:px-8" x-data="{ 
+    payMethod: 'card',
+    processing: false,
+    submitPay() {
+        this.processing = true;
+        setTimeout(() => {
+            document.getElementById('payment-form').submit();
+        }, 1500);
+    }
+}">
+
+    <!-- Processing Overlay screen -->
+    <div x-show="processing" x-cloak class="fixed inset-0 bg-slate-900/90 z-50 flex flex-col items-center justify-center text-white">
+        <span class="p-4 bg-[#8B1E24] rounded-2xl mb-4 animate-pulse">
+            <i data-lucide="shield-check" class="w-12 h-12"></i>
+        </span>
+        <h3 class="text-xl font-bold tracking-tight">Traitement sécurisé de la transaction...</h3>
+        <p class="text-xs text-[#9CA3AF] mt-1">Merci de ne pas quitter cette page.</p>
+        <span class="w-8 h-8 rounded-full border-4 border-[#8B1E24] border-t-transparent animate-spin mt-6"></span>
+    </div>
+
+    <div class="mb-8">
+        <h1 class="text-2xl font-bold text-[#1F2937]">Règlement Sécurisé</h1>
+        <p class="text-xs text-[#6B7280]">Choisissez votre mode de paiement pour valider votre séjour.</p>
+    </div>
+
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+        
+        <!-- Left: Options & forms -->
+        <div class="lg:col-span-2 space-y-6">
+            
+            <!-- Payment Methods Selectors (Solid border & backgrounds) -->
+            <div class="bg-white border border-[#E5E7EB] rounded-2xl p-6 shadow-sm space-y-4">
+                <h3 class="text-sm font-bold text-[#1F2937] uppercase tracking-wider">Moyens de paiement</h3>
+                
+                <div class="grid grid-cols-3 gap-4">
+                    <button type="button" @click="payMethod = 'card'" class="flex flex-col items-center p-4 border rounded-xl transition-all focus:outline-none" :class="payMethod === 'card' ? 'border-[#8B1E24] bg-[#8B1E24]/5 text-[#8B1E24]' : 'border-[#E5E7EB] text-[#6B7280] hover:bg-[#FAFAFA]'">
+                        <i data-lucide="credit-card" class="w-5 h-5 mb-2"></i>
+                        <span class="text-xs font-semibold">Carte</span>
+                    </button>
+                    <button type="button" @click="payMethod = 'wave'" class="flex flex-col items-center p-4 border rounded-xl transition-all focus:outline-none" :class="payMethod === 'wave' ? 'border-[#8B1E24] bg-[#8B1E24]/5 text-[#8B1E24]' : 'border-[#E5E7EB] text-[#6B7280] hover:bg-[#FAFAFA]'">
+                        <span class="w-5 h-5 rounded-full bg-blue-500 text-white flex items-center justify-center font-extrabold text-[8px] mb-2">W</span>
+                        <span class="text-xs font-semibold">Wave</span>
+                    </button>
+                    <button type="button" @click="payMethod = 'orange_money'" class="flex flex-col items-center p-4 border rounded-xl transition-all focus:outline-none" :class="payMethod === 'orange_money' ? 'border-[#8B1E24] bg-[#8B1E24]/5 text-[#8B1E24]' : 'border-[#E5E7EB] text-[#6B7280] hover:bg-[#FAFAFA]'">
+                        <span class="w-5 h-5 rounded-full bg-orange-500 text-white flex items-center justify-center font-extrabold text-[8px] mb-2">OM</span>
+                        <span class="text-xs font-semibold">Orange Money</span>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Form Block -->
+            <div class="bg-white border border-[#E5E7EB] rounded-2xl p-6 shadow-sm">
+                <form id="payment-form" action="{% url 'payment_process' booking.id %}" method="POST" @submit.prevent="submitPay()">
+                    {% csrf_token %}
+                    <input type="hidden" name="payment_method" :value="payMethod">
+
+                    <!-- Card details -->
+                    <div x-show="payMethod === 'card'" x-transition class="space-y-4">
+                        <div>
+                            <label class="block text-xs font-bold text-[#6B7280] mb-1">Titulaire de la carte</label>
+                            <input type="text" placeholder="ABDOULAYE DIOP" class="w-full px-3 py-2 bg-white border border-[#E5E7EB] rounded-lg text-xs focus:ring-1 focus:ring-[#8B1E24] text-[#1F2937] focus:outline-none">
+                        </div>
+                        <div>
+                            <label class="block text-xs font-bold text-[#6B7280] mb-1">Numéro de carte</label>
+                            <input type="text" placeholder="4000 1234 5678 9010" class="w-full px-3 py-2 bg-white border border-[#E5E7EB] rounded-lg text-xs focus:ring-1 focus:ring-[#8B1E24] text-[#1F2937] focus:outline-none">
+                        </div>
+                        <div class="grid grid-cols-2 gap-4">
+                            <div>
+                                <label class="block text-xs font-bold text-[#6B7280] mb-1">Expiration</label>
+                                <input type="text" placeholder="MM/YY" class="w-full px-3 py-2 bg-white border border-[#E5E7EB] rounded-lg text-xs focus:ring-1 focus:ring-[#8B1E24] text-[#1F2937] focus:outline-none">
+                            </div>
+                            <div>
+                                <label class="block text-xs font-bold text-[#6B7280] mb-1">CVC</label>
+                                <input type="password" placeholder="•••" class="w-full px-3 py-2 bg-white border border-[#E5E7EB] rounded-lg text-xs focus:ring-1 focus:ring-[#8B1E24] text-[#1F2937] focus:outline-none">
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Mobile wallet details -->
+                    <div x-show="payMethod === 'wave' || payMethod === 'orange_money'" x-transition class="space-y-4">
+                        <div class="p-4 bg-[#FAFAFA] border border-[#E5E7EB] rounded-xl flex items-start space-x-2">
+                            <span class="text-[#8B1E24] mt-0.5"><i data-lucide="info" class="w-4 h-4"></i></span>
+                            <p class="text-[10px] text-[#6B7280] leading-relaxed">
+                                Une invitation de validation Push sera transmise sur votre numéro de téléphone mobile pour authentification du débit.
+                            </p>
+                        </div>
+                        <div>
+                            <label class="block text-xs font-bold text-[#6B7280] mb-1">Numéro de téléphone Wave / OM</label>
+                            <input type="text" required placeholder="+221 77 123 45 67" class="w-full px-3 py-2 bg-white border border-[#E5E7EB] rounded-lg text-xs focus:ring-1 focus:ring-[#8B1E24] text-[#1F2937] focus:outline-none">
+                        </div>
+                    </div>
+
+                    <div class="mt-8 border-t border-[#E5E7EB] pt-6">
+                        <button type="submit" class="w-full py-3.5 bg-[#8B1E24] hover:bg-[#6F171C] text-white text-xs font-bold rounded-lg shadow-sm transition-colors uppercase tracking-wider">
+                            Régler {{ booking.total_price }} FCFA
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <!-- Right: Summary -->
+        <div class="lg:col-span-1">
+            <div class="bg-white border border-[#E5E7EB] rounded-2xl p-6 shadow-sm space-y-4">
+                <h3 class="font-bold text-sm border-b border-[#E5E7EB] pb-3 text-[#1F2937]">Récapitulatif</h3>
+                
+                <div class="space-y-2.5 text-xs text-[#6B7280]">
+                    <div class="flex justify-between">
+                        <span>Hébergement</span>
+                        <span class="font-bold text-[#1F2937] truncate max-w-[120px]">{{ booking.property.title }}</span>
+                    </div>
+                    <div class="flex justify-between">
+                        <span>Dates</span>
+                        <span class="font-semibold text-[#1F2937]">{{ booking.check_in|date:"d M" }} - {{ booking.check_out|date:"d M Y" }}</span>
+                    </div>
+                </div>
+
+                <div class="border-t border-[#E5E7EB] pt-4 flex justify-between items-center font-extrabold text-base text-[#1F2937]">
+                    <span>Total à régler</span>
+                    <span class="text-[#8B1E24]">{{ booking.total_price }} FCFA</span>
+                </div>
+            </div>
+        </div>
+
+    </div>
+</section>
+{% endblock %}

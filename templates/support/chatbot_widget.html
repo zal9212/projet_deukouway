@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="fr" class="h-full">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Widget Chatbot</title>
+    <!-- Google Font: Poppins -->
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: '#8B1E24',
+                        'primary-hover': '#6F171C',
+                        background: '#FAFAFA',
+                        surface: '#FFFFFF',
+                        border: '#E5E7EB',
+                        'text-primary': '#1F2937',
+                        'text-secondary': '#6B7280',
+                    },
+                    fontFamily: {
+                        sans: ['Poppins', 'sans-serif'],
+                    }
+                }
+            }
+        }
+    </script>
+    <!-- HTMX -->
+    <script src="https://unpkg.com/htmx.org@1.9.10"></script>
+    <!-- Lucide Icons -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <style>
+        body {
+            font-family: 'Poppins', sans-serif;
+        }
+    </style>
+</head>
+<body class="bg-[#FAFAFA] h-full flex flex-col justify-between overflow-hidden p-0 m-0 text-[#1F2937]">
+
+    <!-- Messages Container -->
+    <div id="chat-messages-container" class="flex-grow p-4 overflow-y-auto space-y-4">
+        <!-- Welcoming Bot Message -->
+        <div class="flex items-start space-x-2.5 max-w-[85%]">
+            <div class="w-8 h-8 rounded-full bg-[#8B1E24] text-white flex items-center justify-center flex-shrink-0 font-bold text-xs select-none shadow-sm">
+                DK
+            </div>
+            <div class="p-3 bg-white rounded-2xl rounded-tl-none border border-[#E5E7EB] text-xs shadow-sm leading-relaxed">
+                <p class="font-bold text-[10px] text-[#6B7280] mb-1">Assistant DEKOUWAY</p>
+                <p>Bonjour ! Je suis l'assistant intelligent de DEKOUWAY. Comment puis-je vous aider aujourd'hui ? Vous pouvez me poser des questions sur les réservations, les paiements (Wave / Orange Money) ou la publication d'annonces.</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Interactive Form -->
+    <form id="chat-form" 
+          hx-post="{% url 'chatbot_response' %}" 
+          hx-target="#chat-messages-container" 
+          hx-swap="beforeend" 
+          class="p-3 bg-white border-t border-[#E5E7EB] flex items-center space-x-2"
+          onsubmit="setTimeout(() => { document.getElementById('message-input').value = ''; }, 50);">
+        {% csrf_token %}
+        <input type="text" 
+               id="message-input" 
+               name="message" 
+               required 
+               placeholder="Écrivez votre message..." 
+               class="flex-grow px-4 py-2.5 bg-[#FAFAFA] border border-[#E5E7EB] rounded-xl text-xs focus:outline-none focus:ring-1 focus:ring-[#8B1E24] text-[#1F2937] placeholder-[#9CA3AF]">
+        <button type="submit" class="p-2.5 bg-[#8B1E24] hover:bg-[#6F171C] text-white rounded-xl shadow-sm transition-colors flex items-center justify-center">
+            <i data-lucide="send" class="w-4 h-4"></i>
+        </button>
+    </form>
+
+    <!-- Init icons and handle scrolling -->
+    <script>
+        lucide.createIcons();
+        
+        // Scroll bottom on swapping messages
+        document.body.addEventListener('htmx:afterSwap', function() {
+            lucide.createIcons();
+            var container = document.getElementById('chat-messages-container');
+            container.scrollTop = container.scrollHeight;
+        });
+    </script>
+</body>
+</html>

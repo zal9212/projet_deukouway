@@ -1,0 +1,25 @@
+<!-- Header result count -->
+<div class="flex items-center justify-between mb-4">
+    <p class="text-xs font-bold text-[#6B7280] uppercase tracking-wider">
+        {{ properties|length }} logement{{ properties|length|pluralize:"s" }} trouvé{{ properties|length|pluralize }}
+    </p>
+</div>
+
+<!-- Cards Grid -->
+<div class="grid grid-cols-1 sm:grid-cols-2 gap-6">
+    {% for property in properties %}
+        {% include "components/property_card.html" with property=property %}
+    {% empty %}
+        <div class="col-span-full">
+            {% include "components/empty_state.html" with title="Aucun logement trouvé" description="Essayez de modifier vos critères de recherche." icon="home" %}
+        </div>
+    {% endfor %}
+</div>
+
+{{ map_properties_json|json_script:"map-properties-data-htmx" }}
+<script>
+    if (typeof updateMapMarkers === 'function') {
+        var propertiesJson = JSON.parse(document.getElementById('map-properties-data-htmx').textContent);
+        updateMapMarkers(propertiesJson);
+    }
+</script>

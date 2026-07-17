@@ -1,0 +1,7 @@
+<button type="{{ type|default:'button' }}" 
+        class="px-4 py-2 bg-[#8B1E24] hover:bg-[#6F171C] text-white text-sm font-medium rounded-lg shadow-sm transition-all focus:outline-none focus:ring-2 focus:ring-[#8B1E24] flex items-center justify-center space-x-2 {{ extra_class }}">
+    {% if icon %}
+        <i data-lucide="{{ icon }}" class="w-4 h-4"></i>
+    {% endif %}
+    <span>{{ label }}</span>
+</button>

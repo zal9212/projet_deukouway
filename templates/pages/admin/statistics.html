@@ -1,0 +1,77 @@
+{% extends "layouts/dashboard.html" %}
+
+{% block title %}Statistiques - DEKOUWAY{% endblock %}
+{% block dashboard_title %}Statistiques & Rapports{% endblock %}
+
+{% block content %}
+<div class="space-y-8">
+    <div>
+        <h1 class="text-xl font-bold text-[#1F2937]">Rapports Système</h1>
+        <p class="text-xs text-[#6B7280]">Suivez les performances opérationnelles globales de la plateforme.</p>
+    </div>
+
+    <!-- Charts Simulation in CSS and HTML (Solid Bars only, no fancy SVGs/gradients) -->
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+        
+        <!-- Booking status distribution chart -->
+        <div class="bg-white border border-[#E5E7EB] rounded-2xl p-6 shadow-sm space-y-6">
+            <h3 class="text-sm font-bold text-[#1F2937] uppercase tracking-wider">Répartition des Réservations</h3>
+            
+            <div class="space-y-4">
+                <div>
+                    <div class="flex justify-between text-xs font-semibold mb-1">
+                        <span>Confirmées (Payées)</span>
+                        <span class="font-bold">65%</span>
+                    </div>
+                    <div class="w-full bg-slate-100 rounded-full h-2">
+                        <div class="bg-[#16A34A] h-2 rounded-full w-[65%]"></div>
+                    </div>
+                </div>
+                <div>
+                    <div class="flex justify-between text-xs font-semibold mb-1">
+                        <span>En attente de paiement</span>
+                        <span class="font-bold">20%</span>
+                    </div>
+                    <div class="w-full bg-slate-100 rounded-full h-2">
+                        <div class="bg-[#2563EB] h-2 rounded-full w-[20%]"></div>
+                    </div>
+                </div>
+                <div>
+                    <div class="flex justify-between text-xs font-semibold mb-1">
+                        <span>Annulées / Refusées</span>
+                        <span class="font-bold">15%</span>
+                    </div>
+                    <div class="w-full bg-slate-100 rounded-full h-2">
+                        <div class="bg-[#DC2626] h-2 rounded-full w-[15%]"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Monthly revenues reports -->
+        <div class="bg-white border border-[#E5E7EB] rounded-2xl p-6 shadow-sm space-y-6">
+            <h3 class="text-sm font-bold text-[#1F2937] uppercase tracking-wider">Croissance des revenus</h3>
+            
+            <div class="h-48 flex items-end justify-between pt-6 px-4">
+                <div class="flex flex-col items-center space-y-2">
+                    <div class="bg-[#8B1E24] w-6 h-12 rounded-t"></div>
+                    <span class="text-[9px] text-[#6B7280]">Avr</span>
+                </div>
+                <div class="flex flex-col items-center space-y-2">
+                    <div class="bg-[#8B1E24] w-6 h-20 rounded-t"></div>
+                    <span class="text-[9px] text-[#6B7280]">Mai</span>
+                </div>
+                <div class="flex flex-col items-center space-y-2">
+                    <div class="bg-[#8B1E24] w-6 h-32 rounded-t"></div>
+                    <span class="text-[9px] text-[#6B7280]">Juin</span>
+                </div>
+                <div class="flex flex-col items-center space-y-2">
+                    <div class="bg-[#8B1E24] w-6 h-40 rounded-t"></div>
+                    <span class="text-[9px] text-[#6B7280]">Juil</span>
+                </div>
+            </div>
+        </div>
+
+    </div>
+</div>
+{% endblock %}

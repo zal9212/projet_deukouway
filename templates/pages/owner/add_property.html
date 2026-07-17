@@ -1,0 +1,167 @@
+{% extends "layouts/dashboard.html" %}
+
+{% block title %}{% if object %}Modifier le Logement{% else %}Ajouter un Logement{% endif %} - DEKOUWAY{% endblock %}
+{% block dashboard_title %}{% if object %}Modifier le logement{% else %}Nouveau logement{% endif %}{% endblock %}
+
+{% block content %}
+<div class="max-w-3xl mx-auto space-y-6">
+    <div class="bg-white border border-[#E5E7EB] rounded-2xl p-6 sm:p-8 shadow-sm">
+        
+        <form action="" method="POST" enctype="multipart/form-data" class="space-y-6">
+            {% csrf_token %}
+            
+            {% if form.errors %}
+                <div class="p-3 bg-red-50 border border-red-200 text-[#DC2626] rounded-lg text-xs font-semibold">
+                    Erreur de soumission. Veuillez vérifier les champs.
+                </div>
+            {% endif %}
+
+            <!-- Section 1: details -->
+            <div class="space-y-4">
+                <h3 class="text-sm font-bold text-[#1F2937] uppercase tracking-wider border-b border-[#E5E7EB] pb-2">1. Détails généraux</h3>
+                
+                <div>
+                    <label class="block text-xs font-bold text-[#6B7280] mb-1.5">Titre de l'annonce</label>
+                    <input type="text" name="title" required value="{{ form.title.value|default:'' }}" class="w-full px-3 py-2 bg-white border border-[#E5E7EB] rounded-lg text-xs focus:ring-1 focus:ring-[#8B1E24] text-[#1F2937] focus:outline-none">
+                </div>
+
+                <div>
+                    <label class="block text-xs font-bold text-[#6B7280] mb-1.5">Description détaillée</label>
+                    <textarea name="description" required rows="4" class="w-full px-3 py-2 bg-white border border-[#E5E7EB] rounded-lg text-xs focus:ring-1 focus:ring-[#8B1E24] text-[#1F2937] focus:outline-none">{{ form.description.value|default:'' }}</textarea>
+                </div>
+
+                <div class="grid grid-cols-2 gap-4">
+                    <div>
+                        <label class="block text-xs font-bold text-[#6B7280] mb-1.5">Type de logement</label>
+                        {{ form.property_type }}
+                    </div>
+                    <div>
+                        <label class="block text-xs font-bold text-[#6B7280] mb-1.5">Tarif par nuit (FCFA)</label>
+                        <input type="number" name="price_per_night" required value="{{ form.price_per_night.value|default:'' }}" class="w-full px-3 py-2 bg-white border border-[#E5E7EB] rounded-lg text-xs focus:ring-1 focus:ring-[#8B1E24] text-[#1F2937] focus:outline-none">
+                    </div>
+                </div>
+            </div>
+
+            <!-- Section 2: capacity -->
+            <div class="space-y-4">
+                <h3 class="text-sm font-bold text-[#1F2937] uppercase tracking-wider border-b border-[#E5E7EB] pb-2">2. Capacité & Pièces</h3>
+                <div class="grid grid-cols-3 gap-4">
+                    <div>
+                        <label class="block text-xs font-bold text-[#6B7280] mb-1.5">Voyageurs</label>
+                        <input type="number" name="capacity" required value="{{ form.capacity.value|default:1 }}" class="w-full px-3 py-2 bg-white border border-[#E5E7EB] rounded-lg text-xs focus:ring-1 focus:ring-[#8B1E24] text-[#1F2937] focus:outline-none">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-bold text-[#6B7280] mb-1.5">Chambres</label>
+                        <input type="number" name="bedrooms" required value="{{ form.bedrooms.value|default:1 }}" class="w-full px-3 py-2 bg-white border border-[#E5E7EB] rounded-lg text-xs focus:ring-1 focus:ring-[#8B1E24] text-[#1F2937] focus:outline-none">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-bold text-[#6B7280] mb-1.5">Sdb.</label>
+                        <input type="number" name="bathrooms" required value="{{ form.bathrooms.value|default:1 }}" class="w-full px-3 py-2 bg-white border border-[#E5E7EB] rounded-lg text-xs focus:ring-1 focus:ring-[#8B1E24] text-[#1F2937] focus:outline-none">
+                    </div>
+                </div>
+            </div>
+
+            <!-- Section 3: address and coordinates -->
+            <div class="space-y-4" x-data="{ lat: {{ form.latitude.value|default:14.7167 }}, lng: {{ form.longitude.value|default:-17.4677 }} }">
+                <h3 class="text-sm font-bold text-[#1F2937] uppercase tracking-wider border-b border-[#E5E7EB] pb-2">3. Localisation</h3>
+                
+                <div class="grid grid-cols-2 gap-4">
+                    <div class="col-span-2">
+                        <label class="block text-xs font-bold text-[#6B7280] mb-1.5">Adresse</label>
+                        <input type="text" name="address" required value="{{ form.address.value|default:'' }}" class="w-full px-3 py-2 bg-white border border-[#E5E7EB] rounded-lg text-xs focus:ring-1 focus:ring-[#8B1E24] text-[#1F2937] focus:outline-none">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-bold text-[#6B7280] mb-1.5">Ville</label>
+                        <input type="text" name="city" required value="{{ form.city.value|default:'' }}" class="w-full px-3 py-2 bg-white border border-[#E5E7EB] rounded-lg text-xs focus:ring-1 focus:ring-[#8B1E24] text-[#1F2937] focus:outline-none">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-bold text-[#6B7280] mb-1.5">Quartier</label>
+                        <input type="text" name="neighborhood" required value="{{ form.neighborhood.value|default:'' }}" class="w-full px-3 py-2 bg-white border border-[#E5E7EB] rounded-lg text-xs focus:ring-1 focus:ring-[#8B1E24] text-[#1F2937] focus:outline-none">
+                    </div>
+                    
+                    <!-- Hidden Lat/Lng linked with Alpine & map -->
+                    <input type="hidden" name="latitude" :value="lat" id="id_latitude">
+                    <input type="hidden" name="longitude" :value="lng" id="id_longitude">
+                </div>
+
+                <p class="text-[10px] text-[#6B7280]">Déplacez l'épingle sur la carte ci-dessous pour localiser le bien.</p>
+                <div class="bg-white border border-[#E5E7EB] rounded-xl p-1 shadow-sm h-64">
+                    <div id="picker-map" class="w-full h-full rounded-lg z-10"></div>
+                </div>
+            </div>
+
+            <!-- Section 4: amenities checkboxes -->
+            <div class="space-y-4">
+                <h3 class="text-sm font-bold text-[#1F2937] uppercase tracking-wider border-b border-[#E5E7EB] pb-2">4. Équipements</h3>
+                <div class="grid grid-cols-2 sm:grid-cols-3 gap-3">
+                    {% for cb in form.amenities %}
+                        <label class="flex items-center space-x-2.5 p-3 bg-[#FAFAFA] border border-[#E5E7EB] rounded-xl cursor-pointer hover:bg-slate-100 select-none text-xs font-semibold text-[#1F2937]">
+                            {{ cb.tag }}
+                            <span>{{ cb.choice_label }}</span>
+                        </label>
+                    {% endfor %}
+                </div>
+            </div>
+
+            <!-- Section 5: images -->
+            <div class="space-y-4">
+                <h3 class="text-sm font-bold text-[#1F2937] uppercase tracking-wider border-b border-[#E5E7EB] pb-2">5. Photos du bien</h3>
+                <div class="p-6 border-2 border-dashed border-[#E5E7EB] bg-[#FAFAFA] rounded-xl text-center">
+                    <i data-lucide="upload-cloud" class="w-8 h-8 text-[#9CA3AF] mx-auto mb-2"></i>
+                    <p class="text-xs font-semibold text-[#6B7280]">Sélectionner les photos</p>
+                    <input type="file" name="images" multiple class="mt-4 text-xs text-[#6B7280]">
+                </div>
+            </div>
+
+            <div class="flex items-center justify-end space-x-3 pt-6 border-t border-[#E5E7EB]">
+                <a href="{% url 'owner_properties' %}" class="px-4 py-2.5 border border-[#E5E7EB] hover:bg-[#FAFAFA] rounded-lg text-xs font-bold text-[#1F2937] transition-all">Annuler</a>
+                <button type="submit" class="px-6 py-2.5 bg-[#8B1E24] hover:bg-[#6F171C] text-white text-xs font-bold rounded-lg shadow-sm transition-colors">
+                    Soumettre
+                </button>
+            </div>
+
+        </form>
+
+    </div>
+</div>
+
+<!-- Map Picker -->
+<script>
+    document.addEventListener("DOMContentLoaded", function() {
+        var latField = document.getElementById('id_latitude');
+        var lngField = document.getElementById('id_longitude');
+        var defaultLat = parseFloat(latField.value) || 14.7167;
+        var defaultLng = parseFloat(lngField.value) || -17.4677;
+
+        var map = L.map('picker-map').setView([defaultLat, defaultLng], 12);
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png').addTo(map);
+
+        var marker = L.marker([defaultLat, defaultLng], { draggable: true }).addTo(map);
+
+        marker.on('dragend', function(e) {
+            var pos = marker.getLatLng();
+            latField.value = pos.lat.toFixed(6);
+            lngField.value = pos.lng.toFixed(6);
+            
+            // Sync with Alpine
+            var el = document.querySelector('[x-data]');
+            if (el) {
+                el.__x.$data.lat = pos.lat;
+                el.__x.$data.lng = pos.lng;
+            }
+        });
+
+        map.on('click', function(e) {
+            marker.setLatLng(e.latlng);
+            latField.value = e.latlng.lat.toFixed(6);
+            lngField.value = e.latlng.lng.toFixed(6);
+            
+            var el = document.querySelector('[x-data]');
+            if (el) {
+                el.__x.$data.lat = e.latlng.lat;
+                el.__x.$data.lng = e.latlng.lng;
+            }
+        });
+    });
+</script>
+{% endblock %}
