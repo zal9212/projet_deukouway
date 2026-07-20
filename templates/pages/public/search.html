@@ -1,160 +1,202 @@
 {% extends "layouts/public.html" %}
+{% load static %}
 
-{% block title %}Rechercher un logement - DEKOUWAY{% endblock %}
+{% block title %}Recherche de logements - DEKOUWAY{% endblock %}
+{% block meta_description %}Trouvez le logement idéal parmi notre sélection d'appartements, villas et studios au Sénégal.{% endblock %}
+
+{% block extra_head %}
+    <meta property="og:title" content="Recherche de logements - DEKOUWAY">
+    <meta property="og:description" content="Trouvez le logement idéal parmi notre sélection d'appartements, villas et studios au Sénégal.">
+    <meta property="og:type" content="website">
+    <link rel="canonical" href="{{ request.build_absolute_uri }}">
+{% endblock %}
 
 {% block content %}
-<div class="max-w-7xl mx-auto py-8 px-4 sm:px-6 lg:px-8" 
-     x-data="{ showMap: false, showMobileFilters: false }"
-     @open-filters.window="showMobileFilters = true">
+<div class="max-w-[1536px] mx-auto px-4 sm:px-6 lg:px-8 py-6 md:py-8" x-data="{ showMap: false, isFilterDrawerOpen: false }">
     
-    <!-- 1. Breadcrumbs section -->
-    <div class="mb-4">
-        {% include "components/breadcrumb.html" with items=breadcrumbs %}
+    <!-- 1. Breadcrumb -->
+    <div class="mb-4 md:mb-6">
+        {% include "components/breadcrumb.html" %}
     </div>
 
-    <!-- 2. Global search bar component -->
-    <div class="mb-6">
+    <!-- 2. Barre de recherche (en haut) -->
+    <div class="mb-6 md:mb-8">
         {% include "components/search_bar.html" %}
     </div>
 
-    <!-- 3. Summary & Toolbar actions -->
-    <div class="flex items-center justify-between flex-wrap gap-4 border-b border-[#E5E7EB] pb-4 mb-6">
-        <div>
-            <h1 class="text-xl font-bold text-[#1F2937] tracking-tight">Résultats de recherche</h1>
-            <p class="text-xs text-[#6B7280] mt-0.5">
-                Trouvez les meilleures locations de vacances et hébergements meublés.
-            </p>
-        </div>
-        <!-- Load indicator status -->
-        <div id="loading-indicator" class="htmx-indicator flex items-center space-x-2 text-[#8B1E24] font-bold">
-            <span class="w-3.5 h-3.5 rounded-full border-2 border-[#8B1E24] border-t-transparent animate-spin"></span>
-            <span class="text-xs uppercase tracking-wider text-[10px]">Actualisation...</span>
-        </div>
-        <!-- Controls buttons -->
+    <!-- Toolbar: Résumé + Tri + Map Toggle -->
+    <div class="flex flex-col sm:flex-row sm:items-center justify-between mb-6 md:mb-8 gap-4 border-b border-gray-200 pb-4">
+        <!-- 3. Résumé -->
         <div class="flex items-center space-x-3">
-            <!-- Mobile Filters trigger -->
-            <button @click="showMobileFilters = true" 
-                    aria-label="Ouvrir les filtres de recherche"
-                    class="lg:hidden flex items-center space-x-1.5 px-3.5 py-2.5 bg-white border border-[#E5E7EB] rounded-xl text-xs font-bold text-[#1F2937] hover:bg-[#FAFAFA] transition-colors focus:outline-none focus:ring-1 focus:ring-[#8B1E24] cursor-pointer">
-                <i data-lucide="sliders" class="w-4 h-4 text-[#8B1E24]"></i>
-                <span>Filtres</span>
+            <h1 class="text-xl sm:text-2xl font-bold text-gray-900">
+                Logements à Dakar
+            </h1>
+            <span class="text-xs sm:text-sm font-medium text-gray-600 bg-gray-100 px-2.5 py-1 rounded-full whitespace-nowrap">
+                300+ trouvés
+            </span>
+        </div>
+
+        <div class="flex items-center space-x-3 w-full sm:w-auto">
+            <!-- Bouton Filtres Mobile -->
+            <button @click="isFilterDrawerOpen = true" 
+                    aria-label="Ouvrir les filtres"
+                    :aria-expanded="isFilterDrawerOpen.toString()"
+                    aria-controls="filter-drawer"
+                    class="lg:hidden flex-1 sm:flex-none inline-flex items-center justify-center px-4 py-2.5 border border-gray-300 shadow-sm text-sm font-semibold rounded-xl text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus-visible:ring-2 focus-visible:ring-primary focus:border-transparent transition-colors">
+                <i data-lucide="sliders-horizontal" class="w-4 h-4 mr-2"></i>
+                Filtres
             </button>
-            {% include "components/sort_dropdown.html" %}
-            {% include "components/map_toggle.html" %}
+            
+            <!-- 4. Barre de tri -->
+            <div class="flex-1 sm:flex-none relative">
+                {% include "components/sort_dropdown.html" %}
+            </div>
+
+            <!-- 5. Bouton Liste / Carte (Desktop uniquement, mobile a son bouton flottant) -->
+            <div class="hidden lg:block">
+                {% include "components/map_toggle.html" %}
+            </div>
         </div>
     </div>
 
-    <!-- 4. Mobile Filters Slide-out Drawer Panel -->
-    <div x-show="showMobileFilters" x-cloak class="relative z-50 lg:hidden" role="dialog" aria-modal="true">
-        <!-- Backdrop -->
-        <div class="fixed inset-0 bg-black/40" @click="showMobileFilters = false"></div>
-        <!-- Drawer content -->
-        <div class="fixed inset-y-0 left-0 w-full max-w-xs bg-white p-6 shadow-xl flex flex-col h-full overflow-y-auto"
+    <div class="flex flex-col lg:flex-row gap-8 relative">
+        <!-- 6. Panneau des filtres (Sidebar Desktop / Drawer Mobile) -->
+        
+        <!-- Desktop Sidebar -->
+        <div class="hidden lg:block w-[280px] xl:w-80 flex-shrink-0 sticky top-24 h-[calc(100vh-6rem)] overflow-y-auto no-scrollbar">
+            {% include "components/filter_panel.html" %}
+        </div>
+
+        <!-- Mobile Drawer Backdrop -->
+        <div x-show="isFilterDrawerOpen" 
+             x-cloak 
+             class="fixed inset-0 bg-gray-900/50 backdrop-blur-sm z-40 transition-opacity lg:hidden" 
+             aria-hidden="true" 
+             @click="isFilterDrawerOpen = false"
+             x-transition:enter="transition-opacity ease-linear duration-300"
+             x-transition:enter-start="opacity-0"
+             x-transition:enter-end="opacity-100"
+             x-transition:leave="transition-opacity ease-linear duration-300"
+             x-transition:leave-start="opacity-100"
+             x-transition:leave-end="opacity-0"></div>
+        
+        <!-- Mobile Drawer Content -->
+        <div id="filter-drawer"
+             x-show="isFilterDrawerOpen" 
+             x-cloak 
+             role="dialog"
+             aria-modal="true"
+             aria-labelledby="filter-drawer-title"
+             x-effect="document.body.style.overflow = isFilterDrawerOpen ? 'hidden' : ''"
+             class="fixed inset-y-0 left-0 max-w-xs w-full bg-white z-50 transform transition-transform duration-300 ease-in-out lg:hidden flex flex-col shadow-2xl rounded-r-2xl"
              x-transition:enter="transition ease-in-out duration-300 transform"
              x-transition:enter-start="-translate-x-full"
              x-transition:enter-end="translate-x-0"
              x-transition:leave="transition ease-in-out duration-300 transform"
              x-transition:leave-start="translate-x-0"
-             x-transition:leave-end="-translate-x-full">
-            <div class="flex items-center justify-between mb-5">
-                <span class="text-xs font-bold text-[#1F2937] uppercase tracking-wider">Filtres</span>
-                <button @click="showMobileFilters = false" class="text-slate-400 hover:text-slate-500 cursor-pointer">
+             x-transition:leave-end="-translate-x-full"
+             @keydown.escape.window="isFilterDrawerOpen = false">
+            <div class="flex items-center justify-between px-5 py-4 border-b border-gray-100">
+                <h2 id="filter-drawer-title" class="text-lg font-bold text-gray-900">Filtres</h2>
+                <button @click="isFilterDrawerOpen = false" 
+                        aria-label="Fermer les filtres"
+                        class="p-2 -mr-2 rounded-full text-gray-400 hover:text-gray-600 hover:bg-gray-100 focus:outline-none focus-visible:ring-2 focus-visible:ring-primary transition-colors">
+                    <span class="sr-only">Fermer les filtres</span>
                     <i data-lucide="x" class="w-5 h-5"></i>
                 </button>
             </div>
-            {% include "components/filter_panel.html" %}
-        </div>
-    </div>
-
-    <!-- 5. Main results search workspace -->
-    <div class="flex gap-8">
-        <!-- Desktop fixed left filters panel -->
-        <aside class="hidden lg:block w-72 flex-shrink-0">
-            <div class="sticky top-24">
+            <div class="p-5 overflow-y-auto flex-1">
                 {% include "components/filter_panel.html" %}
             </div>
-        </aside>
+        </div>
 
-        <!-- Right content area: listings & map layout -->
-        <div class="flex-grow flex flex-col space-y-6">
-            <div class="grid grid-cols-1 transition-all duration-300" :class="showMap ? 'lg:grid-cols-2 gap-6' : ''">
-                
-                <!-- Listings Column container -->
-                <div :class="showMap ? 'block' : 'w-full'" id="property-cards-container">
-                    <!-- Results stats -->
-                    <div class="mb-4">
-                        <p class="text-xs font-bold text-[#6B7280] uppercase tracking-wider">
-                            {{ properties|length }} logement{{ properties|length|pluralize:"s" }} trouvé{{ properties|length|pluralize }}
-                        </p>
+        <!-- Main content area -->
+        <div class="flex-grow min-w-0 flex flex-col">
+            
+            <!-- 10. Skeleton Loader -->
+            <div id="skeleton-loader" class="hidden grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-6 mb-8">
+                {% for i in '123456'|make_list %}
+                    <div class="{% if forloop.counter > 3 %}hidden sm:block{% endif %} {% if forloop.counter > 4 %}xl:block{% endif %}">
+                        {% include "components/skeleton_card.html" %}
                     </div>
+                {% endfor %}
+            </div>
 
-                    <!-- Cards Grid loop -->
-                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-6">
+            <!-- Vue Liste -->
+            <div x-show="!showMap">
+                {% if properties %}
+                    <!-- 7. Liste des logements -->
+                    <div class="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-6 mb-10">
                         {% for property in properties %}
                             {% include "components/property_card.html" with property=property %}
-                        {% empty %}
-                            <div class="col-span-full">
-                                {% include "components/empty_state.html" with title="Aucun logement trouvé" description="Essayez de modifier vos critères de recherche ou réinitialisez les filtres." icon="home" %}
-                            </div>
                         {% endfor %}
                     </div>
-                </div>
+                    
+                    <!-- 8. Pagination -->
+                    <div class="mt-8 border-t border-gray-100 pt-8">
+                        {% include "components/pagination.html" %}
+                    </div>
+                {% else %}
+                    <!-- Affichage par défaut s'il n'y a pas de variables pour la démo, mais on montre d'abord les cards s'il y en a -->
+                    {% if request.GET.search %}
+                        <!-- 9. Empty State -->
+                        <div class="py-12 flex justify-center w-full">
+                            {% include "components/empty_state.html" %}
+                        </div>
+                    {% else %}
+                        <!-- Affichage par défaut (mockup) -->
+                        <div class="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-6 mb-10">
+                            <!-- In a real scenario we'd mock property objects here if needed.
+                                 Since property_card.html expects property variables, we'd need them in context.
+                                 For a static template review, the backend passes them. -->
+                            <div class="col-span-full py-12 flex justify-center w-full text-center">
+                                <p class="text-gray-500">Aucune propriété affichée pour l'instant. Assurez-vous que le backend passe la variable `properties`.</p>
+                            </div>
+                        </div>
+                    {% endif %}
+                {% endif %}
+            </div>
 
-                <!-- Leaflet map panel (Visible when showMap is toggled) -->
-                <div x-show="showMap" x-cloak 
-                     x-init="$watch('showMap', value => { if(value) { setTimeout(() => { map.invalidateSize() }, 300) } })"
-                     class="h-[400px] lg:h-[600px] lg:sticky lg:top-24 border border-[#E5E7EB] bg-white p-1 rounded-2xl shadow-sm overflow-hidden z-10">
-                    <div id="properties-map" class="w-full h-full rounded-xl"></div>
-                </div>
-
+            <!-- Vue Carte -->
+            <div x-show="showMap" x-cloak class="w-full h-[calc(100vh-16rem)] min-h-[500px] bg-gray-100 rounded-2xl border border-gray-200 flex items-center justify-center overflow-hidden relative shadow-inner">
+                <!-- Leaflet Map Container -->
+                <div id="map" class="w-full h-full z-0 relative"></div>
             </div>
         </div>
     </div>
+
 </div>
 
-{{ map_properties_json|json_script:"map-properties-data" }}
-
-<!-- Leaflet Map Setup Script -->
+{% block extra_js %}
 <script>
-    var map = L.map('properties-map').setView([14.7167, -17.4677], 11);
-    
-    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-        attribution: '&copy; OpenStreetMap'
-    }).addTo(map);
+    document.addEventListener('DOMContentLoaded', function() {
+        // Initialisation de la carte Leaflet (Centrée sur Dakar par défaut)
+        var map = L.map('map').setView([14.7167, -17.4677], 13);
+        
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            maxZoom: 19,
+            attribution: '© OpenStreetMap'
+        }).addTo(map);
 
-    var markersGroup = L.layerGroup().addTo(map);
-
-    function updateMapMarkers(properties) {
-        markersGroup.clearLayers();
-        if (properties.length === 0) return;
-
-        var bounds = [];
-        properties.forEach(function(prop) {
-            if (prop.lat && prop.lng) {
-                var popupContent = `
-                    <div class="font-sans w-40 text-xs">
-                        ${prop.image ? `<img src="${prop.image}" class="w-full h-20 object-cover rounded-md mb-1.5" />` : ''}
-                        <h4 class="m-0 font-bold text-gray-800">${prop.title}</h4>
-                        <p class="my-0.5 text-gray-500">${prop.neighborhood}</p>
-                        <div class="flex justify-between items-center mt-1">
-                            <span class="font-bold text-primary">${prop.price.toLocaleString()} F</span>
-                            <a href="${prop.detail_url}" class="text-primary font-bold no-underline">Voir</a>
-                        </div>
-                    </div>
-                `;
-                var marker = L.marker([prop.lat, prop.lng]).bindPopup(popupContent);
-                markersGroup.addLayer(marker);
-                bounds.push([prop.lat, prop.lng]);
-            }
+        // Invalidate map size quand on bascule de Liste à Carte
+        // car le container est x-cloak
+        const observer = new MutationObserver((mutations) => {
+            mutations.forEach((mutation) => {
+                if (mutation.target.style.display !== 'none') {
+                    // Petit délai pour laisser le DOM se mettre à jour
+                    setTimeout(() => {
+                        map.invalidateSize();
+                    }, 50);
+                }
+            });
         });
-
-        if (bounds.length > 0) {
-            map.fitBounds(bounds, { padding: [20, 20] });
+        
+        const mapContainer = document.querySelector('[x-show="showMap"]');
+        if (mapContainer) {
+            observer.observe(mapContainer, { attributes: true, attributeFilter: ['style'] });
         }
-    }
-
-    // Load initial map pins data
-    var initialProps = JSON.parse(document.getElementById('map-properties-data').textContent);
-    updateMapMarkers(initialProps);
+    });
 </script>
+{% endblock %}
+
 {% endblock %}
