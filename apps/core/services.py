@@ -1,0 +1,1 @@
+"""Service layer pour la logique métier."""

@@ -1,0 +1,93 @@
+{% extends "layouts/dashboard.html" %}
+
+{% block title %}Mes Favoris - DEKOUWAY{% endblock %}
+
+{% block page_header %}
+<div class="md:flex md:items-center md:justify-between mb-8 mt-2">
+    <div class="min-w-0 flex-1">
+        <h2 class="text-2xl font-bold leading-7 text-gray-900 sm:truncate sm:text-3xl sm:tracking-tight">
+            Mes Favoris
+        </h2>
+        <p class="mt-1 text-sm text-gray-500">Logements que vous avez sauvegardés pour plus tard.</p>
+    </div>
+</div>
+{% endblock %}
+
+{% block content %}
+<div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+    
+    <!-- Favori 1 -->
+    <div class="group relative bg-white border border-gray-200 rounded-xl overflow-hidden shadow-sm hover:shadow-md transition-all flex flex-col">
+        <div class="aspect-w-3 aspect-h-2 relative bg-gray-200">
+            <img src="https://images.unsplash.com/photo-1512917774080-9991f1c4c750?auto=format&fit=crop&w=600" alt="Appartement" class="object-cover w-full h-48 group-hover:scale-105 transition-transform duration-500">
+            <button class="absolute top-3 right-3 p-2 rounded-full bg-white/90 shadow-sm text-[#8B1E24] hover:bg-white hover:scale-110 transition-transform">
+                <i data-lucide="heart" class="w-5 h-5 fill-current"></i>
+            </button>
+        </div>
+        <div class="p-5 flex-1 flex flex-col">
+            <div class="flex items-center justify-between mb-1">
+                <p class="text-xs font-semibold uppercase tracking-wide text-[#8B1E24]">Appartement</p>
+                <div class="flex items-center text-sm font-medium text-gray-900">
+                    <i data-lucide="star" class="w-4 h-4 fill-yellow-400 text-yellow-400 mr-1"></i> 4.8
+                </div>
+            </div>
+            <h3 class="text-lg font-bold text-gray-900 line-clamp-1"><a href="#"><span class="absolute inset-0"></span>Appartement Dakar Plateau</a></h3>
+            <p class="text-sm text-gray-500 flex items-center mt-1"><i data-lucide="map-pin" class="w-3 h-3 mr-1"></i> Dakar, Centre-ville</p>
+            
+            <div class="mt-auto pt-4 flex items-center justify-between">
+                <div>
+                    <span class="text-lg font-bold text-gray-900">45 000 F</span>
+                    <span class="text-sm text-gray-500"> / nuit</span>
+                </div>
+                <!-- Le bouton z-10 permet de cliquer dessus malgré le span absolute global -->
+                <a href="#" class="relative z-10 rounded-md bg-[#8B1E24]/10 px-3 py-2 text-sm font-semibold text-[#8B1E24] hover:bg-[#8B1E24] hover:text-white transition-colors">Réserver</a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Favori 2 -->
+    <div class="group relative bg-white border border-gray-200 rounded-xl overflow-hidden shadow-sm hover:shadow-md transition-all flex flex-col">
+        <div class="aspect-w-3 aspect-h-2 relative bg-gray-200">
+            <img src="https://images.unsplash.com/photo-1493809842364-78817add7ffb?auto=format&fit=crop&w=600" alt="Studio" class="object-cover w-full h-48 group-hover:scale-105 transition-transform duration-500">
+            <button class="absolute top-3 right-3 p-2 rounded-full bg-white/90 shadow-sm text-[#8B1E24] hover:bg-white hover:scale-110 transition-transform">
+                <i data-lucide="heart" class="w-5 h-5 fill-current"></i>
+            </button>
+        </div>
+        <div class="p-5 flex-1 flex flex-col">
+            <div class="flex items-center justify-between mb-1">
+                <p class="text-xs font-semibold uppercase tracking-wide text-[#8B1E24]">Studio</p>
+                <div class="flex items-center text-sm font-medium text-gray-900">
+                    <i data-lucide="star" class="w-4 h-4 fill-yellow-400 text-yellow-400 mr-1"></i> 4.5
+                </div>
+            </div>
+            <h3 class="text-lg font-bold text-gray-900 line-clamp-1"><a href="#"><span class="absolute inset-0"></span>Studio Almadies Vue Mer</a></h3>
+            <p class="text-sm text-gray-500 flex items-center mt-1"><i data-lucide="map-pin" class="w-3 h-3 mr-1"></i> Dakar, Les Almadies</p>
+            
+            <div class="mt-auto pt-4 flex items-center justify-between">
+                <div>
+                    <span class="text-lg font-bold text-gray-900">30 000 F</span>
+                    <span class="text-sm text-gray-500"> / nuit</span>
+                </div>
+                <a href="#" class="relative z-10 rounded-md bg-[#8B1E24]/10 px-3 py-2 text-sm font-semibold text-[#8B1E24] hover:bg-[#8B1E24] hover:text-white transition-colors">Réserver</a>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Zone Add new -->
+    <div class="relative bg-gray-50/50 border-2 border-dashed border-gray-300 rounded-xl overflow-hidden flex flex-col items-center justify-center p-8 hover:bg-gray-50 transition-colors hover:border-gray-400">
+        <div class="h-14 w-14 rounded-full bg-white flex items-center justify-center shadow-sm mb-4">
+            <i data-lucide="search" class="w-6 h-6 text-gray-400"></i>
+        </div>
+        <h3 class="text-base font-semibold text-gray-900 mb-1">Trouver d'autres pépites</h3>
+        <p class="text-sm text-gray-500 text-center mb-6">Explorez plus de 500 logements au Sénégal.</p>
+        <a href="/" class="rounded-md bg-white px-4 py-2 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50">Parcourir les annonces</a>
+    </div>
+
+</div>
+
+<!-- Pagination -->
+<div class="mt-8">
+    {% include "components/dashboard/pagination.html" %}
+</div>
+
+{% endblock %}

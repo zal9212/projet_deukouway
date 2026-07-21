@@ -1,0 +1,132 @@
+{% extends "layouts/dashboard.html" %}
+
+{% block title %}Mes Logements - DEKOUWAY{% endblock %}
+
+{% block page_header %}
+<div class="md:flex md:items-center md:justify-between mb-8 mt-2">
+    <div class="min-w-0 flex-1">
+        <h2 class="text-2xl font-bold leading-7 text-gray-900 sm:truncate sm:text-3xl sm:tracking-tight">
+            Mes Logements
+        </h2>
+        <p class="mt-1 text-sm text-gray-500">Gérez vos annonces et suivez leur statut de validation par l'équipe DEKOUWAY.</p>
+    </div>
+    
+    <div class="mt-4 flex md:ml-4 md:mt-0 space-x-3">
+        <a href="property_add.html" class="inline-flex items-center rounded-md bg-[#8B1E24] px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-[#6F171C]">
+            <i data-lucide="plus" class="h-4 w-4 mr-1.5"></i>
+            Ajouter un logement
+        </a>
+    </div>
+</div>
+{% endblock %}
+
+{% block content %}
+<div class="px-4 sm:px-6 lg:px-8 bg-white border border-gray-200 rounded-xl py-6 shadow-sm">
+    
+    <!-- Filtres & Recherche -->
+    <div class="sm:flex sm:items-center justify-between mb-6">
+        <div class="flex space-x-2 overflow-x-auto pb-2 sm:pb-0">
+            <button class="whitespace-nowrap px-4 py-2 text-sm font-medium rounded-full bg-gray-900 text-white">Tous</button>
+            <button class="whitespace-nowrap px-4 py-2 text-sm font-medium rounded-full bg-white text-gray-700 border border-gray-300 hover:bg-gray-50">Publiés</button>
+            <button class="whitespace-nowrap px-4 py-2 text-sm font-medium rounded-full bg-white text-gray-700 border border-gray-300 hover:bg-gray-50">En attente (1)</button>
+            <button class="whitespace-nowrap px-4 py-2 text-sm font-medium rounded-full bg-white text-gray-700 border border-gray-300 hover:bg-gray-50">Brouillons</button>
+        </div>
+        <div class="mt-4 sm:ml-4 sm:mt-0 sm:flex-none">
+            <div class="relative max-w-xs">
+                <i data-lucide="search" class="absolute left-3 top-1/2 -mt-2 h-4 w-4 text-gray-400"></i>
+                <input type="text" class="block w-full rounded-md border-0 py-1.5 pl-10 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-[#8B1E24] sm:text-sm sm:leading-6" placeholder="Rechercher une annonce...">
+            </div>
+        </div>
+    </div>
+
+    <!-- Vue Cards (Grille pour logements) -->
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 mt-6">
+        <!-- Logement 1 (Publié) -->
+        <div class="group relative bg-white border border-gray-200 rounded-xl overflow-hidden shadow-sm hover:shadow-md transition-all flex flex-col">
+            <div class="aspect-w-3 aspect-h-2 relative bg-gray-200">
+                <img src="https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?auto=format&fit=crop&w=600" alt="Logement" class="object-cover w-full h-48">
+                <div class="absolute top-3 left-3">
+                    {% include "components/dashboard/status_badge.html" with status="success" label="Publié" %}
+                </div>
+            </div>
+            <div class="p-5 flex-1 flex flex-col">
+                <h3 class="text-lg font-bold text-gray-900 line-clamp-1">Villa Teranga Saly</h3>
+                <p class="text-sm text-gray-500 mt-1">Saly Portudal, Sénégal</p>
+                
+                <div class="mt-4 grid grid-cols-2 gap-4 text-sm text-gray-700 border-t border-b border-gray-100 py-3">
+                    <div>
+                        <span class="block text-gray-500 text-xs">Tarif / Nuit</span>
+                        <span class="font-semibold text-gray-900">35 000 F</span>
+                    </div>
+                    <div>
+                        <span class="block text-gray-500 text-xs">Dernière mise à jour</span>
+                        <span class="font-semibold text-gray-900">il y a 5 jours</span>
+                    </div>
+                </div>
+                
+                <div class="mt-4 grid grid-cols-2 gap-3">
+                    <button class="w-full rounded-md bg-white px-3 py-2 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50 text-center">Modifier</button>
+                    <button class="w-full rounded-md bg-white px-3 py-2 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50 text-center text-red-600 hover:text-red-700">Archiver</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Logement 2 (En attente) -->
+        <div class="group relative bg-white border border-gray-200 rounded-xl overflow-hidden shadow-sm hover:shadow-md transition-all flex flex-col">
+            <div class="aspect-w-3 aspect-h-2 relative bg-gray-200">
+                <img src="https://images.unsplash.com/photo-1512917774080-9991f1c4c750?auto=format&fit=crop&w=600" alt="Logement" class="object-cover w-full h-48 opacity-80">
+                <div class="absolute top-3 left-3">
+                    {% include "components/dashboard/status_badge.html" with status="pending" label="En attente de validation SuperAdmin" %}
+                </div>
+            </div>
+            <div class="p-5 flex-1 flex flex-col">
+                <h3 class="text-lg font-bold text-gray-900 line-clamp-1">Appartement Dakar Plateau</h3>
+                <p class="text-sm text-gray-500 mt-1">Dakar, Sénégal</p>
+                
+                <div class="mt-4 grid grid-cols-2 gap-4 text-sm text-gray-700 border-t border-b border-gray-100 py-3">
+                    <div>
+                        <span class="block text-gray-500 text-xs">Tarif / Nuit</span>
+                        <span class="font-semibold text-gray-900">45 000 F</span>
+                    </div>
+                    <div>
+                        <span class="block text-gray-500 text-xs">Soumis le</span>
+                        <span class="font-semibold text-gray-900">19 Juil 2024</span>
+                    </div>
+                </div>
+                
+                <div class="mt-4">
+                    <button class="w-full rounded-md bg-gray-100 px-3 py-2 text-sm font-semibold text-gray-500 cursor-not-allowed text-center" disabled>Verrouillé pendant l'analyse</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Logement 3 (Brouillon) -->
+        <div class="group relative bg-gray-50 border border-gray-200 rounded-xl overflow-hidden shadow-sm transition-all flex flex-col opacity-80 hover:opacity-100">
+            <div class="aspect-w-3 aspect-h-2 relative bg-gray-200 flex items-center justify-center">
+                <i data-lucide="image" class="w-12 h-12 text-gray-400"></i>
+                <div class="absolute top-3 left-3">
+                    <span class="inline-flex items-center rounded-md bg-gray-100 px-2 py-1 text-xs font-medium text-gray-600 ring-1 ring-inset ring-gray-500/10">Brouillon</span>
+                </div>
+            </div>
+            <div class="p-5 flex-1 flex flex-col">
+                <h3 class="text-lg font-bold text-gray-900 line-clamp-1">Studio Somone (Incomplet)</h3>
+                <p class="text-sm text-gray-500 mt-1">Étape 4 / 9 (Galerie)</p>
+                
+                <div class="mt-4 pt-3 border-t border-gray-100">
+                    <div class="w-full bg-gray-200 rounded-full h-2 mb-4">
+                        <div class="bg-blue-600 h-2 rounded-full" style="width: 45%"></div>
+                    </div>
+                </div>
+                
+                <div class="mt-auto pt-2">
+                    <a href="property_add.html" class="block w-full rounded-md bg-white px-3 py-2 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50 text-center border-blue-500 border-2">Continuer la création</a>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="mt-6 border-t border-gray-200 pt-4">
+        {% include "components/dashboard/pagination.html" %}
+    </div>
+</div>
+{% endblock %}

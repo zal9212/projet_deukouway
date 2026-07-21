@@ -1,0 +1,198 @@
+{% extends "layouts/dashboard.html" %}
+
+{% block title %}Dashboard Partenaire - DEKOUWAY{% endblock %}
+
+{% block page_header %}
+<div class="md:flex md:items-center md:justify-between mb-8 mt-2">
+    <div class="min-w-0 flex-1">
+        <h2 class="text-2xl font-bold leading-7 text-gray-900 sm:truncate sm:text-3xl sm:tracking-tight">
+            Bonjour, Ousmane 👋
+        </h2>
+        <p class="mt-1 text-sm text-gray-500">
+            Voici l'activité récente de vos logements sur DEKOUWAY.
+        </p>
+    </div>
+    
+    <div class="mt-4 flex md:ml-4 md:mt-0 space-x-3">
+        <a href="property_add.html" class="inline-flex items-center rounded-md bg-[#8B1E24] px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-[#6F171C] transition-colors">
+            <i data-lucide="plus" class="h-4 w-4 mr-1.5"></i>
+            Ajouter un logement
+        </a>
+    </div>
+</div>
+{% endblock %}
+
+{% block content %}
+<div class="space-y-8">
+
+    <!-- Section 1 : KPIs (Performance) -->
+    <section>
+        <div class="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-4">
+            <!-- Logements -->
+            <div class="relative overflow-hidden rounded-xl bg-white px-4 pb-12 pt-5 shadow-sm ring-1 ring-gray-200 sm:px-6 sm:pt-6">
+                <dt>
+                    <div class="absolute rounded-md bg-gray-50 p-3 ring-1 ring-gray-100">
+                        <i data-lucide="home" class="h-6 w-6 text-gray-700"></i>
+                    </div>
+                    <p class="ml-16 truncate text-sm font-medium text-gray-500">Logements publiés</p>
+                </dt>
+                <dd class="ml-16 flex items-baseline pb-6 sm:pb-7">
+                    <p class="text-2xl font-semibold text-gray-900">2</p>
+                    <p class="ml-2 flex items-baseline text-sm font-semibold text-gray-500">
+                        <span class="text-yellow-600">(1 en attente)</span>
+                    </p>
+                    <div class="absolute inset-x-0 bottom-0 bg-gray-50 px-4 py-4 sm:px-6">
+                        <div class="text-sm">
+                            <a href="properties.html" class="font-medium text-[#8B1E24] hover:text-[#6F171C]">Gérer mes logements<span class="sr-only"></span></a>
+                        </div>
+                    </div>
+                </dd>
+            </div>
+            
+            <!-- Revenus -->
+            <div class="relative overflow-hidden rounded-xl bg-white px-4 pb-12 pt-5 shadow-sm ring-1 ring-gray-200 sm:px-6 sm:pt-6">
+                <dt>
+                    <div class="absolute rounded-md bg-gray-50 p-3 ring-1 ring-gray-100">
+                        <i data-lucide="trending-up" class="h-6 w-6 text-gray-700"></i>
+                    </div>
+                    <p class="ml-16 truncate text-sm font-medium text-gray-500">Revenus ce mois (Net)</p>
+                </dt>
+                <dd class="ml-16 flex items-baseline pb-6 sm:pb-7">
+                    <p class="text-2xl font-semibold text-gray-900">350 000 F</p>
+                    <div class="absolute inset-x-0 bottom-0 bg-gray-50 px-4 py-4 sm:px-6">
+                        <div class="text-sm">
+                            <a href="payouts.html" class="font-medium text-[#8B1E24] hover:text-[#6F171C]">Historique des versements<span class="sr-only"></span></a>
+                        </div>
+                    </div>
+                </dd>
+            </div>
+
+            <!-- Demandes -->
+            <div class="relative overflow-hidden rounded-xl bg-white px-4 pb-12 pt-5 shadow-sm ring-1 ring-gray-200 sm:px-6 sm:pt-6">
+                <dt>
+                    <div class="absolute rounded-md bg-gray-50 p-3 ring-1 ring-gray-100">
+                        <i data-lucide="inbox" class="h-6 w-6 text-gray-700"></i>
+                    </div>
+                    <p class="ml-16 truncate text-sm font-medium text-gray-500">Demandes en attente</p>
+                </dt>
+                <dd class="ml-16 flex items-baseline pb-6 sm:pb-7">
+                    <p class="text-2xl font-semibold text-gray-900">2</p>
+                    <div class="absolute inset-x-0 bottom-0 bg-gray-50 px-4 py-4 sm:px-6">
+                        <div class="text-sm">
+                            <a href="requests.html" class="font-medium text-[#8B1E24] hover:text-[#6F171C]">Répondre aux demandes<span class="sr-only"></span></a>
+                        </div>
+                    </div>
+                </dd>
+            </div>
+
+            <!-- Note Globale -->
+            <div class="relative overflow-hidden rounded-xl bg-white px-4 pb-12 pt-5 shadow-sm ring-1 ring-gray-200 sm:px-6 sm:pt-6">
+                <dt>
+                    <div class="absolute rounded-md bg-gray-50 p-3 ring-1 ring-gray-100">
+                        <i data-lucide="star" class="h-6 w-6 text-yellow-500"></i>
+                    </div>
+                    <p class="ml-16 truncate text-sm font-medium text-gray-500">Note moyenne</p>
+                </dt>
+                <dd class="ml-16 flex items-baseline pb-6 sm:pb-7">
+                    <p class="text-2xl font-semibold text-gray-900">4.8</p>
+                    <div class="absolute inset-x-0 bottom-0 bg-gray-50 px-4 py-4 sm:px-6">
+                        <div class="text-sm">
+                            <a href="stats.html" class="font-medium text-[#8B1E24] hover:text-[#6F171C]">Voir les statistiques<span class="sr-only"></span></a>
+                        </div>
+                    </div>
+                </dd>
+            </div>
+        </div>
+    </section>
+
+    <div class="grid grid-cols-1 gap-8 lg:grid-cols-3">
+        <!-- Section Centrale (Demandes & Versements) -->
+        <div class="lg:col-span-2 space-y-8">
+            <!-- Nouvelles Demandes DEKOUWAY -->
+            <section class="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
+                <div class="border-b border-gray-200 px-6 py-5 flex items-center justify-between">
+                    <h3 class="text-base font-semibold leading-6 text-gray-900">Demandes de DEKOUWAY</h3>
+                    <a href="requests.html" class="text-sm font-medium text-[#8B1E24] hover:text-[#6F171C]">Tout voir</a>
+                </div>
+                <div class="divide-y divide-gray-200">
+                    <!-- Demande 1 -->
+                    <div class="p-6">
+                        <div class="sm:flex sm:items-center sm:justify-between">
+                            <div class="sm:flex sm:items-start gap-4">
+                                <div class="bg-gray-100 rounded-lg p-3 shrink-0 flex items-center justify-center">
+                                    <i data-lucide="calendar" class="w-6 h-6 text-gray-600"></i>
+                                </div>
+                                <div class="mt-3 sm:mt-0">
+                                    <h4 class="text-sm font-bold text-gray-900">Demande #REQ-9821</h4>
+                                    <p class="text-sm text-gray-500 mt-1">Pour : <strong>Villa Teranga Saly</strong></p>
+                                    <div class="mt-2 text-sm text-gray-700 flex flex-wrap gap-x-4 gap-y-2">
+                                        <span class="flex items-center"><i data-lucide="clock" class="w-4 h-4 mr-1 text-gray-400"></i> 12-15 Août (3 nuits)</span>
+                                        <span class="flex items-center"><i data-lucide="users" class="w-4 h-4 mr-1 text-gray-400"></i> 4 pers.</span>
+                                        <span class="flex items-center font-semibold text-green-700"><i data-lucide="banknote" class="w-4 h-4 mr-1"></i> Net: 85 000 F</span>
+                                    </div>
+                                    <p class="text-xs text-gray-500 mt-2 italic">Note SuperAdmin : "Famille très sérieuse, profil vérifié."</p>
+                                </div>
+                            </div>
+                            <div class="mt-4 sm:mt-0 flex flex-col sm:items-end gap-2 shrink-0">
+                                {% include "components/dashboard/status_badge.html" with status="pending" label="À valider" %}
+                                <a href="request_detail.html" class="text-sm font-medium text-[#8B1E24] hover:underline">Analyser</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Derniers versements -->
+            <section class="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
+                <div class="border-b border-gray-200 px-6 py-5 flex items-center justify-between">
+                    <h3 class="text-base font-semibold leading-6 text-gray-900">Derniers versements DEKOUWAY</h3>
+                    <a href="payouts.html" class="text-sm font-medium text-[#8B1E24] hover:text-[#6F171C]">Tout voir</a>
+                </div>
+                <ul role="list" class="divide-y divide-gray-100">
+                    <li class="flex items-center justify-between gap-x-6 py-5 px-6">
+                        <div class="min-w-0">
+                            <div class="flex items-start gap-x-3">
+                                <p class="text-sm font-semibold leading-6 text-gray-900">Versement pour Réservation #RES-2309</p>
+                                {% include "components/dashboard/status_badge.html" with status="success" label="Payé" %}
+                            </div>
+                            <div class="mt-1 flex items-center gap-x-2 text-xs leading-5 text-gray-500">
+                                <p class="truncate">Via Wave</p>
+                                <svg viewBox="0 0 2 2" class="h-0.5 w-0.5 fill-current"><circle cx="1" cy="1" r="1" /></svg>
+                                <p class="whitespace-nowrap">01 Août 2024</p>
+                            </div>
+                        </div>
+                        <div class="flex flex-none items-center gap-x-4">
+                            <span class="font-bold text-gray-900">75 000 F</span>
+                        </div>
+                    </li>
+                </ul>
+            </section>
+        </div>
+
+        <!-- Section Droite (Mini-calendrier, Actions & Notifications) -->
+        <div class="space-y-8">
+            
+            <!-- Actions Rapides -->
+            <section>
+                <h3 class="text-sm font-semibold leading-6 text-gray-900 mb-4">Actions Rapides</h3>
+                <div class="grid grid-cols-1 gap-4">
+                    {% include "components/dashboard/quick_action.html" with title="Envoyer un message" description="Contacter le support DEKOUWAY" icon="message-square" link_url="messages.html" %}
+                    {% include "components/dashboard/quick_action.html" with title="Configurer les versements" description="Modifier votre compte Wave/Orange Money" icon="banknote" link_url="settings.html" %}
+                </div>
+            </section>
+
+            <!-- Activité Système (Validation de propriétés) -->
+            <section class="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
+                <div class="flex items-center justify-between mb-6">
+                    <h3 class="text-base font-semibold leading-6 text-gray-900">État des validations</h3>
+                </div>
+                
+                <div class="flow-root">
+                    {% include "components/dashboard/activity_card.html" with icon="home" user="Logement 'Villa Teranga'" action="est en attente de vérification" date="Soumis hier" description="DEKOUWAY vérifie votre annonce avant publication." icon_type="warning" is_last=False %}
+                    {% include "components/dashboard/activity_card.html" with icon="check-circle" user="Logement 'Appartement Dakar'" action="a été approuvé" date="Le 15 Juil." description="Le logement est visible sur la plateforme." icon_type="success" is_last=True %}
+                </div>
+            </section>
+        </div>
+    </div>
+</div>
+{% endblock %}

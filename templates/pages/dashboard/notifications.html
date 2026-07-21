@@ -1,0 +1,52 @@
+{% extends "layouts/dashboard.html" %}
+{% load static %}
+
+{% block title %}Centre de Notifications - DEKOUWAY{% endblock %}
+
+{% block content %}
+    <!-- Breadcrumb (Fil d'Ariane) -->
+    <div class="mb-6">
+        {% include "components/dashboard/breadcrumb.html" with level1="Dashboard" level2="Notifications" level1_current="false" %}
+    </div>
+
+    <!-- Conteneur Principal du Notification Center -->
+    <div class="max-w-4xl mx-auto">
+        
+        <!-- Injection du Centre de Notifications -->
+        {% extends "components/dashboard/notifications/notification_center.html" %}
+
+        <!-- Surcharge des blocs avec des données fictives pour le prototype -->
+        {% block notification_groups %}
+            
+            <!-- Groupe : Aujourd'hui -->
+            {% include "components/dashboard/notifications/notification_group.html" with group_title="Aujourd'hui" %}
+                {% block group_items %}
+                    <!-- Item 1 : Réservation Urgente -->
+                    {% include "components/dashboard/notifications/notification_item.html" with type="reservation" is_unread=True title="Nouvelle demande de réservation" time="Il y a 2 heures" description="Jean Dupont souhaite réserver la Villa Teranga Saly du 12 au 15 Août." action_text="Voir la demande" %}
+                    
+                    <!-- Item 2 : Paiement -->
+                    {% include "components/dashboard/notifications/notification_item.html" with type="payment" is_unread=False title="Paiement validé" time="Il y a 5 heures" description="Le paiement de 105 000 FCFA pour la réservation #RES-2024-001 a été reçu." %}
+                {% endblock %}
+            
+            <!-- Groupe : Hier -->
+            {% include "components/dashboard/notifications/notification_group.html" with group_title="Hier" %}
+                {% block group_items %}
+                    <!-- Item 3 : Sécurité -->
+                    {% include "components/dashboard/notifications/notification_item.html" with type="alert" is_unread=True title="Nouvelle connexion détectée" time="Hier à 14:32" description="Une connexion depuis un nouvel appareil (Mac OS) a été détectée à Dakar." action_text="Vérifier l'activité" secondary_action="C'était moi" %}
+                    
+                    <!-- Item 4 : Info / Compte -->
+                    {% include "components/dashboard/notifications/notification_item.html" with type="info" is_unread=False title="Profil mis à jour" time="Hier à 09:15" description="Vos informations bancaires ont bien été enregistrées." %}
+                {% endblock %}
+            
+            <!-- Exemple de Pagination intégrée en bas -->
+            <div class="mt-8 border-t border-gray-200 pt-6">
+                {% include "components/dashboard/pagination.html" %}
+            </div>
+            
+        {% endblock %}
+    </div>
+    
+    <!-- Injection de la Modale de test -->
+    {% include "components/dashboard/notifications/notification_modal.html" %}
+    
+{% endblock %}

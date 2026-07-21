@@ -1,0 +1,139 @@
+{% extends "layouts/dashboard.html" %}
+
+{% block title %}Mes Réservations - DEKOUWAY{% endblock %}
+
+{% block page_header %}
+<div class="md:flex md:items-center md:justify-between mb-8 mt-2">
+    <div class="min-w-0 flex-1">
+        <h2 class="text-2xl font-bold leading-7 text-gray-900 sm:truncate sm:text-3xl sm:tracking-tight">
+            Mes Réservations
+        </h2>
+    </div>
+</div>
+{% endblock %}
+
+{% block content %}
+<div class="px-4 sm:px-6 lg:px-8 bg-white border border-gray-200 rounded-xl py-6 shadow-sm">
+    
+    <!-- Filtres & Recherche -->
+    <div class="sm:flex sm:items-center justify-between mb-6">
+        <div class="flex space-x-2 overflow-x-auto pb-2 sm:pb-0">
+            <button class="whitespace-nowrap px-4 py-2 text-sm font-medium rounded-full bg-gray-900 text-white">Toutes</button>
+            <button class="whitespace-nowrap px-4 py-2 text-sm font-medium rounded-full bg-white text-gray-700 border border-gray-300 hover:bg-gray-50">En attente</button>
+            <button class="whitespace-nowrap px-4 py-2 text-sm font-medium rounded-full bg-white text-gray-700 border border-gray-300 hover:bg-gray-50">Confirmées</button>
+            <button class="whitespace-nowrap px-4 py-2 text-sm font-medium rounded-full bg-white text-gray-700 border border-gray-300 hover:bg-gray-50">Terminées</button>
+        </div>
+        <div class="mt-4 sm:ml-4 sm:mt-0 sm:flex-none">
+            <div class="relative max-w-xs">
+                <i data-lucide="search" class="absolute left-3 top-1/2 -mt-2 h-4 w-4 text-gray-400"></i>
+                <input type="text" class="block w-full rounded-md border-0 py-1.5 pl-10 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-[#8B1E24] sm:text-sm sm:leading-6" placeholder="Rechercher...">
+            </div>
+        </div>
+    </div>
+
+    <!-- Vue Cards (Mobile) -->
+    <div class="block sm:hidden space-y-4">
+        <!-- Card 1 -->
+        <div class="border border-gray-200 rounded-lg p-4">
+            <div class="flex items-start justify-between mb-3">
+                <h4 class="font-bold text-gray-900">Villa Teranga Saly</h4>
+                {% include "components/dashboard/status_badge.html" with status="pending" label="En attente" %}
+            </div>
+            <p class="text-sm text-gray-500 mb-2">12 - 15 Août 2024</p>
+            <p class="font-medium text-gray-900 mb-4">105 000 FCFA</p>
+            <a href="reservation_detail.html" class="block w-full text-center rounded-md bg-white px-3 py-2 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50">Détails</a>
+        </div>
+        <!-- Card 2 -->
+        <div class="border border-gray-200 rounded-lg p-4">
+            <div class="flex items-start justify-between mb-3">
+                <h4 class="font-bold text-gray-900">Studio Dakar Plateau</h4>
+                {% include "components/dashboard/status_badge.html" with status="success" label="Terminée" %}
+            </div>
+            <p class="text-sm text-gray-500 mb-2">01 - 03 Juillet 2024</p>
+            <p class="font-medium text-gray-900 mb-4">60 000 FCFA</p>
+            <a href="reservation_detail.html" class="block w-full text-center rounded-md bg-white px-3 py-2 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50">Détails</a>
+        </div>
+    </div>
+
+    <!-- Vue Table (Desktop) -->
+    <div class="hidden sm:block mt-4 flow-root">
+        <div class="-mx-4 -my-2 overflow-x-auto sm:-mx-6 lg:-mx-8">
+            <div class="inline-block min-w-full py-2 align-middle sm:px-6 lg:px-8">
+                <table class="min-w-full divide-y divide-gray-300">
+                    <thead class="bg-gray-50">
+                        <tr>
+                            <th scope="col" class="py-3.5 pl-4 pr-3 text-left text-sm font-semibold text-gray-900 sm:pl-0">Logement</th>
+                            <th scope="col" class="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">Dates</th>
+                            <th scope="col" class="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">Prix</th>
+                            <th scope="col" class="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">Statut</th>
+                            <th scope="col" class="relative py-3.5 pl-3 pr-4 sm:pr-0">
+                                <span class="sr-only">Actions</span>
+                            </th>
+                        </tr>
+                    </thead>
+                    <tbody class="divide-y divide-gray-200 bg-white">
+                        <!-- Ligne 1 -->
+                        <tr>
+                            <td class="whitespace-nowrap py-5 pl-4 pr-3 text-sm sm:pl-0">
+                                <div class="flex items-center">
+                                    <div class="h-11 w-11 flex-shrink-0">
+                                        <img class="h-11 w-11 rounded-md object-cover" src="https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?auto=format&fit=crop&w=100" alt="">
+                                    </div>
+                                    <div class="ml-4">
+                                        <div class="font-medium text-gray-900">Villa Teranga Saly</div>
+                                        <div class="mt-1 text-gray-500">Saly Portudal</div>
+                                    </div>
+                                </div>
+                            </td>
+                            <td class="whitespace-nowrap px-3 py-5 text-sm text-gray-500">
+                                <div class="text-gray-900">12 - 15 Août 2024</div>
+                                <div class="mt-1 text-gray-500">3 nuits, 4 voyageurs</div>
+                            </td>
+                            <td class="whitespace-nowrap px-3 py-5 text-sm text-gray-500">105 000 FCFA</td>
+                            <td class="whitespace-nowrap px-3 py-5 text-sm text-gray-500">
+                                {% include "components/dashboard/status_badge.html" with status="pending" label="En attente" %}
+                            </td>
+                            <td class="relative whitespace-nowrap py-5 pl-3 pr-4 text-right text-sm font-medium sm:pr-0">
+                                <a href="reservation_detail.html">
+                                    {% include "components/dashboard/action_button.html" with action="view" %}
+                                </a>
+                            </td>
+                        </tr>
+                        <!-- Ligne 2 -->
+                        <tr>
+                            <td class="whitespace-nowrap py-5 pl-4 pr-3 text-sm sm:pl-0">
+                                <div class="flex items-center">
+                                    <div class="h-11 w-11 flex-shrink-0">
+                                        <img class="h-11 w-11 rounded-md object-cover" src="https://images.unsplash.com/photo-1512917774080-9991f1c4c750?auto=format&fit=crop&w=100" alt="">
+                                    </div>
+                                    <div class="ml-4">
+                                        <div class="font-medium text-gray-900">Studio Dakar Plateau</div>
+                                        <div class="mt-1 text-gray-500">Dakar</div>
+                                    </div>
+                                </div>
+                            </td>
+                            <td class="whitespace-nowrap px-3 py-5 text-sm text-gray-500">
+                                <div class="text-gray-900">01 - 03 Juillet 2024</div>
+                                <div class="mt-1 text-gray-500">2 nuits, 2 voyageurs</div>
+                            </td>
+                            <td class="whitespace-nowrap px-3 py-5 text-sm text-gray-500">60 000 FCFA</td>
+                            <td class="whitespace-nowrap px-3 py-5 text-sm text-gray-500">
+                                {% include "components/dashboard/status_badge.html" with status="success" label="Terminée" %}
+                            </td>
+                            <td class="relative whitespace-nowrap py-5 pl-3 pr-4 text-right text-sm font-medium sm:pr-0">
+                                <a href="reservation_detail.html">
+                                    {% include "components/dashboard/action_button.html" with action="view" %}
+                                </a>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+    
+    <div class="mt-6 border-t border-gray-200 pt-4">
+        {% include "components/dashboard/pagination.html" %}
+    </div>
+</div>
+{% endblock %}

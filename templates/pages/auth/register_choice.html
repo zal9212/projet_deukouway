@@ -1,0 +1,35 @@
+{% extends "layouts/auth_layout.html" %}
+
+{% block title %}Créer un compte - DEKOUWAY{% endblock %}
+
+{% block content %}
+    {% include "components/auth/auth_header.html" with title="Comment souhaitez-vous utiliser DEKOUWAY ?" subtitle="Choisissez le type de compte qui correspond à vos besoins." %}
+    
+    <div class="mt-8 space-y-4">
+        <!-- Carte Client -->
+        <a href="register_client.html" class="block border border-gray-200 rounded-xl p-6 hover:border-[#8B1E24] hover:shadow-md transition-all group focus:outline-none focus:ring-2 focus:ring-[#8B1E24]">
+            <div class="flex items-center justify-between mb-4">
+                <div class="w-12 h-12 rounded-full bg-gray-100 flex items-center justify-center group-hover:bg-red-50 transition-colors">
+                    <i data-lucide="compass" class="w-6 h-6 text-gray-700 group-hover:text-[#8B1E24] transition-colors"></i>
+                </div>
+                <i data-lucide="arrow-right" class="w-5 h-5 text-gray-400 group-hover:text-[#8B1E24] transition-colors"></i>
+            </div>
+            <h3 class="text-lg font-bold text-gray-900 mb-1">Je cherche un logement</h3>
+            <p class="text-sm text-gray-600">Pour louer des appartements ou des villas lors de vos séjours au Sénégal.</p>
+        </a>
+        
+        <!-- Carte Propriétaire -->
+        <a href="register_owner.html" class="block border border-gray-200 rounded-xl p-6 hover:border-[#8B1E24] hover:shadow-md transition-all group focus:outline-none focus:ring-2 focus:ring-[#8B1E24]">
+            <div class="flex items-center justify-between mb-4">
+                <div class="w-12 h-12 rounded-full bg-gray-100 flex items-center justify-center group-hover:bg-red-50 transition-colors">
+                    <i data-lucide="key" class="w-6 h-6 text-gray-700 group-hover:text-[#8B1E24] transition-colors"></i>
+                </div>
+                <i data-lucide="arrow-right" class="w-5 h-5 text-gray-400 group-hover:text-[#8B1E24] transition-colors"></i>
+            </div>
+            <h3 class="text-lg font-bold text-gray-900 mb-1">Je suis propriétaire</h3>
+            <p class="text-sm text-gray-600">Pour publier vos annonces et accueillir des voyageurs en toute sécurité.</p>
+        </a>
+    </div>
+    
+    {% include "components/auth/auth_footer.html" with text="Vous avez déjà un compte ?" link_text="Connectez-vous" link_url="login.html" %}
+{% endblock %}

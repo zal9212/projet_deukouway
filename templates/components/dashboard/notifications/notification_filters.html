@@ -1,0 +1,45 @@
+<div class="flex flex-wrap items-center gap-2 mt-4 mb-6">
+    <!-- Bouton Tous -->
+    <button type="button" 
+            @click="activeFilter = 'all'"
+            :class="activeFilter === 'all' ? 'bg-gray-900 text-white border-transparent' : 'bg-white text-gray-700 border-gray-300 hover:bg-gray-50'"
+            class="inline-flex items-center rounded-full border px-4 py-1.5 text-sm font-medium transition-colors shadow-sm focus:outline-none focus:ring-2 focus:ring-[#8B1E24] focus:ring-offset-1">
+        Toutes
+    </button>
+
+    <!-- Bouton Réservations -->
+    <button type="button" 
+            @click="activeFilter = 'reservations'"
+            :class="activeFilter === 'reservations' ? 'bg-gray-900 text-white border-transparent' : 'bg-white text-gray-700 border-gray-300 hover:bg-gray-50'"
+            class="inline-flex items-center rounded-full border px-4 py-1.5 text-sm font-medium transition-colors shadow-sm focus:outline-none focus:ring-2 focus:ring-[#8B1E24] focus:ring-offset-1">
+        <i data-lucide="calendar" class="w-4 h-4 mr-2" :class="activeFilter === 'reservations' ? 'text-white' : 'text-gray-400'"></i>
+        Réservations
+    </button>
+
+    <!-- Bouton Paiements -->
+    <button type="button" 
+            @click="activeFilter = 'payments'"
+            :class="activeFilter === 'payments' ? 'bg-gray-900 text-white border-transparent' : 'bg-white text-gray-700 border-gray-300 hover:bg-gray-50'"
+            class="inline-flex items-center rounded-full border px-4 py-1.5 text-sm font-medium transition-colors shadow-sm focus:outline-none focus:ring-2 focus:ring-[#8B1E24] focus:ring-offset-1">
+        <i data-lucide="credit-card" class="w-4 h-4 mr-2" :class="activeFilter === 'payments' ? 'text-white' : 'text-gray-400'"></i>
+        Paiements
+    </button>
+
+    <!-- Bouton Logements -->
+    <button type="button" 
+            @click="activeFilter = 'properties'"
+            :class="activeFilter === 'properties' ? 'bg-gray-900 text-white border-transparent' : 'bg-white text-gray-700 border-gray-300 hover:bg-gray-50'"
+            class="inline-flex items-center rounded-full border px-4 py-1.5 text-sm font-medium transition-colors shadow-sm focus:outline-none focus:ring-2 focus:ring-[#8B1E24] focus:ring-offset-1">
+        <i data-lucide="home" class="w-4 h-4 mr-2" :class="activeFilter === 'properties' ? 'text-white' : 'text-gray-400'"></i>
+        Logements
+    </button>
+
+    <!-- Bouton Sécurité -->
+    <button type="button" 
+            @click="activeFilter = 'security'"
+            :class="activeFilter === 'security' ? 'bg-gray-900 text-white border-transparent' : 'bg-white text-gray-700 border-gray-300 hover:bg-gray-50'"
+            class="inline-flex items-center rounded-full border px-4 py-1.5 text-sm font-medium transition-colors shadow-sm focus:outline-none focus:ring-2 focus:ring-[#8B1E24] focus:ring-offset-1">
+        <i data-lucide="shield-alert" class="w-4 h-4 mr-2" :class="activeFilter === 'security' ? 'text-white' : 'text-gray-400'"></i>
+        Sécurité
+    </button>
+</div>

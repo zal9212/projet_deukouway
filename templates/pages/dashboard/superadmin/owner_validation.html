@@ -1,0 +1,132 @@
+{% extends "layouts/dashboard.html" %}
+
+{% block title %}Validation Partenaires (KYC) - DEKOUWAY ERP{% endblock %}
+
+{% block page_header %}
+<div class="md:flex md:items-center md:justify-between mb-8 mt-2">
+    <div class="min-w-0 flex-1">
+        <h2 class="text-2xl font-bold leading-7 text-gray-900 sm:truncate sm:text-3xl sm:tracking-tight flex items-center">
+            Validation KYC Partenaires
+            <span class="ml-3 inline-flex items-center rounded-full bg-red-100 px-3 py-1 text-sm font-medium text-red-700">3 dossiers en attente</span>
+        </h2>
+        <p class="mt-1 text-sm text-gray-500">Analysez les pièces d'identité avant d'autoriser l'ajout de logements.</p>
+    </div>
+</div>
+{% endblock %}
+
+{% block content %}
+<div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+    
+    <!-- File d'attente (Sidebar gauche) -->
+    <div class="lg:col-span-1 border border-gray-200 bg-white rounded-xl shadow-sm overflow-hidden h-[calc(100vh-16rem)] flex flex-col">
+        <div class="px-4 py-4 border-b border-gray-200 bg-gray-50">
+            <h3 class="font-semibold text-gray-900 text-sm">Dossiers à traiter (Triage)</h3>
+        </div>
+        <ul role="list" class="flex-1 overflow-y-auto divide-y divide-gray-100">
+            <!-- Dossier actif -->
+            <li class="relative px-4 py-4 bg-blue-50/50 border-l-4 border-blue-600 cursor-pointer">
+                <div class="flex justify-between">
+                    <div>
+                        <p class="text-sm font-bold text-gray-900">Mamadou Ba</p>
+                        <p class="text-xs text-gray-500 mt-1">Soumis il y a 2h</p>
+                    </div>
+                    <span class="inline-flex items-center rounded-md bg-yellow-50 px-2 py-1 text-xs font-medium text-yellow-800 ring-1 ring-inset ring-yellow-600/20 h-fit">En analyse</span>
+                </div>
+            </li>
+            <!-- Dossier en attente -->
+            <li class="relative px-4 py-4 hover:bg-gray-50 cursor-pointer">
+                <div class="flex justify-between">
+                    <div>
+                        <p class="text-sm font-medium text-gray-900">Awa Ndiaye</p>
+                        <p class="text-xs text-gray-500 mt-1">Soumis hier</p>
+                    </div>
+                    <span class="inline-flex items-center rounded-md bg-gray-50 px-2 py-1 text-xs font-medium text-gray-600 ring-1 ring-inset ring-gray-500/10 h-fit">Nouveau</span>
+                </div>
+            </li>
+            <!-- Dossier rejeté / en correction -->
+            <li class="relative px-4 py-4 hover:bg-gray-50 cursor-pointer opacity-70">
+                <div class="flex justify-between">
+                    <div>
+                        <p class="text-sm font-medium text-gray-900">Ibrahima Faye</p>
+                        <p class="text-xs text-red-600 mt-1"><i data-lucide="alert-circle" class="w-3 h-3 inline"></i> Correction demandée</p>
+                    </div>
+                </div>
+            </li>
+        </ul>
+    </div>
+
+    <!-- Zone d'Analyse Centrale -->
+    <div class="lg:col-span-2">
+        <div class="bg-white border border-gray-200 rounded-xl shadow-sm overflow-hidden flex flex-col h-[calc(100vh-16rem)]">
+            
+            <div class="border-b border-gray-200 px-6 py-5 flex items-center justify-between bg-white">
+                <div class="flex items-center">
+                    <div class="h-12 w-12 rounded-full bg-gray-200 flex items-center justify-center font-bold text-gray-600 text-lg">MB</div>
+                    <div class="ml-4">
+                        <h3 class="text-lg font-bold leading-6 text-gray-900">Dossier : Mamadou Ba</h3>
+                        <p class="text-sm text-gray-500">ID: #OWNER-4921 • Inscrit le 20 Juil 2024</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="flex-1 overflow-y-auto p-6 space-y-8 bg-gray-50">
+                
+                <!-- Données saisies -->
+                <section class="bg-white p-6 border border-gray-200 rounded-xl shadow-sm">
+                    <h4 class="text-sm font-semibold text-gray-900 mb-4 border-b border-gray-100 pb-2">Informations Déclarées</h4>
+                    <div class="grid grid-cols-2 gap-6">
+                        <div>
+                            <p class="text-xs text-gray-500 uppercase tracking-wider font-semibold">Nom complet</p>
+                            <p class="mt-1 font-medium text-gray-900">Mamadou Ba</p>
+                        </div>
+                        <div>
+                            <p class="text-xs text-gray-500 uppercase tracking-wider font-semibold">Téléphone / Compte Wave</p>
+                            <p class="mt-1 font-medium text-gray-900">+221 77 987 65 43</p>
+                        </div>
+                        <div>
+                            <p class="text-xs text-gray-500 uppercase tracking-wider font-semibold">Email</p>
+                            <p class="mt-1 font-medium text-gray-900">mamadou.ba@example.com</p>
+                        </div>
+                        <div>
+                            <p class="text-xs text-gray-500 uppercase tracking-wider font-semibold">Adresse postale</p>
+                            <p class="mt-1 font-medium text-gray-900">Sacré-Cœur 3, Dakar, Sénégal</p>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Pièces justificatives -->
+                <section class="bg-white p-6 border border-gray-200 rounded-xl shadow-sm">
+                    <h4 class="text-sm font-semibold text-gray-900 mb-4 border-b border-gray-100 pb-2 flex items-center justify-between">
+                        Pièce d'identité (CNI / Passeport)
+                        <button class="text-[#8B1E24] text-xs font-semibold hover:underline">Ouvrir en plein écran</button>
+                    </h4>
+                    
+                    <div class="aspect-w-16 aspect-h-9 bg-gray-900 rounded-lg overflow-hidden flex items-center justify-center">
+                        <div class="text-center p-8">
+                            <i data-lucide="scan-line" class="w-12 h-12 text-white/50 mx-auto mb-3"></i>
+                            <p class="text-white font-medium text-sm">Scan CNI Recto-Verso (Simulé)</p>
+                            <p class="text-gray-400 text-xs mt-1">Le document apparaitrait ici pour vérification visuelle.</p>
+                        </div>
+                    </div>
+                </section>
+                
+            </div>
+
+            <!-- Barre de décision ERP -->
+            <div class="border-t border-gray-200 px-6 py-4 bg-white flex justify-between items-center">
+                <button type="button" class="text-red-600 hover:text-red-800 text-sm font-semibold flex items-center">
+                    <i data-lucide="x-circle" class="w-4 h-4 mr-1.5"></i> Refuser / Demander une correction
+                </button>
+                <div class="flex space-x-3">
+                    <button type="button" class="rounded-md bg-white px-4 py-2 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50">
+                        Ignorer pour l'instant
+                    </button>
+                    <button type="button" class="rounded-md bg-green-600 px-4 py-2 text-sm font-semibold text-white shadow-sm hover:bg-green-500 flex items-center">
+                        <i data-lucide="check-circle-2" class="w-4 h-4 mr-1.5"></i> Valider le Partenaire
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

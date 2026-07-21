@@ -1,0 +1,31 @@
+{% extends "layouts/auth_layout.html" %}
+
+{% block title %}Vérification de votre adresse email - DEKOUWAY{% endblock %}
+
+{% block content %}
+    <div class="text-center">
+        <div class="mx-auto flex h-20 w-20 items-center justify-center rounded-full bg-blue-100 mb-6">
+            <i data-lucide="mail" class="h-10 w-10 text-blue-600"></i>
+        </div>
+        
+        <h2 class="text-3xl font-bold tracking-tight text-gray-900 mb-4">Vérifiez votre boîte mail</h2>
+        
+        <p class="text-base text-gray-600 leading-relaxed mb-8">
+            Nous avons envoyé un lien de confirmation à <span class="font-bold text-gray-900">votre_email@example.com</span>. 
+            Veuillez cliquer sur ce lien pour activer votre compte.
+        </p>
+        
+        <form action="#" method="POST">
+            <!-- Remplacer par {% csrf_token %} en prod -->
+            <input type="hidden" name="csrfmiddlewaretoken" value="placeholder">
+            
+            <button type="submit" class="w-full flex w-full justify-center rounded-lg bg-white px-3 py-3 text-sm font-semibold leading-6 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-gray-200 transition-colors">
+                Renvoyer l'email
+            </button>
+        </form>
+        
+        <p class="mt-8 text-sm text-gray-500">
+            Vous n'avez rien reçu ? Vérifiez votre dossier de courriers indésirables ou <a href="#" class="text-[#8B1E24] font-semibold hover:text-[#6F171C]">contactez le support</a>.
+        </p>
+    </div>
+{% endblock %}

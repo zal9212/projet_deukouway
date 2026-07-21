@@ -1,0 +1,80 @@
+{% extends "layouts/dashboard.html" %}
+
+{% block title %}Documents & GED - DEKOUWAY ERP{% endblock %}
+
+{% block page_header %}
+<div class="md:flex md:items-center md:justify-between mb-8 mt-2">
+    <div class="min-w-0 flex-1">
+        <h2 class="text-2xl font-bold leading-7 text-gray-900 sm:truncate sm:text-3xl sm:tracking-tight">
+            Gestion Électronique des Documents
+        </h2>
+        <p class="mt-1 text-sm text-gray-500">Archives globales des factures, reçus, contrats et pièces d'identité.</p>
+    </div>
+</div>
+{% endblock %}
+
+{% block content %}
+<div class="px-4 sm:px-6 lg:px-8 bg-white border border-gray-200 rounded-xl py-6 shadow-sm">
+    
+    <div class="sm:flex sm:items-center justify-between mb-6">
+        <div class="flex space-x-2 overflow-x-auto pb-2 sm:pb-0">
+            <select class="block rounded-md border-0 py-1.5 pl-3 pr-10 text-gray-900 ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-[#8B1E24] sm:text-sm sm:leading-6">
+                <option>Tous les types</option>
+                <option>Factures / Reçus</option>
+                <option>Contrats de Mandat</option>
+                <option>Pièces d'identité (KYC)</option>
+            </select>
+        </div>
+        <div class="mt-4 sm:ml-4 sm:mt-0 sm:flex-none">
+            <div class="relative max-w-xs">
+                <i data-lucide="search" class="absolute left-3 top-1/2 -mt-2 h-4 w-4 text-gray-400"></i>
+                <input type="text" class="block w-full rounded-md border-0 py-1.5 pl-10 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-[#8B1E24] sm:text-sm sm:leading-6" placeholder="Rechercher fichier...">
+            </div>
+        </div>
+    </div>
+
+    <!-- Liste Documents -->
+    <ul role="list" class="divide-y divide-gray-200 mt-4 border-t border-gray-200">
+        <li class="py-4 hover:bg-gray-50 transition-colors">
+            <div class="flex items-center justify-between">
+                <div class="flex items-center">
+                    <div class="h-10 w-10 bg-red-50 rounded-lg flex items-center justify-center">
+                        <i data-lucide="file-text" class="h-6 w-6 text-red-600"></i>
+                    </div>
+                    <div class="ml-4">
+                        <p class="text-sm font-medium text-gray-900">Reçu_Client_REQ9821.pdf</p>
+                        <p class="text-sm text-gray-500">Généré le 21 Août - Lié à Fatou Diagne</p>
+                    </div>
+                </div>
+                <div class="flex items-center space-x-4">
+                    <button class="text-[#8B1E24] hover:text-[#6F171C] font-medium text-sm flex items-center">
+                        <i data-lucide="download" class="w-4 h-4 mr-1"></i> <span class="hidden sm:inline">Télécharger</span>
+                    </button>
+                </div>
+            </div>
+        </li>
+        <li class="py-4 hover:bg-gray-50 transition-colors">
+            <div class="flex items-center justify-between">
+                <div class="flex items-center">
+                    <div class="h-10 w-10 bg-blue-50 rounded-lg flex items-center justify-center">
+                        <i data-lucide="file-check" class="h-6 w-6 text-blue-600"></i>
+                    </div>
+                    <div class="ml-4">
+                        <p class="text-sm font-medium text-gray-900">Contrat_Mandat_Ousmane_Sy.pdf</p>
+                        <p class="text-sm text-gray-500">Signé le 10 Fév - Propriétaire ID: 4921</p>
+                    </div>
+                </div>
+                <div class="flex items-center space-x-4">
+                    <button class="text-[#8B1E24] hover:text-[#6F171C] font-medium text-sm flex items-center">
+                        <i data-lucide="download" class="w-4 h-4 mr-1"></i> <span class="hidden sm:inline">Télécharger</span>
+                    </button>
+                </div>
+            </div>
+        </li>
+    </ul>
+
+    <div class="mt-6 border-t border-gray-200 pt-4">
+        {% include "components/dashboard/pagination.html" %}
+    </div>
+</div>
+{% endblock %}

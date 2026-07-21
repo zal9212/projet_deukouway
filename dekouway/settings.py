@@ -41,13 +41,17 @@ INSTALLED_APPS = [
     'rest_framework',
     
     # Local apps (monolith modules)
-    'core',
-    'users',
-    'properties',
-    'bookings',
-    'payments',
-    'support',
-    'dashboard',
+    'apps.core',
+    'apps.accounts',
+    'apps.properties',
+    'apps.reservations',
+    'apps.payments',
+    'apps.support',
+    'apps.dashboard',
+    'apps.notifications',
+    'apps.documents',
+    'apps.analytics',
+    'apps.api',
 ]
 
 MIDDLEWARE = [
@@ -95,7 +99,7 @@ PASSWORD_HASHERS = [
 ]
 
 # Custom User Model
-AUTH_USER_MODEL = 'users.User'
+AUTH_USER_MODEL = 'accounts.User'
 
 # Password validation
 AUTH_PASSWORD_VALIDATORS = [

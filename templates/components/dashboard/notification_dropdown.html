@@ -1,0 +1,51 @@
+<div class="relative" @click.outside="notificationOpen = false">
+    <button type="button" 
+            class="-m-2.5 p-2.5 text-gray-400 hover:text-[#8B1E24] transition-colors relative" 
+            @click="notificationOpen = !notificationOpen">
+        <span class="sr-only">Voir les notifications</span>
+        <i data-lucide="bell" class="h-6 w-6"></i>
+        <!-- Pastille rouge de notification -->
+        <span class="absolute top-2 right-2.5 block h-2 w-2 rounded-full bg-[#8B1E24] ring-2 ring-white"></span>
+    </button>
+
+    <!-- Dropdown menu -->
+    <div x-show="notificationOpen" 
+         x-transition:enter="transition ease-out duration-100" 
+         x-transition:enter-start="transform opacity-0 scale-95" 
+         x-transition:enter-end="transform opacity-100 scale-100" 
+         x-transition:leave="transition ease-in duration-75" 
+         x-transition:leave-start="transform opacity-100 scale-100" 
+         x-transition:leave-end="transform opacity-0 scale-95" 
+         x-cloak
+         class="absolute right-0 z-10 mt-2.5 w-80 origin-top-right rounded-md bg-white py-2 shadow-lg ring-1 ring-gray-900/5 focus:outline-none" 
+         role="menu" 
+         aria-orientation="vertical" 
+         aria-labelledby="user-menu-button" 
+         tabindex="-1">
+         
+        <div class="px-4 py-3 border-b border-gray-100 flex justify-between items-center">
+            <h3 class="text-sm font-bold text-gray-900">Notifications</h3>
+            <a href="#" class="text-xs font-semibold text-[#8B1E24] hover:text-[#6F171C]">Tout marquer comme lu</a>
+        </div>
+        
+        <div class="max-h-96 overflow-y-auto">
+            <!-- Item non lu -->
+            <a href="#" class="block px-4 py-3 hover:bg-gray-50 transition-colors border-l-2 border-[#8B1E24] bg-gray-50/50" role="menuitem" tabindex="-1">
+                <p class="text-sm font-semibold text-gray-900">Nouvelle réservation confirmée</p>
+                <p class="text-xs text-gray-500 mt-1 line-clamp-2">Jean Dupont a confirmé sa réservation pour "Villa Teranga" du 12 au 15 Août.</p>
+                <p class="text-[10px] text-gray-400 mt-2">Il y a 5 min</p>
+            </a>
+            
+            <!-- Item lu -->
+            <a href="#" class="block px-4 py-3 hover:bg-gray-50 transition-colors border-l-2 border-transparent" role="menuitem" tabindex="-1">
+                <p class="text-sm font-medium text-gray-900">Paiement reçu</p>
+                <p class="text-xs text-gray-500 mt-1 line-clamp-2">Le paiement de 150 000 FCFA a été viré sur votre compte bancaire.</p>
+                <p class="text-[10px] text-gray-400 mt-2">Hier à 14:30</p>
+            </a>
+        </div>
+        
+        <div class="px-4 py-2 border-t border-gray-100 text-center bg-gray-50 rounded-b-md">
+            <a href="notifications.html" class="text-sm font-semibold text-[#8B1E24] hover:text-[#6F171C]">Ouvrir le centre de notifications &rarr;</a>
+        </div>
+    </div>
+</div>

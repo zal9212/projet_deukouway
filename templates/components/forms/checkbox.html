@@ -1,0 +1,11 @@
+<div class="flex items-start mb-4">
+    <div class="flex h-6 items-center">
+        <input id="{{ id }}" name="{{ name }}" type="checkbox" {% if required %}required{% endif %} class="h-4 w-4 rounded border-gray-300 text-[#8B1E24] focus:ring-[#8B1E24]">
+    </div>
+    <div class="ml-3 text-sm leading-6">
+        <label for="{{ id }}" class="text-gray-600 font-medium">{{ label|safe }}</label>
+        {% if description %}
+        <p class="text-gray-500">{{ description }}</p>
+        {% endif %}
+    </div>
+</div>

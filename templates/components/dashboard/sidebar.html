@@ -1,0 +1,175 @@
+<!-- Sidebar Desktop SuperAdmin (Fixe) -->
+<div class="hidden xl:fixed xl:inset-y-0 xl:z-50 xl:flex xl:w-72 xl:flex-col">
+    <div class="flex grow flex-col gap-y-5 overflow-y-auto bg-gray-900 px-6 pb-4">
+        
+        <!-- Logo -->
+        <div class="flex h-16 shrink-0 items-center mt-2 border-b border-gray-800 pb-2">
+            <a href="/" class="flex items-center space-x-3">
+                <div class="w-10 h-10 bg-[#8B1E24] rounded-xl flex items-center justify-center">
+                    <i data-lucide="shield-check" class="text-white w-6 h-6"></i>
+                </div>
+                <span class="text-xl font-bold tracking-tight text-white">DEKOUWAY</span>
+            </a>
+            <span class="ml-2 inline-flex items-center rounded-md bg-white/10 px-2 py-1 text-[10px] font-medium text-white ring-1 ring-inset ring-white/20 uppercase tracking-widest">ERP</span>
+        </div>
+
+        <nav class="flex flex-1 flex-col mt-2">
+            <ul role="list" class="flex flex-1 flex-col gap-y-6">
+                
+                <!-- Vue d'ensemble -->
+                <li>
+                    <ul role="list" class="-mx-2 space-y-1">
+                        <li>
+                            <a href="dashboard.html" class="group flex gap-x-3 rounded-md p-2 text-sm leading-6 font-semibold bg-[#8B1E24] text-white">
+                                <i data-lucide="layout-dashboard" class="h-5 w-5 shrink-0 text-white"></i>
+                                Dashboard Central
+                            </a>
+                        </li>
+                    </ul>
+                </li>
+
+                <!-- Section Utilisateurs -->
+                <li>
+                    <div class="text-xs font-semibold leading-6 text-gray-400 uppercase tracking-wider mb-1">Utilisateurs</div>
+                    <ul role="list" class="-mx-2 space-y-1">
+                        <li>
+                            <a href="clients.html" class="group flex gap-x-3 rounded-md p-2 text-sm leading-6 font-medium text-gray-300 hover:text-white hover:bg-gray-800 transition-colors">
+                                <i data-lucide="users" class="h-5 w-5 shrink-0 text-gray-400 group-hover:text-white"></i>
+                                Clients (Locataires)
+                            </a>
+                        </li>
+                        <li>
+                            <a href="owners.html" class="group flex gap-x-3 rounded-md p-2 text-sm leading-6 font-medium text-gray-300 hover:text-white hover:bg-gray-800 transition-colors">
+                                <i data-lucide="building" class="h-5 w-5 shrink-0 text-gray-400 group-hover:text-white"></i>
+                                Propriétaires
+                            </a>
+                        </li>
+                        <li>
+                            <a href="owner_validation.html" class="group flex gap-x-3 rounded-md p-2 text-sm leading-6 font-medium text-gray-300 hover:text-white hover:bg-gray-800 transition-colors">
+                                <i data-lucide="user-check" class="h-5 w-5 shrink-0 text-gray-400 group-hover:text-white"></i>
+                                Validation KYC
+                                <span class="ml-auto w-6 min-w-max whitespace-nowrap rounded-full bg-red-500 px-2 py-0.5 text-center text-[10px] font-bold leading-4 text-white">3</span>
+                            </a>
+                        </li>
+                    </ul>
+                </li>
+                
+                <!-- Section Parc Immobilier -->
+                <li>
+                    <div class="text-xs font-semibold leading-6 text-gray-400 uppercase tracking-wider mb-1">Parc Immobilier</div>
+                    <ul role="list" class="-mx-2 space-y-1">
+                        <li>
+                            <a href="properties.html" class="group flex gap-x-3 rounded-md p-2 text-sm leading-6 font-medium text-gray-300 hover:text-white hover:bg-gray-800 transition-colors">
+                                <i data-lucide="home" class="h-5 w-5 shrink-0 text-gray-400 group-hover:text-white"></i>
+                                Tous les Logements
+                            </a>
+                        </li>
+                        <li>
+                            <a href="property_validation.html" class="group flex gap-x-3 rounded-md p-2 text-sm leading-6 font-medium text-gray-300 hover:text-white hover:bg-gray-800 transition-colors">
+                                <i data-lucide="search-check" class="h-5 w-5 shrink-0 text-gray-400 group-hover:text-white"></i>
+                                Validation Logements
+                                <span class="ml-auto w-6 min-w-max whitespace-nowrap rounded-full bg-yellow-500 px-2 py-0.5 text-center text-[10px] font-bold leading-4 text-gray-900">7</span>
+                            </a>
+                        </li>
+                    </ul>
+                </li>
+
+                <!-- Section Activité -->
+                <li>
+                    <div class="text-xs font-semibold leading-6 text-gray-400 uppercase tracking-wider mb-1">Opérations</div>
+                    <ul role="list" class="-mx-2 space-y-1">
+                        <li>
+                            <a href="requests.html" class="group flex gap-x-3 rounded-md p-2 text-sm leading-6 font-medium text-gray-300 hover:text-white hover:bg-gray-800 transition-colors">
+                                <i data-lucide="inbox" class="h-5 w-5 shrink-0 text-gray-400 group-hover:text-white"></i>
+                                Demandes à traiter
+                                <span class="ml-auto w-6 min-w-max whitespace-nowrap rounded-full bg-red-500 px-2 py-0.5 text-center text-[10px] font-bold leading-4 text-white">12</span>
+                            </a>
+                        </li>
+                        <li>
+                            <a href="reservations.html" class="group flex gap-x-3 rounded-md p-2 text-sm leading-6 font-medium text-gray-300 hover:text-white hover:bg-gray-800 transition-colors">
+                                <i data-lucide="calendar" class="h-5 w-5 shrink-0 text-gray-400 group-hover:text-white"></i>
+                                Planning & Séjours
+                            </a>
+                        </li>
+                    </ul>
+                </li>
+
+                <!-- Section Finance -->
+                <li>
+                    <div class="text-xs font-semibold leading-6 text-gray-400 uppercase tracking-wider mb-1">Finance</div>
+                    <ul role="list" class="-mx-2 space-y-1">
+                        <li>
+                            <a href="payments.html" class="group flex gap-x-3 rounded-md p-2 text-sm leading-6 font-medium text-gray-300 hover:text-white hover:bg-gray-800 transition-colors">
+                                <i data-lucide="credit-card" class="h-5 w-5 shrink-0 text-gray-400 group-hover:text-white"></i>
+                                Paiements Entrants
+                            </a>
+                        </li>
+                        <li>
+                            <a href="payouts.html" class="group flex gap-x-3 rounded-md p-2 text-sm leading-6 font-medium text-gray-300 hover:text-white hover:bg-gray-800 transition-colors">
+                                <i data-lucide="banknote" class="h-5 w-5 shrink-0 text-gray-400 group-hover:text-white"></i>
+                                Reversements Partenaires
+                            </a>
+                        </li>
+                    </ul>
+                </li>
+
+                <!-- Section Qualité & Support -->
+                <li>
+                    <div class="text-xs font-semibold leading-6 text-gray-400 uppercase tracking-wider mb-1">Qualité & Support</div>
+                    <ul role="list" class="-mx-2 space-y-1">
+                        <li>
+                            <a href="disputes.html" class="group flex gap-x-3 rounded-md p-2 text-sm leading-6 font-medium text-gray-300 hover:text-white hover:bg-gray-800 transition-colors">
+                                <i data-lucide="scale" class="h-5 w-5 shrink-0 text-gray-400 group-hover:text-white"></i>
+                                Litiges & Médiation
+                            </a>
+                        </li>
+                        <li>
+                            <a href="claims.html" class="group flex gap-x-3 rounded-md p-2 text-sm leading-6 font-medium text-gray-300 hover:text-white hover:bg-gray-800 transition-colors">
+                                <i data-lucide="alert-triangle" class="h-5 w-5 shrink-0 text-gray-400 group-hover:text-white"></i>
+                                Signalements
+                            </a>
+                        </li>
+                        <li>
+                            <a href="support_tickets.html" class="group flex gap-x-3 rounded-md p-2 text-sm leading-6 font-medium text-gray-300 hover:text-white hover:bg-gray-800 transition-colors">
+                                <i data-lucide="life-buoy" class="h-5 w-5 shrink-0 text-gray-400 group-hover:text-white"></i>
+                                Support Client/Proprio
+                            </a>
+                        </li>
+                    </ul>
+                </li>
+
+                <!-- Section Système & Configuration -->
+                <li>
+                    <div class="text-xs font-semibold leading-6 text-gray-400 uppercase tracking-wider mb-1">Système</div>
+                    <ul role="list" class="-mx-2 space-y-1">
+                        <li>
+                            <a href="analytics.html" class="group flex gap-x-3 rounded-md p-2 text-sm leading-6 font-medium text-gray-300 hover:text-white hover:bg-gray-800 transition-colors">
+                                <i data-lucide="bar-chart-2" class="h-5 w-5 shrink-0 text-gray-400 group-hover:text-white"></i>
+                                Analytics & BI
+                            </a>
+                        </li>
+                        <li>
+                            <a href="documents.html" class="group flex gap-x-3 rounded-md p-2 text-sm leading-6 font-medium text-gray-300 hover:text-white hover:bg-gray-800 transition-colors">
+                                <i data-lucide="folder" class="h-5 w-5 shrink-0 text-gray-400 group-hover:text-white"></i>
+                                Base Documentaire
+                            </a>
+                        </li>
+                        <li>
+                            <a href="audit_logs.html" class="group flex gap-x-3 rounded-md p-2 text-sm leading-6 font-medium text-gray-300 hover:text-white hover:bg-gray-800 transition-colors">
+                                <i data-lucide="activity" class="h-5 w-5 shrink-0 text-gray-400 group-hover:text-white"></i>
+                                Audit Logs (Sécurité)
+                            </a>
+                        </li>
+                        <li>
+                            <a href="configuration.html" class="group flex gap-x-3 rounded-md p-2 text-sm leading-6 font-medium text-gray-300 hover:text-white hover:bg-gray-800 transition-colors">
+                                <i data-lucide="settings" class="h-5 w-5 shrink-0 text-gray-400 group-hover:text-white"></i>
+                                Configuration Globale
+                            </a>
+                        </li>
+                    </ul>
+                </li>
+            </ul>
+        </nav>
+        
+    </div>
+</div>

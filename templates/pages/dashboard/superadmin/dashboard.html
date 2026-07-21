@@ -1,0 +1,205 @@
+{% extends "layouts/dashboard.html" %}
+
+{% block title %}DEKOUWAY ERP - SuperAdmin{% endblock %}
+
+{% block page_header %}
+<div class="md:flex md:items-center md:justify-between mb-8 mt-2">
+    <div class="min-w-0 flex-1">
+        <h2 class="text-2xl font-bold leading-7 text-gray-900 sm:truncate sm:text-3xl sm:tracking-tight">
+            Dashboard Central
+        </h2>
+        <p class="mt-1 text-sm text-gray-500">Vue d'ensemble de l'activité plateforme DEKOUWAY.</p>
+    </div>
+    <div class="mt-4 flex md:ml-4 md:mt-0 space-x-3">
+        <a href="requests.html" class="inline-flex items-center rounded-md bg-[#8B1E24] px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-[#6F171C]">
+            <i data-lucide="inbox" class="h-4 w-4 mr-2"></i> File d'attente (12)
+        </a>
+    </div>
+</div>
+{% endblock %}
+
+{% block content %}
+<div class="space-y-8">
+    
+    <!-- Ligne 1 : KPIs Financiers & Trafic -->
+    <section>
+        <div class="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-4">
+            
+            <div class="relative overflow-hidden rounded-xl bg-white px-4 pb-12 pt-5 shadow-sm border border-gray-200 sm:px-6 sm:pt-6">
+                <dt>
+                    <div class="absolute rounded-md bg-green-50 p-3">
+                        <i data-lucide="banknote" class="h-6 w-6 text-green-600"></i>
+                    </div>
+                    <p class="ml-16 truncate text-sm font-medium text-gray-500">Volume d'affaires (Mensuel)</p>
+                </dt>
+                <dd class="ml-16 flex items-baseline pb-6 sm:pb-7">
+                    <p class="text-2xl font-bold text-gray-900">4.2M F</p>
+                    <div class="absolute inset-x-0 bottom-0 bg-gray-50 px-4 py-4 sm:px-6 border-t border-gray-100 flex justify-between items-center">
+                        <a href="payments.html" class="text-sm font-medium text-[#8B1E24] hover:text-[#6F171C]">Voir paiements</a>
+                        <span class="text-xs text-green-600 flex items-center font-bold"><i data-lucide="trending-up" class="w-3 h-3 mr-1"></i> +12%</span>
+                    </div>
+                </dd>
+            </div>
+
+            <div class="relative overflow-hidden rounded-xl bg-white px-4 pb-12 pt-5 shadow-sm border border-gray-200 sm:px-6 sm:pt-6">
+                <dt>
+                    <div class="absolute rounded-md bg-blue-50 p-3">
+                        <i data-lucide="pie-chart" class="h-6 w-6 text-blue-600"></i>
+                    </div>
+                    <p class="ml-16 truncate text-sm font-medium text-gray-500">Commissions DEKOUWAY</p>
+                </dt>
+                <dd class="ml-16 flex items-baseline pb-6 sm:pb-7">
+                    <p class="text-2xl font-bold text-gray-900">630 000 F</p>
+                    <div class="absolute inset-x-0 bottom-0 bg-gray-50 px-4 py-4 sm:px-6 border-t border-gray-100 flex justify-between items-center">
+                        <a href="analytics.html" class="text-sm font-medium text-[#8B1E24] hover:text-[#6F171C]">Voir analytics</a>
+                    </div>
+                </dd>
+            </div>
+
+            <div class="relative overflow-hidden rounded-xl bg-white px-4 pb-12 pt-5 shadow-sm border border-gray-200 sm:px-6 sm:pt-6">
+                <dt>
+                    <div class="absolute rounded-md bg-yellow-50 p-3">
+                        <i data-lucide="calendar-check" class="h-6 w-6 text-yellow-600"></i>
+                    </div>
+                    <p class="ml-16 truncate text-sm font-medium text-gray-500">Réservations actives</p>
+                </dt>
+                <dd class="ml-16 flex items-baseline pb-6 sm:pb-7">
+                    <p class="text-2xl font-bold text-gray-900">42</p>
+                    <p class="ml-2 flex items-baseline text-sm font-semibold text-gray-500">
+                        <span class="text-gray-400">cette semaine</span>
+                    </p>
+                    <div class="absolute inset-x-0 bottom-0 bg-gray-50 px-4 py-4 sm:px-6 border-t border-gray-100 flex justify-between items-center">
+                        <a href="reservations.html" class="text-sm font-medium text-[#8B1E24] hover:text-[#6F171C]">Gérer le planning</a>
+                    </div>
+                </dd>
+            </div>
+
+            <div class="relative overflow-hidden rounded-xl bg-white px-4 pb-12 pt-5 shadow-sm border border-gray-200 sm:px-6 sm:pt-6">
+                <dt>
+                    <div class="absolute rounded-md bg-red-50 p-3">
+                        <i data-lucide="scale" class="h-6 w-6 text-red-600"></i>
+                    </div>
+                    <p class="ml-16 truncate text-sm font-medium text-gray-500">Litiges & Réclamations</p>
+                </dt>
+                <dd class="ml-16 flex items-baseline pb-6 sm:pb-7">
+                    <p class="text-2xl font-bold text-gray-900">1</p>
+                    <p class="ml-2 flex items-baseline text-sm font-semibold text-gray-500">
+                        <span class="text-red-500">En cours</span>
+                    </p>
+                    <div class="absolute inset-x-0 bottom-0 bg-red-50/50 px-4 py-4 sm:px-6 border-t border-red-100 flex justify-between items-center">
+                        <a href="disputes.html" class="text-sm font-medium text-red-700 hover:text-red-900">Traiter urgence</a>
+                    </div>
+                </dd>
+            </div>
+
+        </div>
+    </section>
+
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+        
+        <!-- Section Centrale (Opérations en attente) -->
+        <div class="lg:col-span-2 space-y-8">
+            
+            <!-- File d'attente d'arbitrage -->
+            <section class="bg-white border border-gray-200 rounded-xl shadow-sm overflow-hidden">
+                <div class="border-b border-gray-200 px-6 py-5 flex items-center justify-between">
+                    <h3 class="text-base font-semibold leading-6 text-gray-900 flex items-center">
+                        <i data-lucide="inbox" class="w-5 h-5 mr-2 text-gray-400"></i> Demandes Clients à traiter
+                        <span class="ml-2 bg-red-100 text-red-700 py-0.5 px-2 rounded-full text-xs font-bold">12</span>
+                    </h3>
+                    <a href="requests.html" class="text-sm font-medium text-[#8B1E24] hover:text-[#6F171C]">Toutes les demandes</a>
+                </div>
+                <div class="divide-y divide-gray-200">
+                    <div class="p-6 hover:bg-gray-50">
+                        <div class="sm:flex sm:items-center sm:justify-between">
+                            <div class="sm:flex sm:items-start gap-4">
+                                <div class="bg-gray-100 rounded-lg p-3 shrink-0 flex items-center justify-center">
+                                    <i data-lucide="user" class="w-6 h-6 text-gray-600"></i>
+                                </div>
+                                <div class="mt-3 sm:mt-0">
+                                    <h4 class="text-sm font-bold text-gray-900">Fatou Diagne <span class="text-gray-500 font-normal">demande la</span> Villa Teranga Saly</h4>
+                                    <div class="mt-2 text-sm text-gray-700 flex flex-wrap gap-x-4 gap-y-2">
+                                        <span class="flex items-center"><i data-lucide="clock" class="w-4 h-4 mr-1 text-gray-400"></i> 12-15 Août (3 nuits)</span>
+                                        <span class="flex items-center font-semibold text-gray-900"><i data-lucide="banknote" class="w-4 h-4 mr-1 text-gray-400"></i> 105 000 F</span>
+                                    </div>
+                                    <p class="text-xs text-yellow-600 mt-2 font-medium"><i data-lucide="alert-circle" class="w-3 h-3 inline"></i> Vérification client OK. En attente de votre transfert à Ousmane Sy (Propriétaire).</p>
+                                </div>
+                            </div>
+                            <div class="mt-4 sm:mt-0 flex flex-col sm:items-end gap-2 shrink-0">
+                                {% include "components/dashboard/status_badge.html" with status="pending" label="À Transmettre" %}
+                                <a href="request_detail.html" class="text-sm font-medium text-[#8B1E24] hover:underline">Ouvrir le dossier</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+            
+            <!-- Alertes Logements & KYC -->
+            <section class="bg-white border border-gray-200 rounded-xl shadow-sm overflow-hidden">
+                <div class="border-b border-gray-200 px-6 py-5 flex items-center justify-between">
+                    <h3 class="text-base font-semibold leading-6 text-gray-900">Centre de validation KYC & Parc</h3>
+                </div>
+                <div class="divide-y divide-gray-200">
+                    <div class="p-4 px-6 flex justify-between items-center bg-yellow-50/30">
+                        <div class="flex items-center gap-3">
+                            <i data-lucide="user-check" class="text-yellow-600 w-5 h-5"></i>
+                            <div>
+                                <p class="text-sm font-semibold text-gray-900">Nouveau profil Propriétaire à valider</p>
+                                <p class="text-xs text-gray-500">Mamadou Ba - CNI déposée</p>
+                            </div>
+                        </div>
+                        <a href="owner_validation.html" class="text-sm font-medium text-[#8B1E24]">Vérifier</a>
+                    </div>
+                    <div class="p-4 px-6 flex justify-between items-center bg-blue-50/30">
+                        <div class="flex items-center gap-3">
+                            <i data-lucide="search-check" class="text-blue-600 w-5 h-5"></i>
+                            <div>
+                                <p class="text-sm font-semibold text-gray-900">Nouvelle annonce à vérifier</p>
+                                <p class="text-xs text-gray-500">Studio Plateau (par Ousmane Sy)</p>
+                            </div>
+                        </div>
+                        <a href="property_validation.html" class="text-sm font-medium text-[#8B1E24]">Analyser</a>
+                    </div>
+                </div>
+            </section>
+        </div>
+
+        <!-- Section Droite (Métriques secondaires & Actions) -->
+        <div class="space-y-8">
+            
+            <!-- Utilisateurs -->
+            <section class="bg-white border border-gray-200 rounded-xl shadow-sm p-6">
+                <h3 class="text-sm font-semibold leading-6 text-gray-900 mb-4">Base Utilisateurs</h3>
+                <dl class="space-y-4">
+                    <div class="flex items-center justify-between border-b border-gray-100 pb-2">
+                        <dt class="text-sm text-gray-600 flex items-center"><i data-lucide="users" class="w-4 h-4 mr-2 text-gray-400"></i> Clients actifs</dt>
+                        <dd class="text-sm font-bold text-gray-900">1,245</dd>
+                    </div>
+                    <div class="flex items-center justify-between border-b border-gray-100 pb-2">
+                        <dt class="text-sm text-gray-600 flex items-center"><i data-lucide="building" class="w-4 h-4 mr-2 text-gray-400"></i> Partenaires (Proprios)</dt>
+                        <dd class="text-sm font-bold text-gray-900">184</dd>
+                    </div>
+                    <div class="flex items-center justify-between pb-2">
+                        <dt class="text-sm text-gray-600 flex items-center"><i data-lucide="home" class="w-4 h-4 mr-2 text-gray-400"></i> Logements en ligne</dt>
+                        <dd class="text-sm font-bold text-gray-900">342</dd>
+                    </div>
+                </dl>
+            </section>
+
+            <!-- Versements en attente -->
+            <section class="bg-white border border-gray-200 rounded-xl shadow-sm p-6">
+                <div class="flex items-center justify-between mb-4">
+                    <h3 class="text-sm font-semibold leading-6 text-gray-900">Reversements Partenaires</h3>
+                    <span class="bg-gray-100 text-gray-800 text-xs font-bold px-2 py-0.5 rounded-full">Prévus</span>
+                </div>
+                <div class="mt-2 text-3xl font-bold text-gray-900 tracking-tight">850 000 F</div>
+                <p class="text-xs text-gray-500 mt-1 mb-4">À transférer via Wave/Orange Money sous 48h.</p>
+                <a href="payouts.html" class="block w-full text-center rounded-md bg-gray-900 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-gray-800">
+                    Traiter le batch
+                </a>
+            </section>
+            
+        </div>
+    </div>
+</div>
+{% endblock %}

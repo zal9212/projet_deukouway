@@ -1,0 +1,73 @@
+<div class="mb-6" x-data="{ 
+    isDragging: false, 
+    fileSelected: false, 
+    fileName: '', 
+    fileSize: '',
+    progress: 0,
+    simulateUpload(e) {
+        let file = e.target.files ? e.target.files[0] : (e.dataTransfer ? e.dataTransfer.files[0] : null);
+        if (!file) return;
+        this.fileSelected = true;
+        this.fileName = file.name;
+        this.fileSize = (file.size / 1024 / 1024).toFixed(2) + ' MB';
+        this.progress = 0;
+        let interval = setInterval(() => {
+            this.progress += 10;
+            if(this.progress >= 100) {
+                this.progress = 100;
+                clearInterval(interval);
+            }
+        }, 200);
+    }
+}">
+    <label class="block text-sm font-medium text-gray-700 mb-2">Pièce d'identité (CNI ou Passeport)</label>
+    
+    <!-- Zone de Drag & Drop -->
+    <div class="mt-2 flex justify-center rounded-xl border border-dashed px-6 py-10 transition-colors"
+         :class="isDragging ? 'border-[#8B1E24] bg-red-50' : 'border-gray-900/25 bg-white'"
+         @dragover.prevent="isDragging = true"
+         @dragleave.prevent="isDragging = false"
+         @drop.prevent="isDragging = false; simulateUpload($event)"
+         x-show="!fileSelected">
+         
+        <div class="text-center">
+            <div class="mx-auto flex h-12 w-12 items-center justify-center rounded-full bg-gray-100 mb-4">
+                <i data-lucide="upload-cloud" class="h-6 w-6 text-gray-600"></i>
+            </div>
+            <div class="mt-4 flex text-sm leading-6 text-gray-600 justify-center">
+                <label for="identity-upload" class="relative cursor-pointer rounded-md bg-white font-semibold text-[#8B1E24] focus-within:outline-none focus-within:ring-2 focus-within:ring-[#8B1E24] focus-within:ring-offset-2 hover:text-[#6F171C]">
+                    <span>Téléverser un fichier</span>
+                    <input id="identity-upload" name="identity-upload" type="file" class="sr-only" accept=".jpg,.jpeg,.png,.pdf" @change="simulateUpload">
+                </label>
+                <p class="pl-1">ou glisser-déposer</p>
+            </div>
+            <p class="text-xs leading-5 text-gray-500 mt-2">PNG, JPG, PDF jusqu'à 10MB</p>
+        </div>
+    </div>
+    
+    <!-- Fichier sélectionné & Progression -->
+    <div x-show="fileSelected" x-cloak class="rounded-xl border border-gray-200 p-4 bg-gray-50 flex items-center justify-between">
+        <div class="flex items-center space-x-3 truncate">
+            <div class="h-10 w-10 rounded bg-white border border-gray-200 flex items-center justify-center shrink-0">
+                <i data-lucide="file-text" class="h-5 w-5 text-[#8B1E24]"></i>
+            </div>
+            <div class="truncate">
+                <p class="text-sm font-medium text-gray-900 truncate" x-text="fileName"></p>
+                <p class="text-xs text-gray-500" x-text="fileSize"></p>
+            </div>
+        </div>
+        
+        <!-- Barre de progression -->
+        <div class="w-24 shrink-0 flex flex-col items-end" x-show="progress < 100">
+            <span class="text-xs text-gray-500 mb-1" x-text="progress + '%'"></span>
+            <div class="w-full bg-gray-200 rounded-full h-1.5">
+                <div class="bg-[#8B1E24] h-1.5 rounded-full transition-all duration-200" :style="`width: ${progress}%`"></div>
+            </div>
+        </div>
+        
+        <!-- Action : Supprimer -->
+        <button type="button" x-show="progress === 100" @click="fileSelected = false" class="text-gray-400 hover:text-red-600 transition-colors p-1" aria-label="Supprimer le fichier">
+            <i data-lucide="trash-2" class="h-5 w-5"></i>
+        </button>
+    </div>
+</div>

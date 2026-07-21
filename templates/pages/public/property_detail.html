@@ -1,30 +1,78 @@
 {% extends "layouts/public.html" %}
+{% load static %}
 
-{% block title %}{{ property.title }} - DEKOUWAY{% endblock %}
+{% block title %}Détail du logement - DEKOUWAY{% endblock %}
 
 {% block content %}
-<!-- Inclusion of mobile and desktop sub-layouts to ensure file is under 300 lines limit -->
-{% include "pages/public/partials/property_detail_mobile.html" %}
-{% include "pages/public/partials/property_detail_desktop.html" %}
-
-<!-- Maps integration script -->
-<script>
-    document.addEventListener("DOMContentLoaded", function() {
-        var lat = {{ property.latitude|stringformat:".6f" }};
-        var lng = {{ property.longitude|stringformat:".6f" }};
+<main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 pb-24 lg:pb-12">
+    
+    <!-- Section 1 : Fil d'Ariane -->
+    <nav class="flex items-center text-sm text-gray-500 font-medium mb-6 mt-16 md:mt-20">
+        <a href="#" class="hover:text-gray-900 transition-colors">Accueil</a>
+        <i data-lucide="chevron-right" class="w-4 h-4 mx-2"></i>
+        <a href="#" class="hover:text-gray-900 transition-colors">Recherche</a>
+        <i data-lucide="chevron-right" class="w-4 h-4 mx-2"></i>
+        <span class="text-gray-900 line-clamp-1">Superbe appartement vue mer avec piscine</span>
+    </nav>
+    
+    <!-- Section 2 : Galerie -->
+    {% include "components/property_gallery.html" %}
+    
+    <!-- Section principale avec layout en 2 colonnes (Desktop) -->
+    <div class="flex flex-col lg:flex-row gap-12 mt-8">
         
-        // Initialise desktop map if visible
-        if (document.getElementById('desktop-detail-map')) {
-            var desktopMap = L.map('desktop-detail-map').setView([lat, lng], 14);
-            L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png').addTo(desktopMap);
-            L.marker([lat, lng]).addTo(desktopMap);
-        }
+        <!-- Colonne de gauche (70%) : Contenu principal -->
+        <div class="w-full lg:w-[65%]">
+            
+            <!-- Section 3 : Informations principales (Titre) -->
+            {% include "components/property_header.html" %}
+            
+            <!-- Section 4 : Caractéristiques -->
+            {% include "components/property_features.html" %}
+            
+            <!-- Section 8 : Propriétaire (Réassurance) -->
+            {% include "components/property_owner_card.html" %}
+            
+            <!-- Section 5 : Description -->
+            {% include "components/property_description.html" %}
+            
+            <!-- Section 6 : Équipements -->
+            {% include "components/property_amenities.html" %}
+            
+            <!-- Section 7 : Localisation -->
+            {% include "components/property_location.html" %}
+            
+            <!-- Section 10 : Avis -->
+            {% include "components/property_reviews.html" %}
+            
+            <!-- Section 12 : Règlement -->
+            {% include "components/property_rules.html" %}
+            
+            <!-- Section 13 : FAQ -->
+            {% include "components/property_faq.html" %}
+            
+        </div>
+        
+        <!-- Colonne de droite (30%) : Carte de réservation sticky -->
+        <div class="w-full lg:w-[35%] relative">
+            <!-- Section 9 : Réservation -->
+            {% include "components/reservation_summary.html" %}
+        </div>
+        
+    </div>
+    
+    <!-- Section 11 : Logements similaires (Pleine largeur) -->
+    {% include "components/similar_properties.html" %}
+    
+</main>
+{% endblock %}
 
-        // Initialise mobile map if active
-        if (document.getElementById('mobile-detail-map')) {
-            var mobileMap = L.map('mobile-detail-map').setView([lat, lng], 14);
-            L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png').addTo(mobileMap);
-            L.marker([lat, lng]).addTo(mobileMap);
+{% block extra_js %}
+<!-- Initialisation des icônes Lucide pour cette page -->
+<script>
+    document.addEventListener('DOMContentLoaded', () => {
+        if (typeof lucide !== 'undefined') {
+            lucide.createIcons();
         }
     });
 </script>

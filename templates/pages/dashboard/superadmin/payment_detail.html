@@ -1,0 +1,101 @@
+{% extends "layouts/dashboard.html" %}
+
+{% block title %}Détail Paiement - DEKOUWAY ERP{% endblock %}
+
+{% block content %}
+    <div class="mb-6">
+        {% include "components/dashboard/breadcrumb.html" with level1="Paiements Entrants" level1_url="payments.html" level2="Détails" %}
+    </div>
+
+    <div class="md:flex md:items-center md:justify-between mb-8 mt-2">
+        <div class="min-w-0 flex-1 flex items-center gap-4">
+            <h2 class="text-2xl font-bold leading-7 text-gray-900 sm:truncate sm:text-3xl sm:tracking-tight">
+                Paiement #PAY-1004
+            </h2>
+            {% include "components/dashboard/status_badge.html" with status="success" label="Encaissé avec succès" %}
+        </div>
+        <div class="mt-4 flex md:ml-4 md:mt-0 space-x-3">
+            <button class="inline-flex items-center rounded-md bg-white px-3 py-2 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50"><i data-lucide="receipt" class="w-4 h-4 mr-2 text-gray-400"></i> Générer Reçu Client</button>
+            <button class="inline-flex items-center rounded-md bg-red-50 px-3 py-2 text-sm font-semibold text-red-700 shadow-sm ring-1 ring-inset ring-red-600/10 hover:bg-red-100">Rembourser Client</button>
+        </div>
+    </div>
+
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+        
+        <div class="lg:col-span-2 space-y-8">
+            <!-- Recapitulatif de la transaction -->
+            <div class="bg-white border border-gray-200 rounded-xl p-6 shadow-sm">
+                <h3 class="text-base font-bold text-gray-900 border-b border-gray-100 pb-2 mb-4">Informations de Transaction</h3>
+                
+                <div class="grid grid-cols-2 gap-y-6 gap-x-4">
+                    <div>
+                        <p class="text-sm font-medium text-gray-500">Date et Heure</p>
+                        <p class="mt-1 text-sm text-gray-900">21 Août 2024 - 11:30:42 GMT</p>
+                    </div>
+                    <div>
+                        <p class="text-sm font-medium text-gray-500">Méthode de Paiement</p>
+                        <p class="mt-1 text-sm text-gray-900 flex items-center"><div class="w-4 h-4 rounded bg-[#10C3F9] text-white flex items-center justify-center mr-1 text-[8px] font-bold inline-block">W</div> Wave (API)</p>
+                    </div>
+                    <div>
+                        <p class="text-sm font-medium text-gray-500">Référence Passerelle (ID Externe)</p>
+                        <p class="mt-1 text-sm text-gray-900 font-mono text-xs">wav_txn_98217398127398</p>
+                    </div>
+                    <div>
+                        <p class="text-sm font-medium text-gray-500">Logement Associé</p>
+                        <p class="mt-1 text-sm text-[#8B1E24] font-medium"><a href="properties.html">Villa Teranga Saly</a></p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Ventilation ERP -->
+            <div class="bg-white border border-gray-200 rounded-xl p-6 shadow-sm">
+                <h3 class="text-base font-bold text-gray-900 border-b border-gray-100 pb-2 mb-4">Ventilation ERP (Répartition des fonds)</h3>
+                
+                <div class="space-y-4">
+                    <div class="flex items-center justify-between py-2 border-b border-gray-100">
+                        <div class="flex items-center">
+                            <div class="w-8 h-8 rounded-full bg-gray-100 flex items-center justify-center mr-3"><i data-lucide="arrow-down-to-line" class="w-4 h-4 text-gray-500"></i></div>
+                            <div>
+                                <p class="text-sm font-medium text-gray-900">Montant total encaissé du client</p>
+                                <p class="text-xs text-gray-500">Fatou Diagne</p>
+                            </div>
+                        </div>
+                        <p class="text-base font-bold text-gray-900">110 000 F</p>
+                    </div>
+
+                    <div class="flex items-center justify-between py-2 border-b border-gray-100 pl-11">
+                        <div>
+                            <p class="text-sm font-medium text-green-700">Commission DEKOUWAY Conservée (Marge)</p>
+                            <p class="text-xs text-gray-500">15% Logement + 5000F Frais de service</p>
+                        </div>
+                        <p class="text-sm font-bold text-green-700">+ 25 000 F</p>
+                    </div>
+
+                    <div class="flex items-center justify-between py-2 border-b border-gray-100 pl-11">
+                        <div>
+                            <p class="text-sm font-medium text-orange-700">Dette envers Propriétaire (À reverser)</p>
+                            <p class="text-xs text-gray-500">Ousmane Sy</p>
+                        </div>
+                        <p class="text-sm font-bold text-orange-700">- 85 000 F</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="space-y-6">
+            <div class="bg-gray-900 rounded-xl p-6 shadow-sm text-white">
+                <h3 class="text-sm font-medium text-gray-400 mb-2">Statut du Reversement</h3>
+                
+                <div class="mt-4">
+                    <p class="text-3xl font-bold tracking-tight text-white mb-1">85 000 F</p>
+                    <p class="text-sm text-gray-400">Restent à payer au partenaire.</p>
+                </div>
+
+                <div class="mt-6 pt-6 border-t border-gray-800">
+                    <span class="inline-flex items-center rounded-md bg-yellow-400/10 px-2 py-1 text-xs font-medium text-yellow-500 ring-1 ring-inset ring-yellow-400/20 mb-4">En attente de traitement</span>
+                    <a href="payouts.html" class="block w-full text-center rounded-md bg-white px-3 py-2 text-sm font-semibold text-gray-900 shadow-sm hover:bg-gray-100">Aller aux Reversements</a>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}

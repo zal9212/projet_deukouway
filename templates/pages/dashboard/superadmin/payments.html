@@ -1,0 +1,104 @@
+{% extends "layouts/dashboard.html" %}
+
+{% block title %}Paiements Entrants - DEKOUWAY ERP{% endblock %}
+
+{% block page_header %}
+<div class="md:flex md:items-center md:justify-between mb-8 mt-2">
+    <div class="min-w-0 flex-1">
+        <h2 class="text-2xl font-bold leading-7 text-gray-900 sm:truncate sm:text-3xl sm:tracking-tight">
+            Encaissements Clients (Entrants)
+        </h2>
+        <p class="mt-1 text-sm text-gray-500">Flux d'argent des clients vers les comptes bancaires / mobile money DEKOUWAY.</p>
+    </div>
+</div>
+{% endblock %}
+
+{% block content %}
+<div class="px-4 sm:px-6 lg:px-8 bg-white border border-gray-200 rounded-xl py-6 shadow-sm">
+    
+    <div class="sm:flex sm:items-center justify-between mb-6">
+        <div class="flex space-x-2 overflow-x-auto pb-2 sm:pb-0">
+            <button class="whitespace-nowrap px-4 py-2 text-sm font-medium rounded-full bg-gray-900 text-white">Tous les encaissements</button>
+            <button class="whitespace-nowrap px-4 py-2 text-sm font-medium rounded-full bg-white text-gray-700 border border-gray-300 hover:bg-gray-50 flex items-center"><div class="w-2 h-2 rounded-full bg-green-500 mr-2"></div> Réussis</button>
+            <button class="whitespace-nowrap px-4 py-2 text-sm font-medium rounded-full bg-white text-gray-700 border border-gray-300 hover:bg-gray-50 flex items-center"><div class="w-2 h-2 rounded-full bg-red-500 mr-2"></div> Échoués</button>
+        </div>
+        <div class="mt-4 sm:ml-4 sm:mt-0 sm:flex-none flex gap-2">
+            <button class="inline-flex items-center rounded-md bg-white px-3 py-2 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50">
+                <i data-lucide="download" class="w-4 h-4 mr-2 text-gray-400"></i> Exporter
+            </button>
+        </div>
+    </div>
+
+    <!-- Table Paiements -->
+    <div class="mt-4 flow-root">
+        <div class="-mx-4 -my-2 overflow-x-auto sm:-mx-6 lg:-mx-8">
+            <div class="inline-block min-w-full py-2 align-middle sm:px-6 lg:px-8">
+                <table class="min-w-full divide-y divide-gray-300">
+                    <thead class="bg-gray-50">
+                        <tr>
+                            <th scope="col" class="py-3.5 pl-4 pr-3 text-left text-sm font-semibold text-gray-900 sm:pl-0">Référence & Date</th>
+                            <th scope="col" class="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">Client / Réservation</th>
+                            <th scope="col" class="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">Méthode</th>
+                            <th scope="col" class="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">Montant Total</th>
+                            <th scope="col" class="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">Statut</th>
+                            <th scope="col" class="relative py-3.5 pl-3 pr-4 sm:pr-0">
+                                <span class="sr-only">Actions</span>
+                            </th>
+                        </tr>
+                    </thead>
+                    <tbody class="divide-y divide-gray-200 bg-white">
+                        <tr>
+                            <td class="whitespace-nowrap py-5 pl-4 pr-3 sm:pl-0">
+                                <div class="font-bold text-gray-900">#PAY-1004</div>
+                                <div class="text-gray-500 text-xs mt-0.5">Aujourd'hui, 11:30</div>
+                            </td>
+                            <td class="whitespace-nowrap px-3 py-5 text-sm text-gray-500">
+                                <div class="text-gray-900 font-medium">Fatou Diagne</div>
+                                <div class="text-gray-500 text-xs">Pour #RES-2309</div>
+                            </td>
+                            <td class="whitespace-nowrap px-3 py-5 text-sm text-gray-500 flex items-center">
+                                <div class="w-6 h-6 rounded bg-[#10C3F9] text-white flex items-center justify-center mr-2 text-xs font-bold">W</div> Wave Pay
+                            </td>
+                            <td class="whitespace-nowrap px-3 py-5 text-sm text-gray-500">
+                                <div class="text-gray-900 font-bold text-base">110 000 F</div>
+                            </td>
+                            <td class="whitespace-nowrap px-3 py-5 text-sm text-gray-500">
+                                {% include "components/dashboard/status_badge.html" with status="success" label="Encaissé" %}
+                            </td>
+                            <td class="relative whitespace-nowrap py-5 pl-3 pr-4 text-right text-sm font-medium sm:pr-0">
+                                <a href="payment_detail.html" class="text-[#8B1E24] hover:text-[#6F171C]">Détails</a>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="whitespace-nowrap py-5 pl-4 pr-3 sm:pl-0">
+                                <div class="font-bold text-gray-900">#PAY-1003</div>
+                                <div class="text-gray-500 text-xs mt-0.5">Hier, 09:15</div>
+                            </td>
+                            <td class="whitespace-nowrap px-3 py-5 text-sm text-gray-500">
+                                <div class="text-gray-900 font-medium">Jean Dupont</div>
+                                <div class="text-gray-500 text-xs">Pour #RES-2308</div>
+                            </td>
+                            <td class="whitespace-nowrap px-3 py-5 text-sm text-gray-500 flex items-center">
+                                <div class="w-6 h-6 rounded bg-gray-900 text-white flex items-center justify-center mr-2 text-xs font-bold"><i data-lucide="credit-card" class="w-3 h-3"></i></div> Stripe / CB
+                            </td>
+                            <td class="whitespace-nowrap px-3 py-5 text-sm text-gray-500">
+                                <div class="text-gray-900 font-bold text-base">150 €</div>
+                            </td>
+                            <td class="whitespace-nowrap px-3 py-5 text-sm text-gray-500">
+                                {% include "components/dashboard/status_badge.html" with status="error" label="Échec (Fonds Insuffisants)" %}
+                            </td>
+                            <td class="relative whitespace-nowrap py-5 pl-3 pr-4 text-right text-sm font-medium sm:pr-0">
+                                <a href="payment_detail.html" class="text-[#8B1E24] hover:text-[#6F171C]">Détails</a>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+    
+    <div class="mt-6 border-t border-gray-200 pt-4">
+        {% include "components/dashboard/pagination.html" %}
+    </div>
+</div>
+{% endblock %}

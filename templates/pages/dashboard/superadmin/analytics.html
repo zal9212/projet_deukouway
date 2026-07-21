@@ -1,0 +1,66 @@
+{% extends "layouts/dashboard.html" %}
+
+{% block title %}Analytics - DEKOUWAY ERP{% endblock %}
+
+{% block page_header %}
+<div class="md:flex md:items-center md:justify-between mb-8 mt-2">
+    <div class="min-w-0 flex-1">
+        <h2 class="text-2xl font-bold leading-7 text-gray-900 sm:truncate sm:text-3xl sm:tracking-tight">
+            Business Intelligence & Analytics
+        </h2>
+    </div>
+    <div class="mt-4 flex md:ml-4 md:mt-0 space-x-3">
+        <select class="block rounded-md border-0 py-1.5 pl-3 pr-10 text-gray-900 ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-[#8B1E24] sm:text-sm sm:leading-6">
+            <option>Ce mois-ci</option>
+            <option>Le mois dernier</option>
+            <option>Cette année</option>
+        </select>
+    </div>
+</div>
+{% endblock %}
+
+{% block content %}
+<div class="space-y-8">
+    
+    <div class="grid grid-cols-1 gap-5 sm:grid-cols-3">
+        <div class="overflow-hidden rounded-xl bg-white px-4 py-5 shadow-sm border border-gray-200">
+            <dt class="truncate text-sm font-medium text-gray-500">Marge Brute (Commissions)</dt>
+            <dd class="mt-1 flex justify-between items-baseline">
+                <span class="text-3xl font-bold tracking-tight text-gray-900">1.8M F</span>
+                <span class="text-sm font-semibold text-green-600 flex items-center"><i data-lucide="arrow-up" class="w-4 h-4 mr-1"></i> 8%</span>
+            </dd>
+        </div>
+        <div class="overflow-hidden rounded-xl bg-white px-4 py-5 shadow-sm border border-gray-200">
+            <dt class="truncate text-sm font-medium text-gray-500">Taux d'occupation global moyen</dt>
+            <dd class="mt-1 flex justify-between items-baseline">
+                <span class="text-3xl font-bold tracking-tight text-gray-900">58%</span>
+                <span class="text-sm font-semibold text-green-600 flex items-center"><i data-lucide="arrow-up" class="w-4 h-4 mr-1"></i> 2%</span>
+            </dd>
+        </div>
+        <div class="overflow-hidden rounded-xl bg-white px-4 py-5 shadow-sm border border-gray-200">
+            <dt class="truncate text-sm font-medium text-gray-500">Croissance Utilisateurs (C + P)</dt>
+            <dd class="mt-1 flex justify-between items-baseline">
+                <span class="text-3xl font-bold tracking-tight text-gray-900">+142</span>
+                <span class="text-sm font-semibold text-red-600 flex items-center"><i data-lucide="arrow-down" class="w-4 h-4 mr-1"></i> 1%</span>
+            </dd>
+        </div>
+    </div>
+
+    <!-- Graphiques (Placeholders) -->
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+        <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
+            <h3 class="text-base font-semibold leading-6 text-gray-900 mb-6">Évolution des Commissions (CA)</h3>
+            <div class="h-72 bg-gray-50 rounded-lg flex items-center justify-center border border-dashed border-gray-300">
+                {% include "components/dashboard/chart_placeholder.html" with title="Chart.js / ApexCharts: CA Marge" %}
+            </div>
+        </div>
+        <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
+            <h3 class="text-base font-semibold leading-6 text-gray-900 mb-6">Acquisition Clients vs Propriétaires</h3>
+            <div class="h-72 bg-gray-50 rounded-lg flex items-center justify-center border border-dashed border-gray-300">
+                {% include "components/dashboard/chart_placeholder.html" with title="Chart.js / ApexCharts: Utilisateurs" %}
+            </div>
+        </div>
+    </div>
+
+</div>
+{% endblock %}

@@ -1,0 +1,18 @@
+<div class="relative group rounded-xl border border-gray-200 bg-white p-6 shadow-sm hover:shadow-md transition-all">
+    <div class="flex items-center space-x-4">
+        <div class="flex-shrink-0">
+            <span class="inline-flex h-12 w-12 items-center justify-center rounded-lg bg-gray-50 ring-1 ring-gray-200 group-hover:bg-[#8B1E24]/10 transition-colors">
+                <i data-lucide="{{ icon|default:'plus' }}" class="h-6 w-6 text-gray-600 group-hover:text-[#8B1E24]"></i>
+            </span>
+        </div>
+        <div>
+            <h3 class="text-sm font-semibold text-gray-900">
+                <a href="{{ link_url|default:'#' }}" class="focus:outline-none">
+                    <span class="absolute inset-0" aria-hidden="true"></span>
+                    {{ title }}
+                </a>
+            </h3>
+            <p class="mt-1 text-sm text-gray-500">{{ description }}</p>
+        </div>
+    </div>
+</div>

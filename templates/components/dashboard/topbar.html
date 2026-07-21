@@ -1,0 +1,44 @@
+<!-- Topbar (Hauteur fixe : 64px) -->
+<header class="sticky top-0 z-40 flex h-16 shrink-0 items-center gap-x-4 border-b border-gray-200 bg-white px-4 shadow-sm sm:gap-x-6 sm:px-6 lg:px-8">
+    
+    <!-- Bouton menu Mobile -->
+    <button type="button" 
+            class="-m-2.5 p-2.5 text-gray-700 lg:hidden hover:text-gray-900 transition-colors" 
+            @click="sidebarOpen = true">
+        <span class="sr-only">Ouvrir le menu</span>
+        <i data-lucide="menu" class="h-6 w-6"></i>
+    </button>
+
+    <!-- Séparateur Mobile -->
+    <div class="h-6 w-px bg-gray-200 lg:hidden" aria-hidden="true"></div>
+
+    <div class="flex flex-1 gap-x-4 self-stretch lg:gap-x-6">
+        
+        <!-- Barre de recherche (Ouvre la modale globale) -->
+        <form class="relative flex flex-1" action="#" method="GET" @submit.prevent>
+            <label for="search-field" class="sr-only">Rechercher</label>
+            <div class="relative w-full lg:max-w-md group cursor-text" @click="searchOpen = true">
+                <i data-lucide="search" class="pointer-events-none absolute inset-y-0 left-0 h-full w-5 text-gray-400 group-hover:text-[#8B1E24] transition-colors"></i>
+                <div class="block h-full w-full border-0 py-0 pl-8 pr-0 text-gray-900 sm:text-sm flex items-center text-gray-500">
+                    Rechercher (Appuyez sur Ctrl+K)
+                </div>
+                <div class="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none hidden sm:flex">
+                    <span class="text-xs text-gray-400 border border-gray-200 rounded px-1.5 py-0.5 bg-gray-50">⌘K</span>
+                </div>
+            </div>
+        </form>
+
+        <div class="flex items-center gap-x-4 lg:gap-x-6">
+            
+            <!-- Notifications Dropdown -->
+            {% include "components/dashboard/notification_dropdown.html" %}
+
+            <!-- Séparateur -->
+            <div class="hidden lg:block lg:h-6 lg:w-px lg:bg-gray-200" aria-hidden="true"></div>
+
+            <!-- Profile Dropdown -->
+            {% include "components/dashboard/profile_dropdown.html" %}
+            
+        </div>
+    </div>
+</header>

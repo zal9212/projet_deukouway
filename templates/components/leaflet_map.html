@@ -1,0 +1,153 @@
+<div class="w-full h-full relative" 
+     x-data="leafletMap()" 
+     x-init="initMap()"
+     @active-property-changed.window="highlightMarker($event.detail)">
+    
+    <!-- 1. Skeleton Loading -->
+    <div x-show="!isMapLoaded" class="absolute inset-0 z-10 transition-opacity duration-500">
+        {% include "components/loading_map.html" %}
+    </div>
+
+    <!-- 2. Container de la carte -->
+    <div id="main-map" class="w-full h-full z-0" :class="{ 'opacity-0': !isMapLoaded, 'opacity-100': isMapLoaded }"></div>
+
+    <!-- 3. Templates pour Leaflet -->
+    {% include "components/property_marker.html" %}
+    {% include "components/map_popup.html" %}
+</div>
+
+<script>
+    function leafletMap() {
+        return {
+            isMapLoaded: false,
+            map: null,
+            markers: {}, // Dictionnaire pour stocker les marqueurs par ID
+            
+            initMap() {
+                // Petite simulation de chargement pour montrer le skeleton
+                setTimeout(() => {
+                    // Vérifier si Leaflet est chargé (il doit être dans le <head> du layout)
+                    if (typeof L === 'undefined') {
+                        console.error('Leaflet.js n\'est pas chargé.');
+                        return;
+                    }
+
+                    // Initialisation de la carte centrée sur Dakar
+                    this.map = L.map('main-map', {
+                        zoomControl: false // On désactive pour pouvoir le repositionner si besoin
+                    }).setView([14.7167, -17.4677], 13);
+                    
+                    // Ajout du contrôle de zoom en bas à droite
+                    L.control.zoom({ position: 'bottomright' }).addTo(this.map);
+
+                    // Ajout des tuiles
+                    L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png', {
+                        attribution: '&copy; OpenStreetMap, &copy; CARTO',
+                        maxZoom: 19
+                    }).addTo(this.map);
+
+                    // Quand la carte est prête
+                    this.map.whenReady(() => {
+                        this.isMapLoaded = true;
+                        this.addMockMarkers();
+                        
+                        // Observer les redimensionnements pour invalider la taille
+                        // (particulièrement utile quand on toggle entre map/list sur mobile)
+                        window.addEventListener('resize', () => {
+                            this.map.invalidateSize();
+                        });
+                        
+                        // Alpine Watcher sur le changement d'affichage
+                        this.$watch('showMap', (value) => {
+                            if (value) {
+                                setTimeout(() => this.map.invalidateSize(), 100);
+                            }
+                        });
+                    });
+                }, 500); // Faux délai de 500ms
+            },
+
+            addMockMarkers() {
+                // Données mockées pour simuler l'API
+                const mockData = [
+                    { id: 1, lat: 14.7167, lng: -17.4677, price: '150k CFA', title: 'Studio moderne Ngor', neighborhood: 'Ngor Almadies', rating: '4.8', image: 'https://images.unsplash.com/photo-1522708323590-d24dbb6b0267?auto=format&fit=crop&q=80&w=400' },
+                    { id: 2, lat: 14.7220, lng: -17.4500, price: '300k CFA', title: 'Appartement vue mer', neighborhood: 'Plateau', rating: '4.9', image: 'https://images.unsplash.com/photo-1502672260266-1c1e52db06ac?auto=format&fit=crop&q=80&w=400' },
+                    { id: 3, lat: 14.7450, lng: -17.4850, price: '85k CFA', title: 'Chambre étudiante', neighborhood: 'Fann Hock', rating: '4.5', image: 'https://images.unsplash.com/photo-1554995207-c18c203602cb?auto=format&fit=crop&q=80&w=400' }
+                ];
+
+                const markerTemplate = document.getElementById('property-marker-template').innerHTML;
+                const popupTemplate = document.getElementById('map-popup-template').innerHTML;
+
+                mockData.forEach(item => {
+                    // Création de l'icône HTML (L.divIcon)
+                    const htmlIcon = markerTemplate
+                        .replace('[[price]]', item.price)
+                        .replace('[[id]]', item.id);
+
+                    const icon = L.divIcon({
+                        className: 'custom-leaflet-icon',
+                        html: htmlIcon,
+                        iconSize: null, // Laisse la taille s'adapter au contenu HTML
+                        iconAnchor: [40, 16], // Centre de l'icône approximatif
+                        popupAnchor: [0, -16] // Popup juste au dessus
+                    });
+
+                    // Création du Popup
+                    const popupContent = popupTemplate
+                        .replace('[[title]]', item.title)
+                        .replace('[[title]]', item.title)
+                        .replace('[[price]]', item.price)
+                        .replace('[[neighborhood]]', item.neighborhood)
+                        .replace('[[rating]]', item.rating)
+                        .replace('[[image]]', item.image);
+
+                    // Ajout du marqueur
+                    const marker = L.marker([item.lat, item.lng], { icon: icon })
+                        .bindPopup(popupContent, {
+                            maxWidth: 240,
+                            minWidth: 240,
+                            autoPanPadding: [50, 50]
+                        })
+                        .addTo(this.map);
+
+                    // Stockage du marqueur pour pouvoir le manipuler plus tard (hover depuis la liste)
+                    this.markers[item.id] = marker;
+                    
+                    // Interaction inverse : Survol du marqueur -> Met en évidence la carte liste
+                    marker.on('mouseover', () => {
+                        this.activeProperty = item.id;
+                    });
+                    marker.on('mouseout', () => {
+                        if (this.activeProperty === item.id) this.activeProperty = null;
+                    });
+                });
+            },
+
+            // Méthode appelée quand un élément de la liste est survolé
+            highlightMarker(propertyId) {
+                // Réinitialiser tous les marqueurs
+                document.querySelectorAll('.property-marker').forEach(el => {
+                    el.classList.remove('active');
+                });
+                
+                // Mettre en évidence le marqueur actif
+                if (propertyId && this.markers[propertyId]) {
+                    const markerEl = document.querySelector(`.property-marker[data-property-id="${propertyId}"]`);
+                    if (markerEl) {
+                        markerEl.classList.add('active');
+                        // Optionnel : panTo si on veut centrer la carte sur le marqueur
+                        // this.map.panTo(this.markers[propertyId].getLatLng());
+                    }
+                }
+            }
+        }
+    }
+</script>
+
+<style>
+    /* Pour s'assurer que divIcon n'a pas de styles par défaut gênants */
+    .custom-leaflet-icon {
+        background: transparent;
+        border: none;
+    }
+</style>

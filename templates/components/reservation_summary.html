@@ -1,0 +1,62 @@
+<div class="bg-white border border-gray-200 rounded-2xl shadow-xl p-6 sticky top-28 hidden lg:block">
+    <div class="flex items-baseline mb-6">
+        <span class="text-2xl font-bold text-gray-900">150 000 FCFA</span>
+        <span class="text-gray-500 ml-1">/ mois</span>
+    </div>
+    
+    <div class="border border-gray-300 rounded-xl overflow-hidden mb-4">
+        <!-- Calendrier Placeholder -->
+        <div class="flex border-b border-gray-300">
+            <div class="flex-1 p-3 border-r border-gray-300 cursor-pointer hover:bg-gray-50 transition-colors">
+                <label class="block text-[10px] font-bold text-gray-900 uppercase tracking-wide">Arrivée</label>
+                <div class="text-sm text-gray-500 mt-1">Ajouter une date</div>
+            </div>
+            <div class="flex-1 p-3 cursor-pointer hover:bg-gray-50 transition-colors">
+                <label class="block text-[10px] font-bold text-gray-900 uppercase tracking-wide">Départ</label>
+                <div class="text-sm text-gray-500 mt-1">Ajouter une date</div>
+            </div>
+        </div>
+        
+        <!-- Voyageurs Placeholder -->
+        <div class="p-3 cursor-pointer hover:bg-gray-50 transition-colors flex justify-between items-center">
+            <div>
+                <label class="block text-[10px] font-bold text-gray-900 uppercase tracking-wide">Voyageurs</label>
+                <div class="text-sm text-gray-900 mt-1">1 voyageur</div>
+            </div>
+            <i data-lucide="chevron-down" class="w-4 h-4 text-gray-500"></i>
+        </div>
+    </div>
+    
+    <button class="w-full py-3.5 bg-[#8B1E24] hover:bg-[#6F171C] text-white font-bold rounded-xl shadow-md transition-colors text-center focus:outline-none focus:ring-2 focus:ring-[#8B1E24] focus:ring-offset-2 mb-4">
+        Demander une réservation
+    </button>
+    
+    <p class="text-center text-sm text-gray-500 mb-6">Aucun montant ne vous sera débité pour le moment</p>
+    
+    <div class="space-y-3 text-sm text-gray-700 pb-4 border-b border-gray-200">
+        <div class="flex justify-between">
+            <span class="underline">150 000 FCFA x 1 mois</span>
+            <span>150 000 FCFA</span>
+        </div>
+        <div class="flex justify-between">
+            <span class="underline">Frais de service DEKOUWAY</span>
+            <span>7 500 FCFA</span>
+        </div>
+    </div>
+    
+    <div class="flex justify-between items-center font-bold text-lg text-gray-900 pt-4">
+        <span>Total</span>
+        <span>157 500 FCFA</span>
+    </div>
+</div>
+
+<!-- Barre d'action collante sur Mobile (remplace la carte sticky) -->
+<div class="fixed bottom-0 left-0 w-full bg-white border-t border-gray-200 p-4 px-6 flex justify-between items-center z-50 lg:hidden shadow-[0_-4px_6px_-1px_rgba(0,0,0,0.1)]">
+    <div>
+        <div class="text-lg font-bold text-gray-900">150 000 FCFA <span class="text-sm font-normal text-gray-500">/ mois</span></div>
+        <div class="text-sm text-gray-900 underline font-semibold cursor-pointer">15 au 22 oct.</div>
+    </div>
+    <button class="px-6 py-3 bg-[#8B1E24] hover:bg-[#6F171C] text-white font-bold rounded-xl shadow-md transition-colors">
+        Demander
+    </button>
+</div>

@@ -1,0 +1,138 @@
+{% extends "layouts/dashboard.html" %}
+
+{% block title %}Ajouter un logement - DEKOUWAY{% endblock %}
+
+{% block content %}
+<div class="max-w-4xl mx-auto" x-data="{ step: 1, maxStep: 9 }">
+    
+    <!-- En-tête avec navigation des étapes -->
+    <div class="mb-8">
+        <h2 class="text-2xl font-bold leading-7 text-gray-900 sm:truncate sm:text-3xl sm:tracking-tight mb-6">
+            Proposer un nouveau logement
+        </h2>
+        
+        <!-- Progress Bar -->
+        <nav aria-label="Progress">
+            <ol role="list" class="flex items-center">
+                <!-- Étape dynamique générée par Alpine -->
+                <template x-for="i in maxStep" :key="i">
+                    <li class="relative pr-8 sm:pr-20" :class="i !== maxStep ? '' : 'pr-0 sm:pr-0'">
+                        <div class="absolute inset-0 flex items-center" aria-hidden="true" x-show="i !== maxStep">
+                            <div class="h-0.5 w-full bg-gray-200" :class="step > i ? 'bg-[#8B1E24]' : 'bg-gray-200'"></div>
+                        </div>
+                        <button type="button" @click="if (i <= step) step = i" class="relative flex h-8 w-8 items-center justify-center rounded-full" :class="step > i ? 'bg-[#8B1E24] hover:bg-[#6F171C]' : (step === i ? 'bg-white border-2 border-[#8B1E24]' : 'bg-white border-2 border-gray-300 hover:border-gray-400')">
+                            <i x-show="step > i" data-lucide="check" class="w-5 h-5 text-white"></i>
+                            <span x-show="step <= i" class="text-sm font-semibold" :class="step === i ? 'text-[#8B1E24]' : 'text-gray-500'" x-text="i"></span>
+                        </button>
+                    </li>
+                </template>
+            </ol>
+        </nav>
+    </div>
+
+    <div class="bg-white shadow-sm ring-1 ring-gray-900/5 sm:rounded-xl">
+        <div class="px-4 py-6 sm:p-8">
+            
+            <!-- ETAPE 1: Informations de base -->
+            <div x-show="step === 1">
+                <h3 class="text-lg font-semibold leading-7 text-gray-900 mb-6">Étape 1 : Informations générales</h3>
+                <div class="grid grid-cols-1 gap-x-6 gap-y-8 sm:grid-cols-6">
+                    <div class="sm:col-span-4">
+                        <label class="block text-sm font-medium leading-6 text-gray-900">Titre de l'annonce</label>
+                        <div class="mt-2">
+                            <input type="text" class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-[#8B1E24] sm:text-sm sm:leading-6" placeholder="Ex: Superbe villa avec piscine à Saly">
+                        </div>
+                    </div>
+                    
+                    <div class="col-span-full">
+                        <label class="block text-sm font-medium leading-6 text-gray-900">Type de logement</label>
+                        <div class="mt-2 grid grid-cols-1 gap-4 sm:grid-cols-3">
+                            <div class="relative flex cursor-pointer rounded-lg border bg-white p-4 shadow-sm focus:outline-none hover:border-[#8B1E24] border-[#8B1E24] ring-1 ring-[#8B1E24]">
+                                <div class="flex flex-1">
+                                    <div class="flex flex-col">
+                                        <span class="block text-sm font-medium text-gray-900">Logement entier</span>
+                                        <span class="mt-1 flex items-center text-sm text-gray-500">Villa, appartement</span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="relative flex cursor-pointer rounded-lg border border-gray-300 bg-white p-4 shadow-sm focus:outline-none hover:border-gray-400">
+                                <div class="flex flex-1">
+                                    <div class="flex flex-col">
+                                        <span class="block text-sm font-medium text-gray-900">Chambre privée</span>
+                                        <span class="mt-1 flex items-center text-sm text-gray-500">Dans un logement partagé</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="col-span-full">
+                        <label class="block text-sm font-medium leading-6 text-gray-900">Description</label>
+                        <div class="mt-2">
+                            <textarea rows="4" class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-[#8B1E24] sm:text-sm sm:leading-6"></textarea>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ETAPE 9: Résumé et Soumission -->
+            <div x-show="step === 9" x-cloak>
+                <h3 class="text-lg font-semibold leading-7 text-gray-900 mb-6">Étape 9 : Vérification et soumission</h3>
+                
+                <div class="rounded-md bg-blue-50 p-4 mb-6">
+                    <div class="flex">
+                        <div class="flex-shrink-0">
+                            <i data-lucide="info" class="h-5 w-5 text-blue-400"></i>
+                        </div>
+                        <div class="ml-3">
+                            <h3 class="text-sm font-medium text-blue-800">Processus de validation DEKOUWAY</h3>
+                            <div class="mt-2 text-sm text-blue-700">
+                                <p>Une fois soumis, votre logement sera analysé par un SuperAdmin. Il ne sera pas visible par les clients tant qu'il n'aura pas été officiellement validé (sous 48h).</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="border-t border-b border-gray-200 py-6 mb-6">
+                    <dl class="divide-y divide-gray-100">
+                        <div class="px-4 py-4 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-0">
+                            <dt class="text-sm font-medium leading-6 text-gray-900">Titre</dt>
+                            <dd class="mt-1 text-sm leading-6 text-gray-700 sm:col-span-2 sm:mt-0">Villa Teranga Saly</dd>
+                        </div>
+                        <div class="px-4 py-4 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-0">
+                            <dt class="text-sm font-medium leading-6 text-gray-900">Tarif de base</dt>
+                            <dd class="mt-1 text-sm leading-6 text-gray-700 sm:col-span-2 sm:mt-0">35 000 FCFA / nuit</dd>
+                        </div>
+                    </dl>
+                </div>
+            </div>
+
+            <!-- Placeholder pour les autres étapes -->
+            <div x-show="step > 1 && step < 9" x-cloak class="py-12 text-center">
+                <div class="mx-auto flex h-12 w-12 items-center justify-center rounded-full bg-gray-100">
+                    <i data-lucide="settings" class="h-6 w-6 text-gray-600 animate-spin-slow"></i>
+                </div>
+                <h3 class="mt-4 text-sm font-semibold text-gray-900">Étape <span x-text="step"></span> en cours de construction</h3>
+                <p class="mt-2 text-sm text-gray-500">Composant simulé pour l'interface utilisateur.</p>
+            </div>
+
+        </div>
+        
+        <!-- Pied de formulaire (Boutons Précédent / Suivant) -->
+        <div class="flex items-center justify-between border-t border-gray-900/10 px-4 py-4 sm:px-8 bg-gray-50 rounded-b-xl">
+            <button type="button" @click="if (step > 1) step--" class="text-sm font-semibold leading-6 text-gray-900" :class="step === 1 ? 'invisible' : ''">
+                Précédent
+            </button>
+            
+            <button type="button" @click="if (step < 9) step++" x-show="step < 9" class="rounded-md bg-gray-900 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-gray-800 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2">
+                Suivant
+            </button>
+
+            <!-- Bouton final strict -->
+            <a href="properties.html" x-show="step === 9" x-cloak class="rounded-md bg-[#8B1E24] px-4 py-2 text-sm font-semibold text-white shadow-sm hover:bg-[#6F171C] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2">
+                Envoyer pour validation (SuperAdmin)
+            </a>
+        </div>
+    </div>
+</div>
+{% endblock %}

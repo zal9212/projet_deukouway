@@ -1,0 +1,18 @@
+<div class="fixed bottom-20 left-1/2 -translate-x-1/2 z-50 lg:hidden">
+    <button @click="showMap = !showMap" 
+            class="flex items-center space-x-2 bg-[#8B1E24] text-white px-5 py-3 rounded-full shadow-lg hover:shadow-xl hover:bg-[#6F171C] transition-all duration-300 font-semibold text-sm">
+        
+        <!-- Vue Liste active -> Afficher "Carte" -->
+        <div x-show="!showMap" x-cloak class="flex items-center">
+            <span>Carte</span>
+            <i data-lucide="map" class="w-4 h-4 ml-2"></i>
+        </div>
+
+        <!-- Vue Carte active -> Afficher "Liste" -->
+        <div x-show="showMap" x-cloak class="flex items-center">
+            <span>Liste</span>
+            <i data-lucide="list" class="w-4 h-4 ml-2"></i>
+        </div>
+        
+    </button>
+</div>

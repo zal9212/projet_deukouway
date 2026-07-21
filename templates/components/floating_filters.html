@@ -1,0 +1,32 @@
+<div class="w-full bg-white border-b border-gray-200/80 sticky top-[72px] z-20 py-3 px-4 shadow-sm">
+    <div class="flex items-center gap-3 overflow-x-auto no-scrollbar max-w-[1536px] mx-auto">
+        
+        <!-- Bouton Filtres Avancés (Ouvre le Drawer) -->
+        <button @click="isFilterDrawerOpen = true" 
+                aria-label="Ouvrir les filtres avancés"
+                class="flex-shrink-0 inline-flex items-center px-4 py-2 bg-white border border-gray-300 rounded-full text-sm font-medium text-gray-700 hover:border-gray-900 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary transition-all">
+            <i data-lucide="sliders-horizontal" class="w-4 h-4 mr-2"></i>
+            Filtres
+        </button>
+
+        <!-- Séparateur visuel -->
+        <div class="h-6 w-px bg-gray-300 mx-1 flex-shrink-0"></div>
+
+        <!-- Quick Filters -->
+        <button class="flex-shrink-0 inline-flex items-center px-4 py-2 bg-white border border-gray-300 rounded-full text-sm font-medium text-gray-700 hover:border-gray-900 transition-all">
+            Appartements
+        </button>
+        <button class="flex-shrink-0 inline-flex items-center px-4 py-2 bg-white border border-gray-300 rounded-full text-sm font-medium text-gray-700 hover:border-gray-900 transition-all">
+            Villas
+        </button>
+        <button class="flex-shrink-0 inline-flex items-center px-4 py-2 bg-white border border-gray-300 rounded-full text-sm font-medium text-gray-700 hover:border-gray-900 transition-all">
+            Studios
+        </button>
+        <button class="flex-shrink-0 inline-flex items-center px-4 py-2 bg-white border border-gray-300 rounded-full text-sm font-medium text-gray-700 hover:border-gray-900 transition-all">
+            Meublé
+        </button>
+        <button class="flex-shrink-0 inline-flex items-center px-4 py-2 bg-white border border-gray-300 rounded-full text-sm font-medium text-gray-700 hover:border-gray-900 transition-all">
+            Vue sur mer
+        </button>
+    </div>
+</div>

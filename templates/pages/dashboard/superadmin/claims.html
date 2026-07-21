@@ -1,0 +1,69 @@
+{% extends "layouts/dashboard.html" %}
+
+{% block title %}Réclamations - DEKOUWAY ERP{% endblock %}
+
+{% block page_header %}
+<div class="md:flex md:items-center md:justify-between mb-8 mt-2">
+    <div class="min-w-0 flex-1">
+        <h2 class="text-2xl font-bold leading-7 text-gray-900 sm:truncate sm:text-3xl sm:tracking-tight">
+            Registre des Réclamations
+        </h2>
+        <p class="mt-1 text-sm text-gray-500">Gérez les signalements (qualité, comportements) n'entraînant pas de litige financier direct.</p>
+    </div>
+</div>
+{% endblock %}
+
+{% block content %}
+<div class="px-4 sm:px-6 lg:px-8 bg-white border border-gray-200 rounded-xl py-6 shadow-sm">
+    
+    <div class="sm:flex sm:items-center justify-between mb-6">
+        <div class="flex space-x-2 overflow-x-auto pb-2 sm:pb-0">
+            <button class="whitespace-nowrap px-4 py-2 text-sm font-medium rounded-full bg-gray-900 text-white">À traiter (2)</button>
+            <button class="whitespace-nowrap px-4 py-2 text-sm font-medium rounded-full bg-white text-gray-700 border border-gray-300 hover:bg-gray-50 flex items-center">Archivées</button>
+        </div>
+    </div>
+
+    <!-- Table Réclamations -->
+    <div class="mt-4 flow-root">
+        <div class="-mx-4 -my-2 overflow-x-auto sm:-mx-6 lg:-mx-8">
+            <div class="inline-block min-w-full py-2 align-middle sm:px-6 lg:px-8">
+                <table class="min-w-full divide-y divide-gray-300">
+                    <thead class="bg-gray-50">
+                        <tr>
+                            <th scope="col" class="py-3.5 pl-4 pr-3 text-left text-sm font-semibold text-gray-900 sm:pl-0">Référence</th>
+                            <th scope="col" class="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">Émetteur</th>
+                            <th scope="col" class="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">Catégorie & Détails</th>
+                            <th scope="col" class="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">Statut</th>
+                            <th scope="col" class="relative py-3.5 pl-3 pr-4 sm:pr-0">
+                                <span class="sr-only">Actions</span>
+                            </th>
+                        </tr>
+                    </thead>
+                    <tbody class="divide-y divide-gray-200 bg-white">
+                        <tr>
+                            <td class="whitespace-nowrap py-5 pl-4 pr-3 sm:pl-0">
+                                <div class="font-bold text-gray-900">#REC-841</div>
+                                <div class="text-gray-500 text-xs mt-0.5">Il y a 3 jours</div>
+                            </td>
+                            <td class="whitespace-nowrap px-3 py-5 text-sm text-gray-500">
+                                <div class="text-gray-900 font-medium">Ousmane Sy</div>
+                                <div class="text-gray-500 text-xs"><span class="inline-flex items-center rounded-md bg-gray-100 px-1.5 py-0.5 text-[10px] font-medium text-gray-600">Partenaire</span></div>
+                            </td>
+                            <td class="whitespace-nowrap px-3 py-5 text-sm text-gray-500">
+                                <div class="text-gray-900 font-medium">Comportement Voyageur</div>
+                                <div class="text-gray-500 text-xs">Le client (Jean) a été très bruyant.</div>
+                            </td>
+                            <td class="whitespace-nowrap px-3 py-5 text-sm text-gray-500">
+                                <span class="inline-flex items-center rounded-md bg-yellow-50 px-2 py-1 text-xs font-medium text-yellow-800 ring-1 ring-inset ring-yellow-600/20">Avertissement à envoyer</span>
+                            </td>
+                            <td class="relative whitespace-nowrap py-5 pl-3 pr-4 text-right text-sm font-medium sm:pr-0">
+                                <button class="text-[#8B1E24] hover:text-[#6F171C] font-bold text-xs uppercase">Traiter</button>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

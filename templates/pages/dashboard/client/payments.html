@@ -1,0 +1,129 @@
+{% extends "layouts/dashboard.html" %}
+
+{% block title %}Mes Paiements - DEKOUWAY{% endblock %}
+
+{% block page_header %}
+<div class="md:flex md:items-center md:justify-between mb-8 mt-2">
+    <div class="min-w-0 flex-1">
+        <h2 class="text-2xl font-bold leading-7 text-gray-900 sm:truncate sm:text-3xl sm:tracking-tight">
+            Paiements & Factures
+        </h2>
+    </div>
+    <div class="mt-4 flex md:ml-4 md:mt-0">
+        <button type="button" class="inline-flex items-center rounded-md bg-white px-3 py-2 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50">
+            <i data-lucide="download" class="h-4 w-4 mr-2 text-gray-400"></i> Exporter
+        </button>
+    </div>
+</div>
+{% endblock %}
+
+{% block content %}
+<div class="space-y-8">
+    <!-- Stats rapides -->
+    <dl class="grid grid-cols-1 gap-5 sm:grid-cols-3">
+        <div class="overflow-hidden rounded-xl bg-white px-4 py-5 shadow-sm border border-gray-200 sm:p-6">
+            <dt class="truncate text-sm font-medium text-gray-500">Total dépensé</dt>
+            <dd class="mt-1 text-3xl font-bold tracking-tight text-gray-900">165 000 F</dd>
+        </div>
+        <div class="overflow-hidden rounded-xl bg-white px-4 py-5 shadow-sm border border-gray-200 sm:p-6">
+            <dt class="truncate text-sm font-medium text-gray-500">Paiements en attente</dt>
+            <dd class="mt-1 text-3xl font-bold tracking-tight text-gray-900">105 000 F</dd>
+        </div>
+        <div class="overflow-hidden rounded-xl bg-white px-4 py-5 shadow-sm border border-gray-200 sm:p-6 flex items-center justify-between">
+            <div>
+                <dt class="truncate text-sm font-medium text-gray-500">Moyen de paiement favori</dt>
+                <dd class="mt-1 text-lg font-semibold tracking-tight text-gray-900">Wave</dd>
+            </div>
+            <div class="h-10 w-10 bg-blue-100 rounded-full flex items-center justify-center">
+                <i data-lucide="smartphone" class="w-5 h-5 text-blue-600"></i>
+            </div>
+        </div>
+    </dl>
+
+    <!-- Table des paiements -->
+    <div class="px-4 sm:px-6 lg:px-8 bg-white border border-gray-200 rounded-xl py-6 shadow-sm">
+        
+        <div class="sm:flex sm:items-center justify-between mb-6">
+            <div class="relative max-w-sm">
+                <i data-lucide="search" class="absolute left-3 top-1/2 -mt-2 h-4 w-4 text-gray-400"></i>
+                <input type="text" class="block w-full rounded-md border-0 py-1.5 pl-10 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-[#8B1E24] sm:text-sm sm:leading-6" placeholder="Rechercher une transaction...">
+            </div>
+            <div class="mt-4 sm:mt-0 flex space-x-3">
+                <select class="block w-full rounded-md border-0 py-1.5 pl-3 pr-10 text-gray-900 ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-[#8B1E24] sm:text-sm sm:leading-6">
+                    <option>Tous les statuts</option>
+                    <option>Payé</option>
+                    <option>En attente</option>
+                    <option>Annulé</option>
+                </select>
+            </div>
+        </div>
+
+        <div class="mt-4 flow-root">
+            <div class="-mx-4 -my-2 overflow-x-auto sm:-mx-6 lg:-mx-8">
+                <div class="inline-block min-w-full py-2 align-middle sm:px-6 lg:px-8">
+                    <table class="min-w-full divide-y divide-gray-300">
+                        <thead class="bg-gray-50">
+                            <tr>
+                                <th scope="col" class="py-3.5 pl-4 pr-3 text-left text-sm font-semibold text-gray-900 sm:pl-0">N° Transaction</th>
+                                <th scope="col" class="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">Date</th>
+                                <th scope="col" class="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">Méthode</th>
+                                <th scope="col" class="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">Montant</th>
+                                <th scope="col" class="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">Statut</th>
+                                <th scope="col" class="relative py-3.5 pl-3 pr-4 sm:pr-0"><span class="sr-only">Actions</span></th>
+                            </tr>
+                        </thead>
+                        <tbody class="divide-y divide-gray-200 bg-white">
+                            <!-- Ligne 1 -->
+                            <tr>
+                                <td class="whitespace-nowrap py-4 pl-4 pr-3 text-sm font-medium text-gray-900 sm:pl-0">
+                                    <a href="payment_detail.html" class="hover:text-[#8B1E24]">#TRX-982374</a>
+                                    <div class="text-xs text-gray-500 font-normal mt-0.5">Villa Teranga Saly</div>
+                                </td>
+                                <td class="whitespace-nowrap px-3 py-4 text-sm text-gray-500">10 Août 2024</td>
+                                <td class="whitespace-nowrap px-3 py-4 text-sm text-gray-500 flex items-center">
+                                    <div class="w-6 h-6 rounded bg-[#10C3F9] text-white flex items-center justify-center mr-2 text-xs font-bold">W</div>
+                                    Wave
+                                </td>
+                                <td class="whitespace-nowrap px-3 py-4 text-sm font-medium text-gray-900">105 000 F</td>
+                                <td class="whitespace-nowrap px-3 py-4 text-sm text-gray-500">
+                                    {% include "components/dashboard/status_badge.html" with status="pending" label="En attente" %}
+                                </td>
+                                <td class="relative whitespace-nowrap py-4 pl-3 pr-4 text-right text-sm font-medium sm:pr-0">
+                                    <a href="payment_detail.html">
+                                        {% include "components/dashboard/action_button.html" with action="view" text="Détails" %}
+                                    </a>
+                                </td>
+                            </tr>
+                            <!-- Ligne 2 -->
+                            <tr>
+                                <td class="whitespace-nowrap py-4 pl-4 pr-3 text-sm font-medium text-gray-900 sm:pl-0">
+                                    <a href="payment_detail.html" class="hover:text-[#8B1E24]">#TRX-762931</a>
+                                    <div class="text-xs text-gray-500 font-normal mt-0.5">Studio Dakar Plateau</div>
+                                </td>
+                                <td class="whitespace-nowrap px-3 py-4 text-sm text-gray-500">28 Juin 2024</td>
+                                <td class="whitespace-nowrap px-3 py-4 text-sm text-gray-500 flex items-center">
+                                    <div class="w-6 h-6 rounded bg-[#FF6600] text-white flex items-center justify-center mr-2 text-xs font-bold">OM</div>
+                                    Orange Money
+                                </td>
+                                <td class="whitespace-nowrap px-3 py-4 text-sm font-medium text-gray-900">60 000 F</td>
+                                <td class="whitespace-nowrap px-3 py-4 text-sm text-gray-500">
+                                    {% include "components/dashboard/status_badge.html" with status="success" label="Payé" %}
+                                </td>
+                                <td class="relative whitespace-nowrap py-4 pl-3 pr-4 text-right text-sm font-medium sm:pr-0">
+                                    <a href="payment_detail.html">
+                                        {% include "components/dashboard/action_button.html" with action="view" text="Détails" %}
+                                    </a>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+        
+        <div class="mt-6 border-t border-gray-200 pt-4">
+            {% include "components/dashboard/pagination.html" %}
+        </div>
+    </div>
+</div>
+{% endblock %}

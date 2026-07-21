@@ -1,0 +1,99 @@
+{% extends "layouts/dashboard.html" %}
+
+{% block title %}Détail du Paiement - DEKOUWAY{% endblock %}
+
+{% block content %}
+    <div class="mb-6">
+        {% include "components/dashboard/breadcrumb.html" with level1="Paiements" level1_url="payments.html" level2="Détail" %}
+    </div>
+
+    <div class="max-w-3xl mx-auto">
+        <!-- Reçu / Facture container -->
+        <div class="bg-white border border-gray-200 rounded-2xl shadow-sm overflow-hidden">
+            <!-- Header du reçu -->
+            <div class="bg-gray-50 border-b border-gray-200 px-8 py-8 sm:flex sm:items-center sm:justify-between">
+                <div>
+                    <h2 class="text-2xl font-bold text-gray-900">Reçu de paiement</h2>
+                    <p class="text-sm text-gray-500 mt-1">Transaction #TRX-982374</p>
+                </div>
+                <div class="mt-4 sm:mt-0">
+                    <img src="https://ui-avatars.com/api/?name=D&background=8B1E24&color=fff&rounded=true&font-size=0.6" alt="Logo" class="w-12 h-12">
+                </div>
+            </div>
+
+            <!-- Corps du reçu -->
+            <div class="px-8 py-8">
+                <div class="sm:flex sm:justify-between mb-8">
+                    <div>
+                        <h3 class="text-sm font-semibold text-gray-900 mb-2">Payé par :</h3>
+                        <p class="text-sm text-gray-600">Saliou</p>
+                        <p class="text-sm text-gray-600">saliou7393@gmail.com</p>
+                    </div>
+                    <div class="mt-4 sm:mt-0 sm:text-right">
+                        <h3 class="text-sm font-semibold text-gray-900 mb-2">Date du paiement :</h3>
+                        <p class="text-sm text-gray-600">10 Août 2024</p>
+                    </div>
+                </div>
+
+                <div class="border-t border-b border-gray-100 py-6 mb-8">
+                    <h3 class="text-sm font-semibold text-gray-900 mb-4">Détails de la réservation</h3>
+                    <div class="flex items-start">
+                        <img src="https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?auto=format&fit=crop&w=150" class="w-16 h-16 rounded-md object-cover mr-4">
+                        <div>
+                            <p class="font-medium text-gray-900">Villa Teranga Saly</p>
+                            <p class="text-sm text-gray-500">Saly Portudal, Sénégal</p>
+                            <p class="text-sm text-gray-500 mt-1">12 Août 2024 - 15 Août 2024 (3 nuits)</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Montants -->
+                <table class="w-full text-sm text-left">
+                    <thead class="border-b border-gray-100 text-gray-900 font-semibold">
+                        <tr>
+                            <th class="pb-3">Description</th>
+                            <th class="pb-3 text-right">Montant</th>
+                        </tr>
+                    </thead>
+                    <tbody class="text-gray-600">
+                        <tr class="border-b border-gray-50">
+                            <td class="py-4">Hébergement (35 000 F x 3 nuits)</td>
+                            <td class="py-4 text-right">105 000 F</td>
+                        </tr>
+                        <tr class="border-b border-gray-50">
+                            <td class="py-4">Frais de service (0%)</td>
+                            <td class="py-4 text-right">0 F</td>
+                        </tr>
+                    </tbody>
+                    <tfoot>
+                        <tr class="text-lg font-bold text-gray-900">
+                            <td class="pt-6">Total payé</td>
+                            <td class="pt-6 text-right">105 000 FCFA</td>
+                        </tr>
+                    </tfoot>
+                </table>
+
+                <div class="mt-10 bg-gray-50 rounded-lg p-4 flex items-center justify-between">
+                    <div class="flex items-center">
+                        <div class="w-8 h-8 rounded bg-[#10C3F9] text-white flex items-center justify-center mr-3 font-bold text-sm">W</div>
+                        <div>
+                            <p class="text-sm font-medium text-gray-900">Payé avec Wave</p>
+                            <p class="text-xs text-gray-500">N° de référence : WAV-12345678</p>
+                        </div>
+                    </div>
+                    {% include "components/dashboard/status_badge.html" with status="pending" label="En attente" %}
+                </div>
+            </div>
+            
+            <!-- Actions -->
+            <div class="bg-gray-50 border-t border-gray-200 px-8 py-4 sm:flex sm:flex-row-reverse">
+                <button type="button" class="inline-flex w-full justify-center rounded-md bg-[#8B1E24] px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-[#6F171C] sm:ml-3 sm:w-auto">
+                    <i data-lucide="download" class="w-4 h-4 mr-2"></i> Télécharger en PDF
+                </button>
+                <button type="button" class="mt-3 inline-flex w-full justify-center rounded-md bg-white px-3 py-2 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50 sm:mt-0 sm:w-auto">
+                    Signaler un problème
+                </button>
+            </div>
+        </div>
+    </div>
+{% endblock %}

@@ -1,0 +1,47 @@
+{% extends "layouts/dashboard.html" %}
+
+{% block title %}Historique - DEKOUWAY{% endblock %}
+
+{% block page_header %}
+<div class="md:flex md:items-center md:justify-between mb-8 mt-2">
+    <div class="min-w-0 flex-1">
+        <h2 class="text-2xl font-bold leading-7 text-gray-900 sm:truncate sm:text-3xl sm:tracking-tight">
+            Historique de mon compte
+        </h2>
+        <p class="mt-1 text-sm text-gray-500">Trace de toutes vos actions (réservations, paiements, sécurité).</p>
+    </div>
+</div>
+{% endblock %}
+
+{% block content %}
+<div class="max-w-3xl mx-auto bg-white border border-gray-200 rounded-xl p-6 sm:p-8 shadow-sm">
+    <div class="flow-root">
+        <!-- Aujourd'hui -->
+        <h3 class="text-xs font-bold uppercase tracking-wider text-gray-500 mb-6">Aujourd'hui</h3>
+        <ul role="list" class="-mb-8">
+            {% include "components/dashboard/activity_card.html" with icon="calendar" user="Vous" action="avez envoyé une demande de réservation" date="il y a 2 heures" description="Villa Teranga Saly du 12 au 15 Août." icon_type="info" is_last=False %}
+            {% include "components/dashboard/activity_card.html" with icon="search" user="Vous" action="avez recherché un logement" date="il y a 3 heures" description="Recherche à Saly Portudal, 4 voyageurs." icon_type="info" is_last=True %}
+        </ul>
+        
+        <!-- Hier -->
+        <h3 class="text-xs font-bold uppercase tracking-wider text-gray-500 mt-12 mb-6">Hier</h3>
+        <ul role="list" class="-mb-8">
+            {% include "components/dashboard/activity_card.html" with icon="log-in" user="Vous" action="vous êtes connecté" date="14:32" description="Connexion depuis Dakar (Nouvel appareil)." icon_type="warning" is_last=False %}
+            {% include "components/dashboard/activity_card.html" with icon="user" user="Vous" action="avez mis à jour votre photo de profil" date="10:15" icon_type="success" is_last=True %}
+        </ul>
+
+        <!-- La semaine dernière -->
+        <h3 class="text-xs font-bold uppercase tracking-wider text-gray-500 mt-12 mb-6">La semaine dernière</h3>
+        <ul role="list" class="-mb-8">
+            {% include "components/dashboard/activity_card.html" with icon="credit-card" user="Vous" action="avez payé 60 000 FCFA" date="01 Juillet" description="Paiement pour le Studio Dakar Plateau." icon_type="success" is_last=False %}
+            {% include "components/dashboard/activity_card.html" with icon="check-circle" user="Vous" action="avez vérifié votre numéro de téléphone" date="28 Juin" icon_type="success" is_last=True %}
+        </ul>
+    </div>
+    
+    <div class="mt-12 text-center">
+        <button type="button" class="inline-flex items-center rounded-md bg-white px-3 py-2 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50">
+            Charger plus d'événements
+        </button>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,67 @@
+{% extends "layouts/dashboard.html" %}
+
+{% block title %}Sécurité - DEKOUWAY{% endblock %}
+
+{% block page_header %}
+<div class="md:flex md:items-center md:justify-between mb-8 mt-2">
+    <div class="min-w-0 flex-1">
+        <h2 class="text-2xl font-bold leading-7 text-gray-900 sm:truncate sm:text-3xl sm:tracking-tight">
+            Sécurité du Compte Partenaire
+        </h2>
+    </div>
+</div>
+{% endblock %}
+
+{% block content %}
+<div class="space-y-10 divide-y divide-gray-900/10 max-w-4xl">
+    
+    <!-- Changer mot de passe -->
+    <div class="grid grid-cols-1 gap-x-8 gap-y-8 md:grid-cols-3">
+        <div class="px-4 sm:px-0">
+            <h2 class="text-base font-semibold leading-7 text-gray-900">Mot de passe</h2>
+            <p class="mt-1 text-sm leading-6 text-gray-600">Il est recommandé de changer votre mot de passe tous les 6 mois.</p>
+        </div>
+
+        <form class="bg-white shadow-sm ring-1 ring-gray-900/5 sm:rounded-xl md:col-span-2">
+            <div class="px-4 py-6 sm:p-8">
+                <div class="grid max-w-2xl grid-cols-1 gap-x-6 gap-y-8 sm:grid-cols-6">
+                    <div class="col-span-full">
+                        <label for="current-password" class="block text-sm font-medium leading-6 text-gray-900">Mot de passe actuel</label>
+                        <div class="mt-2">
+                            <input type="password" name="current_password" id="current-password" class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-[#8B1E24] sm:text-sm sm:leading-6">
+                        </div>
+                    </div>
+
+                    <div class="col-span-full">
+                        <label for="new-password" class="block text-sm font-medium leading-6 text-gray-900">Nouveau mot de passe</label>
+                        <div class="mt-2">
+                            <input type="password" name="new_password" id="new-password" class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-[#8B1E24] sm:text-sm sm:leading-6">
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="flex items-center justify-end gap-x-6 border-t border-gray-900/10 px-4 py-4 sm:px-8">
+                <button type="submit" class="rounded-md bg-[#8B1E24] px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-[#6F171C]">Mettre à jour</button>
+            </div>
+        </form>
+    </div>
+
+    <!-- Double Authentification -->
+    <div class="grid grid-cols-1 gap-x-8 gap-y-8 md:grid-cols-3 pt-10">
+        <div class="px-4 sm:px-0">
+            <h2 class="text-base font-semibold leading-7 text-gray-900">Double Authentification (2FA)</h2>
+            <p class="mt-1 text-sm leading-6 text-gray-600">Sécurisez l'accès à vos versements avec un code SMS.</p>
+        </div>
+
+        <div class="bg-white shadow-sm ring-1 ring-gray-900/5 sm:rounded-xl md:col-span-2 p-6">
+            <div class="flex items-center justify-between">
+                <div>
+                    <h3 class="text-sm font-bold text-gray-900">Authentification par SMS</h3>
+                    <p class="text-xs text-gray-500 mt-1">Actuellement activée sur le numéro finissant par **67.</p>
+                </div>
+                <button class="rounded-md bg-white px-3 py-2 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50">Gérer</button>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

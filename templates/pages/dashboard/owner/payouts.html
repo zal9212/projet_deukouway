@@ -1,0 +1,100 @@
+{% extends "layouts/dashboard.html" %}
+
+{% block title %}Versements - DEKOUWAY{% endblock %}
+
+{% block page_header %}
+<div class="md:flex md:items-center md:justify-between mb-8 mt-2">
+    <div class="min-w-0 flex-1">
+        <h2 class="text-2xl font-bold leading-7 text-gray-900 sm:truncate sm:text-3xl sm:tracking-tight">
+            Historique des versements
+        </h2>
+        <p class="mt-1 text-sm text-gray-500">Suivez l'argent que DEKOUWAY vous a transféré sur vos comptes locaux.</p>
+    </div>
+</div>
+{% endblock %}
+
+{% block content %}
+<div class="space-y-8">
+    <!-- Solde actuel -->
+    <div class="overflow-hidden rounded-xl bg-gray-900 px-4 py-5 shadow-sm sm:p-6 text-white flex items-center justify-between">
+        <div>
+            <dt class="truncate text-sm font-medium text-gray-400">Prochain versement estimé (16 Août)</dt>
+            <dd class="mt-1 text-3xl font-bold tracking-tight text-white">85 000 FCFA</dd>
+        </div>
+        <div class="hidden sm:block">
+            <button class="inline-flex items-center rounded-md bg-white/10 px-3 py-2 text-sm font-semibold text-white hover:bg-white/20 ring-1 ring-inset ring-white/20">
+                Gérer mes comptes
+            </button>
+        </div>
+    </div>
+
+    <!-- Table des Versements -->
+    <div class="px-4 sm:px-6 lg:px-8 bg-white border border-gray-200 rounded-xl py-6 shadow-sm">
+        
+        <div class="sm:flex sm:items-center justify-between mb-6">
+            <h3 class="text-base font-semibold leading-6 text-gray-900">Transactions effectuées</h3>
+            <div class="mt-4 sm:mt-0 flex space-x-3">
+                <button class="inline-flex items-center rounded-md bg-white px-3 py-2 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50">
+                    <i data-lucide="download" class="w-4 h-4 mr-2 text-gray-400"></i> Exporter (.csv)
+                </button>
+            </div>
+        </div>
+
+        <div class="mt-4 flow-root">
+            <div class="-mx-4 -my-2 overflow-x-auto sm:-mx-6 lg:-mx-8">
+                <div class="inline-block min-w-full py-2 align-middle sm:px-6 lg:px-8">
+                    <table class="min-w-full divide-y divide-gray-300">
+                        <thead class="bg-gray-50">
+                            <tr>
+                                <th scope="col" class="py-3.5 pl-4 pr-3 text-left text-sm font-semibold text-gray-900 sm:pl-0">Réservation source</th>
+                                <th scope="col" class="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">Date du versement</th>
+                                <th scope="col" class="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">Compte destination</th>
+                                <th scope="col" class="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">Montant Net</th>
+                                <th scope="col" class="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">Statut</th>
+                            </tr>
+                        </thead>
+                        <tbody class="divide-y divide-gray-200 bg-white">
+                            <!-- Versement 1 -->
+                            <tr>
+                                <td class="whitespace-nowrap py-4 pl-4 pr-3 text-sm font-medium text-gray-900 sm:pl-0">
+                                    <span class="text-[#8B1E24]">#RES-2309</span>
+                                    <div class="text-xs text-gray-500 font-normal mt-0.5">Villa Teranga Saly</div>
+                                </td>
+                                <td class="whitespace-nowrap px-3 py-4 text-sm text-gray-500">01 Août 2024</td>
+                                <td class="whitespace-nowrap px-3 py-4 text-sm text-gray-500 flex items-center">
+                                    <div class="w-6 h-6 rounded bg-[#10C3F9] text-white flex items-center justify-center mr-2 text-xs font-bold">W</div>
+                                    Wave (***78)
+                                </td>
+                                <td class="whitespace-nowrap px-3 py-4 text-sm font-medium text-gray-900">75 000 F</td>
+                                <td class="whitespace-nowrap px-3 py-4 text-sm text-gray-500">
+                                    {% include "components/dashboard/status_badge.html" with status="success" label="Transféré" %}
+                                </td>
+                            </tr>
+                            <!-- Versement 2 -->
+                            <tr>
+                                <td class="whitespace-nowrap py-4 pl-4 pr-3 text-sm font-medium text-gray-900 sm:pl-0">
+                                    <span class="text-[#8B1E24]">#RES-1902</span>
+                                    <div class="text-xs text-gray-500 font-normal mt-0.5">Studio Dakar Plateau</div>
+                                </td>
+                                <td class="whitespace-nowrap px-3 py-4 text-sm text-gray-500">15 Juil 2024</td>
+                                <td class="whitespace-nowrap px-3 py-4 text-sm text-gray-500 flex items-center">
+                                    <div class="w-6 h-6 rounded bg-[#FF6600] text-white flex items-center justify-center mr-2 text-xs font-bold">OM</div>
+                                    Orange Money (***12)
+                                </td>
+                                <td class="whitespace-nowrap px-3 py-4 text-sm font-medium text-gray-900">45 000 F</td>
+                                <td class="whitespace-nowrap px-3 py-4 text-sm text-gray-500">
+                                    {% include "components/dashboard/status_badge.html" with status="success" label="Transféré" %}
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+        
+        <div class="mt-6 border-t border-gray-200 pt-4">
+            {% include "components/dashboard/pagination.html" %}
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,119 @@
+{% extends "layouts/dashboard.html" %}
+
+{% block title %}Détail Demande - DEKOUWAY{% endblock %}
+
+{% block content %}
+    <div class="mb-6">
+        {% include "components/dashboard/breadcrumb.html" with level1="Demandes" level1_url="requests.html" level2="Détail" %}
+    </div>
+
+    <div class="md:flex md:items-center md:justify-between mb-8 mt-2">
+        <div class="min-w-0 flex-1 flex items-center gap-4">
+            <h2 class="text-2xl font-bold leading-7 text-gray-900 sm:truncate sm:text-3xl sm:tracking-tight">
+                Demande #REQ-9821
+            </h2>
+            {% include "components/dashboard/status_badge.html" with status="pending" label="En attente de votre réponse" %}
+        </div>
+        <div class="mt-4 flex md:ml-4 md:mt-0 space-x-3">
+            <button class="inline-flex items-center rounded-md bg-white px-3 py-2 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50">Contacter DEKOUWAY</button>
+            <button class="inline-flex items-center rounded-md bg-red-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-red-500">Refuser</button>
+            <button class="inline-flex items-center rounded-md bg-green-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-green-500">Accepter la demande</button>
+        </div>
+    </div>
+
+    <!-- Timeline d'Approbation SuperAdmin -> Owner -->
+    <div class="mb-8 bg-gray-50 p-6 rounded-xl border border-gray-200">
+        <h3 class="text-sm font-semibold text-gray-900 mb-4">Statut d'approbation</h3>
+        <ol class="flex items-center w-full">
+            <li class="flex w-full items-center text-green-600 after:content-[''] after:w-full after:h-1 after:border-b after:border-green-600 after:border-4 after:inline-block">
+                <span class="flex items-center justify-center w-8 h-8 bg-green-600 rounded-full lg:h-10 lg:w-10 shrink-0">
+                    <i data-lucide="check" class="w-5 h-5 text-white"></i>
+                </span>
+                <span class="absolute mt-14 text-sm font-medium text-gray-900">Demande Client</span>
+            </li>
+            <li class="flex w-full items-center text-green-600 after:content-[''] after:w-full after:h-1 after:border-b after:border-green-600 after:border-4 after:inline-block">
+                <span class="flex items-center justify-center w-8 h-8 bg-green-600 rounded-full lg:h-10 lg:w-10 shrink-0">
+                    <i data-lucide="check" class="w-5 h-5 text-white"></i>
+                </span>
+                <span class="absolute mt-14 text-sm font-medium text-gray-900">Vérifié par DEKOUWAY</span>
+            </li>
+            <li class="flex items-center text-[#8B1E24]">
+                <span class="flex items-center justify-center w-8 h-8 bg-[#8B1E24] rounded-full lg:h-10 lg:w-10 shrink-0 ring-4 ring-white">
+                    <i data-lucide="clock" class="w-5 h-5 text-white"></i>
+                </span>
+                <span class="absolute mt-14 text-sm font-medium text-[#8B1E24] right-0">Votre Validation</span>
+            </li>
+        </ol>
+    </div>
+
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+        
+        <!-- Informations Logement & Demande -->
+        <div class="lg:col-span-2 space-y-6">
+            <div class="bg-white border border-gray-200 rounded-xl p-6 shadow-sm">
+                <div class="flex items-start gap-4">
+                    <img src="https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?auto=format&fit=crop&w=200" alt="Logement" class="h-20 w-24 object-cover rounded-md">
+                    <div>
+                        <h3 class="text-xl font-bold text-gray-900">Villa Teranga Saly</h3>
+                        <p class="text-gray-500 text-sm mt-1">Saly Portudal</p>
+                    </div>
+                </div>
+                
+                <div class="mt-6 grid grid-cols-2 gap-6 border-t border-gray-100 pt-6">
+                    <div>
+                        <p class="text-sm text-gray-500">Arrivée prévue</p>
+                        <p class="font-semibold text-gray-900">Lun 12 Août 2024</p>
+                    </div>
+                    <div>
+                        <p class="text-sm text-gray-500">Départ prévu</p>
+                        <p class="font-semibold text-gray-900">Jeu 15 Août 2024</p>
+                    </div>
+                    <div>
+                        <p class="text-sm text-gray-500">Durée</p>
+                        <p class="font-semibold text-gray-900">3 nuits</p>
+                    </div>
+                    <div>
+                        <p class="text-sm text-gray-500">Voyageurs</p>
+                        <p class="font-semibold text-gray-900">4 adultes, 0 enfant</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Message du SuperAdmin -->
+            <div class="bg-blue-50 border border-blue-100 rounded-xl p-6 shadow-sm">
+                <h4 class="font-semibold text-blue-900 mb-2 flex items-center">
+                    <i data-lucide="shield-check" class="w-5 h-5 mr-2"></i> Note de DEKOUWAY
+                </h4>
+                <p class="text-sm text-blue-800">"Bonjour Ousmane, ce client a un profil complet et vérifié. Il vient pour des vacances en famille. Les dates semblent libres sur votre calendrier."</p>
+            </div>
+        </div>
+
+        <!-- Détails Financiers (Vue Propriétaire) -->
+        <div class="space-y-6">
+            <div class="bg-white border border-gray-200 rounded-xl p-6 shadow-sm">
+                <h3 class="font-bold text-gray-900 mb-4">Calcul du revenu</h3>
+                <div class="space-y-3 text-sm">
+                    <div class="flex justify-between text-gray-600">
+                        <span>Montant brut (35 000 x 3)</span>
+                        <span>105 000 F</span>
+                    </div>
+                    <div class="flex justify-between text-red-600">
+                        <span>Commission DEKOUWAY (-15%)</span>
+                        <span>-15 750 F</span>
+                    </div>
+                    <div class="flex justify-between text-red-600 border-b border-gray-200 pb-3">
+                        <span>Taxes applicables</span>
+                        <span>-4 250 F</span>
+                    </div>
+                    <div class="flex justify-between font-bold text-lg text-gray-900 pt-1">
+                        <span>Revenu Net estimé</span>
+                        <span class="text-green-700">85 000 F</span>
+                    </div>
+                </div>
+                <div class="mt-4 text-xs text-gray-500">
+                    <i data-lucide="info" class="w-3 h-3 inline mr-1"></i> Ce montant sera versé sur votre compte Wave (***78) 48h après l'arrivée du client.
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}

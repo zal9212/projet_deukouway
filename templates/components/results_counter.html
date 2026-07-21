@@ -1,0 +1,19 @@
+<div class="py-4">
+    <h1 class="text-xl sm:text-2xl font-bold text-gray-900">
+        {% if properties %}
+            {{ properties|length }} logements
+        {% else %}
+            Plus de 300 logements
+        {% endif %}
+        {% if request.GET.city %}
+            à {{ request.GET.city|title }}
+        {% endif %}
+    </h1>
+    {% if request.GET.neighborhood or request.GET.type %}
+        <p class="text-sm text-gray-500 mt-1">
+            Filtres actifs : 
+            {% if request.GET.neighborhood %} {{ request.GET.neighborhood|title }} {% endif %}
+            {% if request.GET.type %} • {{ request.GET.type|title }} {% endif %}
+        </p>
+    {% endif %}
+</div>

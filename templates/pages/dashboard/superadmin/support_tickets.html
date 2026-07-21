@@ -1,0 +1,106 @@
+{% extends "layouts/dashboard.html" %}
+
+{% block title %}Tickets Support - DEKOUWAY ERP{% endblock %}
+
+{% block page_header %}
+<div class="md:flex md:items-center md:justify-between mb-8 mt-2">
+    <div class="min-w-0 flex-1">
+        <h2 class="text-2xl font-bold leading-7 text-gray-900 sm:truncate sm:text-3xl sm:tracking-tight">
+            Support Client & Propriétaire
+        </h2>
+        <p class="mt-1 text-sm text-gray-500">Messagerie interne centralisée. Vous répondez aux questions de vos utilisateurs.</p>
+    </div>
+</div>
+{% endblock %}
+
+{% block content %}
+<div class="h-[calc(100vh-14rem)] flex overflow-hidden bg-white border border-gray-200 rounded-xl shadow-sm">
+    
+    <!-- Liste des tickets (Sidebar) -->
+    <div class="flex flex-col w-1/3 min-w-[300px] border-r border-gray-200 bg-white">
+        
+        <div class="p-4 border-b border-gray-200">
+            <div class="relative">
+                <i data-lucide="search" class="absolute left-3 top-1/2 -mt-2 h-4 w-4 text-gray-400"></i>
+                <input type="text" class="block w-full rounded-md border-0 py-1.5 pl-10 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-[#8B1E24] sm:text-sm sm:leading-6" placeholder="Rechercher ticket...">
+            </div>
+            <div class="flex gap-2 mt-4">
+                <button class="px-3 py-1 bg-gray-900 text-white text-xs font-semibold rounded-full">Ouverts</button>
+                <button class="px-3 py-1 bg-gray-100 text-gray-700 hover:bg-gray-200 text-xs font-semibold rounded-full">Fermés</button>
+            </div>
+        </div>
+
+        <ul role="list" class="flex-1 overflow-y-auto divide-y divide-gray-100">
+            <!-- Ticket Propriétaire -->
+            <li class="relative px-6 py-5 hover:bg-gray-50 bg-blue-50/50 cursor-pointer">
+                <div class="flex justify-between space-x-3">
+                    <div class="min-w-0 flex-1">
+                        <div class="flex items-center gap-2">
+                            <span class="flex h-2 w-2 rounded-full bg-blue-600"></span>
+                            <span class="inline-flex items-center rounded-md bg-gray-100 px-1.5 py-0.5 text-[10px] font-medium text-gray-600">Propriétaire</span>
+                            <p class="truncate text-sm font-semibold text-gray-900">Mamadou Ba</p>
+                        </div>
+                        <p class="truncate text-sm text-gray-500 mt-1">Sujet : Validation compte</p>
+                    </div>
+                    <time class="flex-shrink-0 whitespace-nowrap text-xs text-gray-500">10:42</time>
+                </div>
+            </li>
+
+            <!-- Ticket Client -->
+            <li class="relative px-6 py-5 hover:bg-gray-50 cursor-pointer">
+                <div class="flex justify-between space-x-3">
+                    <div class="min-w-0 flex-1">
+                        <div class="flex items-center gap-2">
+                            <span class="inline-flex items-center rounded-md bg-green-50 px-1.5 py-0.5 text-[10px] font-medium text-green-700 ring-1 ring-inset ring-green-600/20">Client</span>
+                            <p class="truncate text-sm font-medium text-gray-900">Fatou Diagne</p>
+                        </div>
+                        <p class="truncate text-sm text-gray-500 mt-1">Sujet : Comment payer par Wave ?</p>
+                    </div>
+                    <time class="flex-shrink-0 whitespace-nowrap text-xs text-gray-500">Hier</time>
+                </div>
+            </li>
+        </ul>
+    </div>
+
+    <!-- Zone de discussion ERP -->
+    <div class="flex-1 flex flex-col bg-gray-50/50">
+        <div class="flex items-center justify-between px-6 py-4 border-b border-gray-200 bg-white">
+            <div class="flex items-center">
+                <div class="h-10 w-10 rounded-full bg-gray-200 flex items-center justify-center font-bold text-gray-600 text-sm">MB</div>
+                <div class="ml-4">
+                    <h2 class="text-sm font-bold text-gray-900">Mamadou Ba <span class="font-normal text-xs text-gray-500 ml-2">(Propriétaire)</span></h2>
+                    <p class="text-xs text-gray-500">Ticket #T-8472 • En cours de traitement par : Vous</p>
+                </div>
+            </div>
+            <div class="flex items-center gap-2">
+                <a href="owners.html" class="inline-flex items-center rounded-md bg-white px-3 py-2 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50">Voir fiche</a>
+                <button class="inline-flex items-center rounded-md bg-[#8B1E24] px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-[#6F171C]">Clôturer Ticket</button>
+            </div>
+        </div>
+
+        <div class="flex-1 overflow-y-auto px-6 py-6 space-y-6">
+            <!-- Message User -->
+            <div class="flex justify-start">
+                <div class="flex items-end">
+                    <div class="max-w-lg bg-white border border-gray-200 rounded-2xl rounded-bl-none px-5 py-3 shadow-sm">
+                        <p class="text-sm text-gray-800">Bonjour, j'ai soumis ma CNI hier, pouvez-vous me dire quand mon compte sera activé pour que je puisse publier mes annonces ?</p>
+                        <span class="text-[10px] text-gray-400 mt-2 block">10:42</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Saisie -->
+        <div class="px-6 py-4 bg-white border-t border-gray-200">
+            <div class="flex items-end gap-3">
+                <div class="relative flex-grow">
+                    <textarea rows="2" class="block w-full resize-none rounded-md border-0 py-2.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-[#8B1E24] sm:text-sm sm:leading-6" placeholder="Répondre en tant que Support DEKOUWAY..."></textarea>
+                </div>
+                <button type="button" class="inline-flex items-center justify-center rounded-md bg-[#8B1E24] px-4 py-2 text-sm font-semibold text-white shadow-sm hover:bg-[#6F171C]">
+                    Envoyer
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

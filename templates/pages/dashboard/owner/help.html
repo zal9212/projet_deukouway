@@ -1,0 +1,74 @@
+{% extends "layouts/dashboard.html" %}
+
+{% block title %}Centre d'Aide - DEKOUWAY{% endblock %}
+
+{% block page_header %}
+<div class="md:flex md:items-center md:justify-between mb-8 mt-2">
+    <div class="min-w-0 flex-1">
+        <h2 class="text-2xl font-bold leading-7 text-gray-900 sm:truncate sm:text-3xl sm:tracking-tight">
+            Assistance Partenaire
+        </h2>
+    </div>
+</div>
+{% endblock %}
+
+{% block content %}
+<div class="space-y-8">
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <!-- FAQ Section -->
+        <div class="bg-white border border-gray-200 rounded-xl p-6 shadow-sm">
+            <div class="flex items-center gap-3 mb-6">
+                <div class="w-10 h-10 rounded-full bg-blue-50 flex items-center justify-center">
+                    <i data-lucide="help-circle" class="h-6 w-6 text-blue-600"></i>
+                </div>
+                <h3 class="text-lg font-bold text-gray-900">Questions Fréquentes</h3>
+            </div>
+            
+            <dl class="space-y-4" x-data="{ active: null }">
+                <div class="border border-gray-200 rounded-lg">
+                    <button @click="active !== 1 ? active = 1 : active = null" class="flex w-full items-start justify-between text-left p-4 focus:outline-none">
+                        <span class="text-sm font-semibold leading-7 text-gray-900">Combien de temps prend la validation d'un logement ?</span>
+                        <span class="ml-6 flex h-7 items-center">
+                            <i data-lucide="chevron-down" class="h-5 w-5 text-gray-500 transition-transform" :class="active === 1 ? 'rotate-180' : ''"></i>
+                        </span>
+                    </button>
+                    <dd class="p-4 pt-0 text-sm leading-7 text-gray-600" x-show="active === 1" x-collapse x-cloak>
+                        Nos SuperAdmins analysent votre logement sous 48h ouvrées. Si des éléments manquent, vous recevrez un message dans l'onglet Messages.
+                    </dd>
+                </div>
+                
+                <div class="border border-gray-200 rounded-lg">
+                    <button @click="active !== 2 ? active = 2 : active = null" class="flex w-full items-start justify-between text-left p-4 focus:outline-none">
+                        <span class="text-sm font-semibold leading-7 text-gray-900">Quand reçois-je mon argent ?</span>
+                        <span class="ml-6 flex h-7 items-center">
+                            <i data-lucide="chevron-down" class="h-5 w-5 text-gray-500 transition-transform" :class="active === 2 ? 'rotate-180' : ''"></i>
+                        </span>
+                    </button>
+                    <dd class="p-4 pt-0 text-sm leading-7 text-gray-600" x-show="active === 2" x-collapse x-cloak>
+                        DEKOUWAY vous reverse votre montant net (moins la commission) 48h après l'entrée du client dans les lieux, sur Wave ou Orange Money.
+                    </dd>
+                </div>
+            </dl>
+        </div>
+
+        <!-- Contact Support -->
+        <div class="bg-[#8B1E24] rounded-xl p-6 shadow-sm text-white flex flex-col justify-between">
+            <div>
+                <h3 class="text-xl font-bold mb-2">Besoin d'aide supplémentaire ?</h3>
+                <p class="text-[#8B1E24] text-red-100 text-sm">Nos conseillers partenaires sont disponibles 7j/7 pour vous accompagner.</p>
+            </div>
+            
+            <div class="mt-8">
+                <a href="messages.html" class="w-full block text-center rounded-md bg-white px-3 py-3 text-sm font-semibold text-[#8B1E24] shadow-sm hover:bg-gray-50">
+                    Ouvrir un ticket
+                </a>
+                <p class="text-center text-xs text-red-200 mt-4">Ou appelez le +221 33 000 00 00 (Lun-Ven 9h-18h)</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% block extra_scripts %}
+<script defer src="https://cdn.jsdelivr.net/npm/@alpinejs/collapse@3.x.x/dist/cdn.min.js"></script>
+{% endblock %}
+{% endblock %}

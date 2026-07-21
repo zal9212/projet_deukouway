@@ -1,0 +1,125 @@
+{% extends "layouts/dashboard.html" %}
+
+{% block title %}Détail de la Réservation - DEKOUWAY{% endblock %}
+
+{% block content %}
+    <div class="mb-6">
+        {% include "components/dashboard/breadcrumb.html" with level1="Mes Réservations" level1_url="reservations.html" level2="Détail" %}
+    </div>
+
+    <div class="md:flex md:items-center md:justify-between mb-8 mt-2">
+        <div class="min-w-0 flex-1 flex items-center gap-4">
+            <h2 class="text-2xl font-bold leading-7 text-gray-900 sm:truncate sm:text-3xl sm:tracking-tight">
+                Réservation #RES-2024-001
+            </h2>
+            {% include "components/dashboard/status_badge.html" with status="pending" label="En attente de validation" %}
+        </div>
+        <div class="mt-4 flex md:ml-4 md:mt-0 space-x-3">
+            <button class="inline-flex items-center rounded-md bg-white px-3 py-2 text-sm font-semibold text-red-600 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50">Annuler</button>
+            <button class="inline-flex items-center rounded-md bg-[#8B1E24] px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-[#6F171C]">Contacter le propriétaire</button>
+        </div>
+    </div>
+
+    <!-- Timeline du Workflow -->
+    <div class="mb-8 overflow-x-auto pb-4">
+        <ol class="flex items-center w-full min-w-[600px]">
+            <li class="flex w-full items-center text-[#8B1E24] after:content-[''] after:w-full after:h-1 after:border-b after:border-[#8B1E24] after:border-4 after:inline-block">
+                <span class="flex items-center justify-center w-8 h-8 bg-[#8B1E24] rounded-full lg:h-10 lg:w-10 shrink-0">
+                    <i data-lucide="check" class="w-5 h-5 text-white"></i>
+                </span>
+                <span class="absolute mt-14 text-sm font-medium">Demande</span>
+            </li>
+            <li class="flex w-full items-center text-gray-400 after:content-[''] after:w-full after:h-1 after:border-b after:border-gray-200 after:border-4 after:inline-block">
+                <span class="flex items-center justify-center w-8 h-8 bg-gray-100 rounded-full lg:h-10 lg:w-10 shrink-0 ring-4 ring-white">
+                    <i data-lucide="clock" class="w-5 h-5 text-gray-500"></i>
+                </span>
+                <span class="absolute mt-14 text-sm font-medium text-gray-900">Validation</span>
+            </li>
+            <li class="flex w-full items-center text-gray-400 after:content-[''] after:w-full after:h-1 after:border-b after:border-gray-200 after:border-4 after:inline-block">
+                <span class="flex items-center justify-center w-8 h-8 bg-gray-100 rounded-full lg:h-10 lg:w-10 shrink-0">
+                    <i data-lucide="credit-card" class="w-5 h-5 text-gray-500"></i>
+                </span>
+                <span class="absolute mt-14 text-sm font-medium">Paiement</span>
+            </li>
+            <li class="flex items-center text-gray-400">
+                <span class="flex items-center justify-center w-8 h-8 bg-gray-100 rounded-full lg:h-10 lg:w-10 shrink-0">
+                    <i data-lucide="home" class="w-5 h-5 text-gray-500"></i>
+                </span>
+                <span class="absolute mt-14 text-sm font-medium right-0">Séjour</span>
+            </li>
+        </ol>
+    </div>
+
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+        <!-- Informations Réservation -->
+        <div class="lg:col-span-2 space-y-8">
+            <div class="bg-white border border-gray-200 rounded-xl overflow-hidden shadow-sm">
+                <div class="h-48 w-full bg-gray-200">
+                    <img src="https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?auto=format&fit=crop&w=800" alt="Logement" class="w-full h-full object-cover">
+                </div>
+                <div class="p-6">
+                    <h3 class="text-xl font-bold text-gray-900">Villa Teranga Saly</h3>
+                    <p class="text-gray-500 text-sm mt-1 flex items-center"><i data-lucide="map-pin" class="w-4 h-4 mr-1"></i> Saly Portudal, Route de Ngaparou</p>
+                    
+                    <div class="mt-6 grid grid-cols-2 gap-6 border-t border-b border-gray-100 py-6">
+                        <div>
+                            <p class="text-sm text-gray-500">Arrivée</p>
+                            <p class="font-semibold text-gray-900">Lun 12 Août 2024</p>
+                            <p class="text-sm text-gray-500">14:00 - 18:00</p>
+                        </div>
+                        <div>
+                            <p class="text-sm text-gray-500">Départ</p>
+                            <p class="font-semibold text-gray-900">Jeu 15 Août 2024</p>
+                            <p class="text-sm text-gray-500">Avant 11:00</p>
+                        </div>
+                        <div>
+                            <p class="text-sm text-gray-500">Durée</p>
+                            <p class="font-semibold text-gray-900">3 nuits</p>
+                        </div>
+                        <div>
+                            <p class="text-sm text-gray-500">Voyageurs</p>
+                            <p class="font-semibold text-gray-900">4 voyageurs</p>
+                        </div>
+                    </div>
+
+                    <div class="mt-6">
+                        <h4 class="font-semibold text-gray-900 mb-2">Hôte</h4>
+                        <div class="flex items-center gap-4">
+                            <img src="https://ui-avatars.com/api/?name=Ousmane+Fall" class="w-12 h-12 rounded-full" alt="Hôte">
+                            <div>
+                                <p class="font-semibold text-gray-900">Ousmane Fall</p>
+                                <p class="text-sm text-gray-500">Membre depuis 2023</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Détails de paiement -->
+        <div class="space-y-6">
+            <div class="bg-white border border-gray-200 rounded-xl p-6 shadow-sm">
+                <h3 class="font-bold text-gray-900 mb-4">Détail du prix</h3>
+                <div class="space-y-3 text-sm">
+                    <div class="flex justify-between text-gray-600">
+                        <span>35 000 F x 3 nuits</span>
+                        <span>105 000 F</span>
+                    </div>
+                    <div class="flex justify-between text-gray-600">
+                        <span>Frais de service (0%)</span>
+                        <span>0 F</span>
+                    </div>
+                    <div class="border-t border-gray-200 pt-3 flex justify-between font-bold text-lg text-gray-900">
+                        <span>Total (FCFA)</span>
+                        <span>105 000 F</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="bg-white border border-gray-200 rounded-xl p-6 shadow-sm">
+                <h3 class="font-bold text-gray-900 mb-4">Documents</h3>
+                {% include "components/dashboard/empty_state.html" with title="Aucun document" description="La facture sera disponible une fois le paiement validé." icon="file-text" %}
+            </div>
+        </div>
+    </div>
+{% endblock %}

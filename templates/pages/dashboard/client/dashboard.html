@@ -1,0 +1,121 @@
+{% extends "layouts/dashboard.html" %}
+
+{% block title %}Mon Dashboard - DEKOUWAY{% endblock %}
+
+{% block page_header %}
+<div class="md:flex md:items-center md:justify-between mb-8 mt-2">
+    <div class="min-w-0 flex-1">
+        <h2 class="text-2xl font-bold leading-7 text-gray-900 sm:truncate sm:text-3xl sm:tracking-tight">
+            Bonjour, Saliou 👋
+        </h2>
+        <p class="mt-1 text-sm text-gray-500">
+            Bienvenue sur votre espace locataire.
+        </p>
+    </div>
+    
+    <div class="mt-4 flex md:ml-4 md:mt-0">
+        <a href="/" class="inline-flex items-center rounded-md bg-[#8B1E24] px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-[#6F171C] transition-colors focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#8B1E24]">
+            <i data-lucide="search" class="h-4 w-4 mr-1.5"></i>
+            Trouver un logement
+        </a>
+    </div>
+</div>
+{% endblock %}
+
+{% block content %}
+<div class="space-y-8">
+
+    <!-- Section 1 : KPIs -->
+    <section>
+        {% extends "components/dashboard/kpi_grid.html" %}
+        {% block kpi_cards %}
+            {% include "components/dashboard/stats_card.html" with title="Réservations actives" value="1" icon="calendar-check" link_text="Voir mes réservations" link_url="reservations.html" %}
+            {% include "components/dashboard/stats_card.html" with title="Logements en favoris" value="5" icon="heart" link_text="Gérer mes favoris" link_url="favorites.html" %}
+            {% include "components/dashboard/stats_card.html" with title="Dépenses ce mois" value="150 000 F" icon="credit-card" link_text="Historique des paiements" link_url="payments.html" %}
+            {% include "components/dashboard/stats_card.html" with title="Documents" value="2" icon="file-text" link_text="Voir mes factures" link_url="documents.html" %}
+        {% endblock %}
+    </section>
+
+    <div class="grid grid-cols-1 gap-8 lg:grid-cols-3">
+        <!-- Section 2 : Colonne Principale (Dernières Réservations) -->
+        <div class="lg:col-span-2 space-y-8">
+            <section class="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
+                <div class="border-b border-gray-200 px-6 py-5 flex items-center justify-between">
+                    <h3 class="text-base font-semibold leading-6 text-gray-900">Prochain séjour</h3>
+                    <a href="reservations.html" class="text-sm font-medium text-[#8B1E24] hover:text-[#6F171C]">Tout voir</a>
+                </div>
+                <div class="p-6">
+                    <div class="flex items-start gap-4">
+                        <img src="https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?auto=format&fit=crop&q=80&w=300" alt="Villa" class="h-24 w-32 object-cover rounded-lg">
+                        <div class="flex-1">
+                            <div class="flex items-center justify-between">
+                                <h4 class="text-lg font-bold text-gray-900">Villa Teranga Saly</h4>
+                                {% include "components/dashboard/status_badge.html" with status="approved" label="Confirmée" %}
+                            </div>
+                            <p class="text-sm text-gray-500 mt-1"><i data-lucide="map-pin" class="inline h-3 w-3 mr-1"></i> Saly Portudal, Sénégal</p>
+                            <div class="mt-3 flex items-center gap-4 text-sm text-gray-700">
+                                <div><i data-lucide="calendar" class="inline h-4 w-4 mr-1 text-gray-400"></i> 12 - 15 Août 2024</div>
+                                <div><i data-lucide="users" class="inline h-4 w-4 mr-1 text-gray-400"></i> 4 voyageurs</div>
+                            </div>
+                            <div class="mt-4">
+                                <a href="reservation_detail.html" class="text-sm font-medium text-[#8B1E24] hover:underline">Voir les détails</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+            
+            <!-- Favoris récents -->
+            <section>
+                {% include "components/dashboard/section_title.html" with title="Ajoutés récemment aux favoris" %}
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <!-- Favori 1 -->
+                    <div class="group relative flex items-center gap-x-4 rounded-xl border border-gray-200 bg-white p-4 shadow-sm hover:shadow-md transition-shadow">
+                        <img src="https://images.unsplash.com/photo-1512917774080-9991f1c4c750?auto=format&fit=crop&w=150" alt="" class="h-16 w-16 rounded-lg object-cover">
+                        <div class="flex-1">
+                            <h4 class="text-sm font-semibold text-gray-900"><a href="favorites.html"><span class="absolute inset-0"></span>Appartement Dakar Plateau</a></h4>
+                            <p class="text-xs text-gray-500 mt-1">Dakar, Centre-ville</p>
+                            <p class="text-xs font-bold text-gray-900 mt-1">45 000 F / nuit</p>
+                        </div>
+                    </div>
+                    <!-- Favori 2 -->
+                    <div class="group relative flex items-center gap-x-4 rounded-xl border border-gray-200 bg-white p-4 shadow-sm hover:shadow-md transition-shadow">
+                        <img src="https://images.unsplash.com/photo-1493809842364-78817add7ffb?auto=format&fit=crop&w=150" alt="" class="h-16 w-16 rounded-lg object-cover">
+                        <div class="flex-1">
+                            <h4 class="text-sm font-semibold text-gray-900"><a href="favorites.html"><span class="absolute inset-0"></span>Studio Almadies</a></h4>
+                            <p class="text-xs text-gray-500 mt-1">Dakar, Almadies</p>
+                            <p class="text-xs font-bold text-gray-900 mt-1">30 000 F / nuit</p>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </div>
+
+        <!-- Section 3 : Colonne Droite (Actions rapides & Activité) -->
+        <div class="space-y-8">
+            <!-- Actions Rapides -->
+            <section>
+                <h3 class="text-sm font-semibold leading-6 text-gray-900 mb-4">Actions Rapides</h3>
+                <div class="grid grid-cols-1 gap-4">
+                    {% include "components/dashboard/quick_action.html" with title="Mettre à jour mon profil" description="Ajouter une photo ou vérifier votre téléphone" icon="user-check" link_url="profile.html" %}
+                    {% include "components/dashboard/quick_action.html" with title="Télécharger facture" description="Dernier paiement : 105 000 F" icon="download" link_url="payment_detail.html" %}
+                </div>
+            </section>
+
+            <!-- Activité Récente (Historique) -->
+            <section class="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
+                <div class="flex items-center justify-between mb-6">
+                    <h3 class="text-base font-semibold leading-6 text-gray-900">Activité récente</h3>
+                    <a href="history.html" class="text-sm font-medium text-[#8B1E24]">Historique</a>
+                </div>
+                
+                <div class="flow-root">
+                    {% include "components/dashboard/activity_card.html" with icon="calendar" user="Vous" action="avez réservé Villa Teranga Saly" date="il y a 2 jours" description="En attente de validation par le propriétaire." icon_type="info" is_last=False %}
+                    {% include "components/dashboard/activity_card.html" with icon="heart" user="Vous" action="avez ajouté Studio Almadies aux favoris" date="il y a 3 jours" icon_type="success" is_last=False %}
+                    {% include "components/dashboard/activity_card.html" with icon="shield-check" user="Vous" action="avez vérifié votre adresse email" date="il y a 5 jours" icon_type="success" is_last=True %}
+                </div>
+            </section>
+        </div>
+    </div>
+</div>
+{% endblock %}

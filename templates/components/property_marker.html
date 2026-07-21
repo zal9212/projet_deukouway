@@ -1,0 +1,18 @@
+<!-- Ce template est utilisé par Leaflet (L.divIcon) pour générer les marqueurs sur la carte -->
+<template id="property-marker-template">
+    <div class="property-marker flex items-center justify-center px-3 py-1.5 bg-white border border-gray-300 rounded-full shadow-md text-sm font-bold text-gray-900 transition-transform duration-200 hover:scale-110 hover:bg-gray-900 hover:text-white cursor-pointer relative z-10 whitespace-nowrap group"
+         data-property-id="[[id]]">
+        <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="mr-1.5 text-[#8B1E24] group-hover:text-white transition-colors"><path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"/><circle cx="12" cy="10" r="3"/></svg>
+        <span>[[price]]</span>
+    </div>
+</template>
+
+<style>
+    /* Style injecté quand le marqueur est actif (survolé dans la liste) */
+    .property-marker.active {
+        background-color: #111827; /* gray-900 */
+        color: white;
+        transform: scale(1.1);
+        z-index: 50;
+    }
+</style>
