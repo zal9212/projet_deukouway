@@ -3,7 +3,7 @@ from django.utils import timezone
 from decimal import Decimal
 from apps.accounts.models import User
 from apps.reservations.models import Reservation
-from apps.payments.models import Payment, Commission, Payout, Invoice, Refund, PaymentHistory
+from apps.payments.models import Payment, Commission, Payout, Invoice, Refund, PaymentHistory, PlatformSettings
 from apps.payments.choices import PaymentStatusChoices, PayoutStatusChoices
 from apps.payments.services.exceptions import PaymentAlreadyCompleted, InvalidAmount, PayoutAlreadyProcessed
 import logging
@@ -14,8 +14,10 @@ logger = logging.getLogger(__name__)
 class PaymentService:
 
     @staticmethod
-    def calculate_commission(amount: Decimal, percentage: Decimal = Decimal('15.00')) -> Decimal:
+    def calculate_commission(amount: Decimal, percentage: Decimal = None) -> Decimal:
         """Calcule la commission DEKOUWAY à partir d'un montant de paiement."""
+        if percentage is None:
+            percentage = PlatformSettings.load().commission_percentage
         return (amount * percentage / Decimal('100')).quantize(Decimal('0.01'))
 
     @staticmethod
@@ -65,14 +67,19 @@ class PaymentService:
 
     @staticmethod
     @transaction.atomic
-    def create_commission(payment: Payment, percentage: Decimal = Decimal('15.00')) -> Commission:
-        amount = PaymentService.calculate_commission(payment.amount, percentage)
-        
+    def create_commission(payment: Payment, percentage: Decimal = None) -> Commission:
+        if percentage is None:
+            percentage = PlatformSettings.load().commission_percentage
+        # Le tarif de la réservation (hors frais de service client) sert de base à la commission.
+        base_amount = payment.reservation.total_price
+        amount = PaymentService.calculate_commission(base_amount, percentage)
+        service_fee = payment.amount - base_amount
+
         commission = Commission.objects.create(
             payment=payment,
             percentage_applied=percentage,
             amount=amount,
-            service_fee=Decimal('0.00')
+            service_fee=service_fee
         )
         logger.info(f"Commission créée : {commission.id} pour le paiement {payment.id}")
         return commission
@@ -89,7 +96,7 @@ class PaymentService:
         if not commission:
             raise Exception("La commission doit être calculée avant le reversement.")
             
-        payout_amount = payment.amount - commission.amount
+        payout_amount = payment.amount - commission.amount - commission.service_fee
         
         payout = Payout.objects.create(
             owner=owner,
@@ -117,25 +124,25 @@ class PaymentService:
     @staticmethod
     @transaction.atomic
     def refund_payment(payment: Payment, amount: Decimal, reason: str) -> Refund:
-        if payment.status != PaymentStatusChoices.COMPLETED:
+        if payment.status != PaymentStatusChoices.SUCCESS:
             raise Exception("Impossible de rembourser un paiement non terminé.")
-            
+
         refund = Refund.objects.create(
             payment=payment,
             amount=amount,
             reason=reason,
-            status=PaymentStatusChoices.COMPLETED,
+            status=PaymentStatusChoices.SUCCESS,
             gateway_transaction_id=str(uuid.uuid4())
         )
-        
+
         old_status = payment.status
-        payment.status = PaymentStatusChoices.FAILED
+        payment.status = PaymentStatusChoices.REFUNDED
         payment.save(update_fields=['status'])
-        
+
         PaymentHistory.objects.create(
             payment=payment,
             old_status=old_status,
-            new_status=PaymentStatusChoices.FAILED,
+            new_status=PaymentStatusChoices.REFUNDED,
             details={"action": "Remboursé", "refund_id": str(refund.id)}
         )
         
@@ -162,3 +169,14 @@ class PaymentService:
             "amount": payment.amount,
             "date": payment.created_at
         }
+
+    @staticmethod
+    @transaction.atomic
+    def update_platform_settings(commission_percentage: Decimal, client_service_fee: Decimal) -> PlatformSettings:
+        settings_obj = PlatformSettings.load()
+        settings_obj.commission_percentage = commission_percentage
+        settings_obj.client_service_fee = client_service_fee
+        settings_obj.full_clean()
+        settings_obj.save(update_fields=['commission_percentage', 'client_service_fee'])
+        logger.info(f"Configuration plateforme mise à jour : commission={commission_percentage}%, frais={client_service_fee}")
+        return settings_obj

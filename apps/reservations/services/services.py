@@ -5,6 +5,7 @@ from apps.properties.models import Property
 from apps.reservations.models import ReservationRequest, Reservation, ReservationStatusHistory, ReservationHistory
 from apps.reservations.choices import ReservationStatusChoices
 from apps.reservations.services.exceptions import InvalidWorkflowTransition, DatesNotAvailable
+from apps.reservations.services.selectors import ReservationSelector
 import logging
 import uuid
 
@@ -15,10 +16,12 @@ class ReservationService:
     @staticmethod
     @transaction.atomic
     def create_request(client: User, prop: Property, check_in, check_out, guests: int, special_requests: str = "") -> ReservationRequest:
-        # Logique de vérification des disponibilités à intégrer ici
-        # if not prop.is_available(check_in, check_out):
-        #     raise DatesNotAvailable("Les dates ne sont pas disponibles.")
-            
+        if check_out <= check_in:
+            raise DatesNotAvailable("La date de départ doit être postérieure à la date d'arrivée.")
+
+        if ReservationSelector.has_overlapping_active_booking(prop.id, check_in, check_out):
+            raise DatesNotAvailable("Ce logement n'est plus disponible pour les dates sélectionnées.")
+
         req = ReservationRequest.objects.create(
             client=client,
             property=prop,
@@ -45,7 +48,7 @@ class ReservationService:
         if req.client_id != client.id:
             raise InvalidWorkflowTransition("Non autorisé.")
             
-        if req.status not in [ReservationStatusChoices.REQUESTED, ReservationStatusChoices.PENDING_OWNER_ACCEPTANCE]:
+        if req.status not in [ReservationStatusChoices.REQUESTED, ReservationStatusChoices.SENT_TO_OWNER, ReservationStatusChoices.PAYMENT_PENDING]:
             raise InvalidWorkflowTransition("Impossible d'annuler à cette étape.")
             
         old_status = req.status
@@ -132,17 +135,17 @@ class ReservationService:
         if req.property.owner_id != owner.id:
             raise InvalidWorkflowTransition("Propriétaire non autorisé.")
             
-        if req.status != ReservationStatusChoices.PENDING_OWNER_ACCEPTANCE:
-            raise InvalidWorkflowTransition("La demande doit être au statut PENDING_OWNER_ACCEPTANCE.")
-            
+        if req.status != ReservationStatusChoices.SENT_TO_OWNER:
+            raise InvalidWorkflowTransition("La demande doit être au statut SENT_TO_OWNER.")
+
         old_status = req.status
-        req.status = ReservationStatusChoices.REJECTED
+        req.status = ReservationStatusChoices.OWNER_DECLINED
         req.save(update_fields=['status'])
-        
+
         ReservationStatusHistory.objects.create(
             request=req,
             old_status=old_status,
-            new_status=ReservationStatusChoices.REJECTED,
+            new_status=ReservationStatusChoices.OWNER_DECLINED,
             notes=f"Rejetée par le propriétaire {owner.email} : {reason}"
         )
         

@@ -1,62 +1,102 @@
-<div class="bg-white border border-gray-200 rounded-2xl shadow-xl p-6 sticky top-28 hidden lg:block">
+<div class="bg-white border border-gray-200 rounded-2xl shadow-xl p-6 sticky top-28 hidden lg:block"
+     x-data="reservationBox({{ property.price }}, {{ platform_settings.client_service_fee }}, {{ property.max_guests }})">
     <div class="flex items-baseline mb-6">
-        <span class="text-2xl font-bold text-gray-900">150 000 FCFA</span>
-        <span class="text-gray-500 ml-1">/ mois</span>
+        <span class="text-2xl font-bold text-gray-900">{{ property.price }} FCFA</span>
+        <span class="text-gray-500 ml-1">/ nuit</span>
     </div>
-    
-    <div class="border border-gray-300 rounded-xl overflow-hidden mb-4">
-        <!-- Calendrier Placeholder -->
-        <div class="flex border-b border-gray-300">
-            <div class="flex-1 p-3 border-r border-gray-300 cursor-pointer hover:bg-gray-50 transition-colors">
-                <label class="block text-[10px] font-bold text-gray-900 uppercase tracking-wide">Arrivée</label>
-                <div class="text-sm text-gray-500 mt-1">Ajouter une date</div>
+
+    {% if request.user.is_authenticated and request.user.is_client %}
+    <form method="POST" action="{% url 'booking_create' property.id %}" id="reservation-form">
+        {% csrf_token %}
+        <div class="border border-gray-300 rounded-xl overflow-hidden mb-4">
+            <div class="flex border-b border-gray-300">
+                <div class="flex-1 p-3 border-r border-gray-300">
+                    <label class="block text-[10px] font-bold text-gray-900 uppercase tracking-wide">Arrivée</label>
+                    <input type="date" name="check_in" x-model="checkIn" required min="{{ today|date:'Y-m-d' }}"
+                           class="w-full text-sm text-gray-900 mt-1 border-0 p-0 focus:ring-0">
+                </div>
+                <div class="flex-1 p-3">
+                    <label class="block text-[10px] font-bold text-gray-900 uppercase tracking-wide">Départ</label>
+                    <input type="date" name="check_out" x-model="checkOut" required min="{{ today|date:'Y-m-d' }}"
+                           class="w-full text-sm text-gray-900 mt-1 border-0 p-0 focus:ring-0">
+                </div>
             </div>
-            <div class="flex-1 p-3 cursor-pointer hover:bg-gray-50 transition-colors">
-                <label class="block text-[10px] font-bold text-gray-900 uppercase tracking-wide">Départ</label>
-                <div class="text-sm text-gray-500 mt-1">Ajouter une date</div>
+
+            <div class="p-3 flex justify-between items-center">
+                <div class="flex-1">
+                    <label class="block text-[10px] font-bold text-gray-900 uppercase tracking-wide">Voyageurs</label>
+                    <input type="number" name="guests" x-model.number="guests" min="1" max="{{ property.max_guests }}" required
+                           class="w-full text-sm text-gray-900 mt-1 border-0 p-0 focus:ring-0">
+                </div>
             </div>
         </div>
-        
-        <!-- Voyageurs Placeholder -->
-        <div class="p-3 cursor-pointer hover:bg-gray-50 transition-colors flex justify-between items-center">
-            <div>
-                <label class="block text-[10px] font-bold text-gray-900 uppercase tracking-wide">Voyageurs</label>
-                <div class="text-sm text-gray-900 mt-1">1 voyageur</div>
-            </div>
-            <i data-lucide="chevron-down" class="w-4 h-4 text-gray-500"></i>
-        </div>
-    </div>
-    
-    <button class="w-full py-3.5 bg-[#8B1E24] hover:bg-[#6F171C] text-white font-bold rounded-xl shadow-md transition-colors text-center focus:outline-none focus:ring-2 focus:ring-[#8B1E24] focus:ring-offset-2 mb-4">
-        Demander une réservation
-    </button>
-    
+
+        <button type="submit" :disabled="nights <= 0"
+                class="w-full py-3.5 bg-[#8B1E24] hover:bg-[#6F171C] disabled:opacity-50 disabled:cursor-not-allowed text-white font-bold rounded-xl shadow-md transition-colors text-center focus:outline-none focus:ring-2 focus:ring-[#8B1E24] focus:ring-offset-2 mb-4">
+            Demander une réservation
+        </button>
+    </form>
+
     <p class="text-center text-sm text-gray-500 mb-6">Aucun montant ne vous sera débité pour le moment</p>
-    
-    <div class="space-y-3 text-sm text-gray-700 pb-4 border-b border-gray-200">
+
+    <div class="space-y-3 text-sm text-gray-700 pb-4 border-b border-gray-200" x-show="nights > 0" x-cloak>
         <div class="flex justify-between">
-            <span class="underline">150 000 FCFA x 1 mois</span>
-            <span>150 000 FCFA</span>
+            <span class="underline" x-text="pricePerNight + ' FCFA x ' + nights + ' nuit' + (nights > 1 ? 's' : '')"></span>
+            <span x-text="subtotal.toLocaleString('fr-FR') + ' FCFA'"></span>
         </div>
         <div class="flex justify-between">
             <span class="underline">Frais de service DEKOUWAY</span>
-            <span>7 500 FCFA</span>
+            <span x-text="serviceFee.toLocaleString('fr-FR') + ' FCFA'"></span>
         </div>
     </div>
-    
-    <div class="flex justify-between items-center font-bold text-lg text-gray-900 pt-4">
+
+    <div class="flex justify-between items-center font-bold text-lg text-gray-900 pt-4" x-show="nights > 0" x-cloak>
         <span>Total</span>
-        <span>157 500 FCFA</span>
+        <span x-text="total.toLocaleString('fr-FR') + ' FCFA'"></span>
     </div>
+    {% elif request.user.is_authenticated %}
+    <p class="text-sm text-gray-600 text-center py-4">Seuls les comptes voyageurs peuvent réserver un logement.</p>
+    {% else %}
+    <a href="{% url 'accounts:login' %}?next={{ request.path }}" class="block w-full py-3.5 bg-[#8B1E24] hover:bg-[#6F171C] text-white font-bold rounded-xl shadow-md transition-colors text-center focus:outline-none focus:ring-2 focus:ring-[#8B1E24] focus:ring-offset-2 mb-4">
+        Se connecter pour réserver
+    </a>
+    <p class="text-center text-sm text-gray-500">Aucun montant ne vous sera débité pour le moment</p>
+    {% endif %}
 </div>
 
 <!-- Barre d'action collante sur Mobile (remplace la carte sticky) -->
 <div class="fixed bottom-0 left-0 w-full bg-white border-t border-gray-200 p-4 px-6 flex justify-between items-center z-50 lg:hidden shadow-[0_-4px_6px_-1px_rgba(0,0,0,0.1)]">
     <div>
-        <div class="text-lg font-bold text-gray-900">150 000 FCFA <span class="text-sm font-normal text-gray-500">/ mois</span></div>
-        <div class="text-sm text-gray-900 underline font-semibold cursor-pointer">15 au 22 oct.</div>
+        <div class="text-lg font-bold text-gray-900">{{ property.price }} FCFA <span class="text-sm font-normal text-gray-500">/ nuit</span></div>
     </div>
-    <button class="px-6 py-3 bg-[#8B1E24] hover:bg-[#6F171C] text-white font-bold rounded-xl shadow-md transition-colors">
+    {% if request.user.is_authenticated and request.user.is_client %}
+    <button type="submit" form="reservation-form" class="px-6 py-3 bg-[#8B1E24] hover:bg-[#6F171C] text-white font-bold rounded-xl shadow-md transition-colors">
         Demander
     </button>
+    {% else %}
+    <a href="{% url 'accounts:login' %}?next={{ request.path }}" class="px-6 py-3 bg-[#8B1E24] hover:bg-[#6F171C] text-white font-bold rounded-xl shadow-md transition-colors">
+        Se connecter
+    </a>
+    {% endif %}
 </div>
+
+<script>
+    function reservationBox(pricePerNight, serviceFee, maxGuests) {
+        return {
+            checkIn: '', checkOut: '', guests: 1,
+            pricePerNight: pricePerNight, serviceFee: serviceFee, maxGuests: maxGuests,
+
+            get nights() {
+                if (!this.checkIn || !this.checkOut) return 0;
+                const diffMs = new Date(this.checkOut) - new Date(this.checkIn);
+                return Math.max(0, Math.round(diffMs / (1000 * 60 * 60 * 24)));
+            },
+            get subtotal() {
+                return this.nights * this.pricePerNight;
+            },
+            get total() {
+                return this.nights > 0 ? this.subtotal + this.serviceFee : 0;
+            }
+        }
+    }
+</script>

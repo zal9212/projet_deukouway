@@ -22,7 +22,7 @@ class PaymentServiceTests(TestCase):
             client=self.client, property=self.prop, check_in=timezone.now().date(), check_out=timezone.now().date() + timedelta(days=2), guests=1
         )
         self.res = Reservation.objects.create(
-            request=self.req, client=self.client, property=self.prop, check_in=self.req.check_in, check_out=self.req.check_out, guests=1, total_price=200.00
+            request=self.req, client=self.client, property=self.prop, check_in=self.req.check_in, check_out=self.req.check_out, guests=1, total_price=Decimal('200.00')
         )
 
     def test_calculate_commission(self):

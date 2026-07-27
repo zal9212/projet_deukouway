@@ -4,7 +4,7 @@ from datetime import timedelta
 from apps.accounts.models import User
 from apps.properties.models import Property, PropertyType, PropertyCategory
 from apps.reservations.services.services import ReservationService
-from apps.reservations.services.exceptions import InvalidWorkflowTransition
+from apps.reservations.services.exceptions import InvalidWorkflowTransition, DatesNotAvailable
 from apps.reservations.choices import ReservationStatusChoices
 
 class ReservationServiceTests(TestCase):
@@ -51,3 +51,26 @@ class ReservationServiceTests(TestCase):
         req = ReservationService.create_request(self.client, self.prop, self.check_in, self.check_out, 2)
         with self.assertRaises(InvalidWorkflowTransition):
             ReservationService.owner_accept(req, self.owner)
+
+    def test_overlapping_dates_rejected(self):
+        ReservationService.create_request(self.client, self.prop, self.check_in, self.check_out, 2)
+        other_client = User.objects.create_user(email="other_client@test.com", password="password", is_client=True)
+        overlapping_check_in = self.check_in + timedelta(days=1)
+        overlapping_check_out = self.check_out + timedelta(days=2)
+        with self.assertRaises(DatesNotAvailable):
+            ReservationService.create_request(other_client, self.prop, overlapping_check_in, overlapping_check_out, 1)
+
+    def test_non_overlapping_dates_allowed(self):
+        ReservationService.create_request(self.client, self.prop, self.check_in, self.check_out, 2)
+        other_client = User.objects.create_user(email="other_client2@test.com", password="password", is_client=True)
+        later_check_in = self.check_out + timedelta(days=5)
+        later_check_out = later_check_in + timedelta(days=2)
+        req = ReservationService.create_request(other_client, self.prop, later_check_in, later_check_out, 1)
+        self.assertEqual(req.status, ReservationStatusChoices.REQUESTED)
+
+    def test_cancelled_request_frees_up_dates(self):
+        req = ReservationService.create_request(self.client, self.prop, self.check_in, self.check_out, 2)
+        ReservationService.cancel_request(req, self.client)
+        other_client = User.objects.create_user(email="other_client3@test.com", password="password", is_client=True)
+        new_req = ReservationService.create_request(other_client, self.prop, self.check_in, self.check_out, 1)
+        self.assertEqual(new_req.status, ReservationStatusChoices.REQUESTED)

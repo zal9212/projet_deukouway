@@ -1,0 +1,18 @@
+{% if messages %}
+<div class="fixed top-4 inset-x-0 z-[100] flex flex-col items-center gap-2 px-4 pointer-events-none">
+    {% for message in messages %}
+    <div x-data="{ show: true }" x-init="setTimeout(() => show = false, 6000)" x-show="show" x-transition
+         class="pointer-events-auto w-full max-w-md flex items-start gap-3 rounded-xl border px-4 py-3 shadow-lg text-sm font-medium
+         {% if message.tags == 'success' %} bg-emerald-50 border-emerald-200 text-emerald-800
+         {% elif message.tags == 'error' %} bg-red-50 border-red-200 text-red-800
+         {% elif message.tags == 'warning' %} bg-yellow-50 border-yellow-200 text-yellow-800
+         {% else %} bg-blue-50 border-blue-200 text-blue-800 {% endif %}">
+        <i data-lucide="{% if message.tags == 'success' %}check-circle{% elif message.tags == 'error' %}alert-circle{% elif message.tags == 'warning' %}alert-triangle{% else %}info{% endif %}" class="w-5 h-5 flex-shrink-0 mt-0.5"></i>
+        <span class="flex-1">{{ message }}</span>
+        <button @click="show = false" aria-label="Fermer" class="flex-shrink-0 hover:opacity-70">
+            <i data-lucide="x" class="w-4 h-4"></i>
+        </button>
+    </div>
+    {% endfor %}
+</div>
+{% endif %}

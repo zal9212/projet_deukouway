@@ -1,7 +1,7 @@
 from django.db import transaction
 from django.utils import timezone
 from apps.accounts.models import User
-from apps.notifications.models import Notification, NotificationHistory
+from apps.notifications.models import Notification, NotificationHistory, NotificationPreference
 import logging
 
 logger = logging.getLogger(__name__)
@@ -69,3 +69,12 @@ class NotificationService:
     @transaction.atomic
     def create_system_notification(user: User, title: str, message: str) -> Notification:
         return NotificationService._create_notification(user, f"[SYSTÈME] {title}", message)
+
+    @staticmethod
+    @transaction.atomic
+    def update_preferences(user: User, email_enabled: bool, sms_enabled: bool) -> NotificationPreference:
+        preferences, _ = NotificationPreference.objects.get_or_create(user=user)
+        preferences.email_enabled = email_enabled
+        preferences.sms_enabled = sms_enabled
+        preferences.save(update_fields=['email_enabled', 'sms_enabled'])
+        return preferences

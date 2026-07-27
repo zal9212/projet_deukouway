@@ -15,14 +15,6 @@
 
 {% block content %}
 <div class="px-4 sm:px-6 lg:px-8 bg-white border border-gray-200 rounded-xl py-6 shadow-sm">
-    
-    <div class="sm:flex sm:items-center justify-between mb-6">
-        <div class="flex space-x-2 overflow-x-auto pb-2 sm:pb-0">
-            <button class="whitespace-nowrap px-4 py-2 text-sm font-medium rounded-full bg-gray-900 text-white">À traiter (2)</button>
-            <button class="whitespace-nowrap px-4 py-2 text-sm font-medium rounded-full bg-white text-gray-700 border border-gray-300 hover:bg-gray-50">Acceptées</button>
-            <button class="whitespace-nowrap px-4 py-2 text-sm font-medium rounded-full bg-white text-gray-700 border border-gray-300 hover:bg-gray-50">Toutes</button>
-        </div>
-    </div>
 
     <!-- Table des Demandes -->
     <div class="mt-4 flow-root">
@@ -31,9 +23,8 @@
                 <table class="min-w-full divide-y divide-gray-300">
                     <thead class="bg-gray-50">
                         <tr>
-                            <th scope="col" class="py-3.5 pl-4 pr-3 text-left text-sm font-semibold text-gray-900 sm:pl-0">Référence</th>
+                            <th scope="col" class="py-3.5 pl-4 pr-3 text-left text-sm font-semibold text-gray-900 sm:pl-0">Logement</th>
                             <th scope="col" class="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">Dates</th>
-                            <th scope="col" class="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">Revenu Net (FCFA)</th>
                             <th scope="col" class="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">Statut</th>
                             <th scope="col" class="relative py-3.5 pl-3 pr-4 sm:pr-0">
                                 <span class="sr-only">Actions</span>
@@ -41,52 +32,46 @@
                         </tr>
                     </thead>
                     <tbody class="divide-y divide-gray-200 bg-white">
-                        <!-- Ligne 1 -->
+                        {% for req in requests %}
                         <tr>
                             <td class="whitespace-nowrap py-5 pl-4 pr-3 text-sm sm:pl-0">
-                                <div class="font-medium text-gray-900">#REQ-9821</div>
-                                <div class="mt-1 text-gray-500">Villa Teranga Saly</div>
+                                <div class="font-medium text-gray-900">{{ req.property.title }}</div>
+                                <div class="mt-1 text-gray-500">{{ req.client.email }}</div>
                             </td>
                             <td class="whitespace-nowrap px-3 py-5 text-sm text-gray-500">
-                                <div class="text-gray-900">12 - 15 Août 2024</div>
-                                <div class="mt-1 text-gray-500">3 nuits, 4 voyageurs</div>
+                                <div class="text-gray-900">{{ req.check_in|date:"d M Y" }} - {{ req.check_out|date:"d M Y" }}</div>
+                                <div class="mt-1 text-gray-500">{{ req.guests }} voyageur{{ req.guests|pluralize }}</div>
                             </td>
-                            <td class="whitespace-nowrap px-3 py-5 text-sm text-gray-500 font-semibold text-green-700">85 000</td>
                             <td class="whitespace-nowrap px-3 py-5 text-sm text-gray-500">
-                                {% include "components/dashboard/status_badge.html" with status="pending" label="À valider" %}
+                                {% if req.status == 'SENT_TO_OWNER' %}
+                                    {% include "components/dashboard/status_badge.html" with status="pending" label="À valider" %}
+                                {% elif req.status == 'PAYMENT_PENDING' or req.status == 'PAID' or req.status == 'CONFIRMED' %}
+                                    {% include "components/dashboard/status_badge.html" with status="success" label="Acceptée" %}
+                                {% elif req.status == 'OWNER_DECLINED' or req.status == 'REJECTED' %}
+                                    {% include "components/dashboard/status_badge.html" with status="error" label="Refusée" %}
+                                {% else %}
+                                    {% include "components/dashboard/status_badge.html" with status="info" label=req.get_status_display %}
+                                {% endif %}
                             </td>
                             <td class="relative whitespace-nowrap py-5 pl-3 pr-4 text-right text-sm font-medium sm:pr-0">
-                                <a href="request_detail.html">
+                                <a href="{% url 'dashboard:owner_request_detail' req.id %}">
                                     {% include "components/dashboard/action_button.html" with action="view" text="Ouvrir" %}
                                 </a>
                             </td>
                         </tr>
-                        <!-- Ligne 2 -->
+                        {% empty %}
                         <tr>
-                            <td class="whitespace-nowrap py-5 pl-4 pr-3 text-sm sm:pl-0">
-                                <div class="font-medium text-gray-900">#REQ-9822</div>
-                                <div class="mt-1 text-gray-500">Studio Dakar Plateau</div>
-                            </td>
-                            <td class="whitespace-nowrap px-3 py-5 text-sm text-gray-500">
-                                <div class="text-gray-900">20 - 22 Août 2024</div>
-                                <div class="mt-1 text-gray-500">2 nuits, 2 voyageurs</div>
-                            </td>
-                            <td class="whitespace-nowrap px-3 py-5 text-sm text-gray-500 font-semibold text-green-700">51 000</td>
-                            <td class="whitespace-nowrap px-3 py-5 text-sm text-gray-500">
-                                {% include "components/dashboard/status_badge.html" with status="pending" label="À valider" %}
-                            </td>
-                            <td class="relative whitespace-nowrap py-5 pl-3 pr-4 text-right text-sm font-medium sm:pr-0">
-                                <a href="request_detail.html">
-                                    {% include "components/dashboard/action_button.html" with action="view" text="Ouvrir" %}
-                                </a>
+                            <td colspan="4" class="py-8 text-center text-gray-500">
+                                Aucune demande pour le moment.
                             </td>
                         </tr>
+                        {% endfor %}
                     </tbody>
                 </table>
             </div>
         </div>
     </div>
-    
+
     <div class="mt-6 border-t border-gray-200 pt-4">
         {% include "components/dashboard/pagination.html" %}
     </div>

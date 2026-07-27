@@ -7,7 +7,7 @@
     
     <div class="mt-8 space-y-4">
         <!-- Carte Client -->
-        <a href="register_client.html" class="block border border-gray-200 rounded-xl p-6 hover:border-[#8B1E24] hover:shadow-md transition-all group focus:outline-none focus:ring-2 focus:ring-[#8B1E24]">
+        <a href="{% url 'register_client' %}" class="block border border-gray-200 rounded-xl p-6 hover:border-[#8B1E24] hover:shadow-md transition-all group focus:outline-none focus:ring-2 focus:ring-[#8B1E24]">
             <div class="flex items-center justify-between mb-4">
                 <div class="w-12 h-12 rounded-full bg-gray-100 flex items-center justify-center group-hover:bg-red-50 transition-colors">
                     <i data-lucide="compass" class="w-6 h-6 text-gray-700 group-hover:text-[#8B1E24] transition-colors"></i>
@@ -19,7 +19,7 @@
         </a>
         
         <!-- Carte Propriétaire -->
-        <a href="register_owner.html" class="block border border-gray-200 rounded-xl p-6 hover:border-[#8B1E24] hover:shadow-md transition-all group focus:outline-none focus:ring-2 focus:ring-[#8B1E24]">
+        <a href="{% url 'register_owner' %}" class="block border border-gray-200 rounded-xl p-6 hover:border-[#8B1E24] hover:shadow-md transition-all group focus:outline-none focus:ring-2 focus:ring-[#8B1E24]">
             <div class="flex items-center justify-between mb-4">
                 <div class="w-12 h-12 rounded-full bg-gray-100 flex items-center justify-center group-hover:bg-red-50 transition-colors">
                     <i data-lucide="key" class="w-6 h-6 text-gray-700 group-hover:text-[#8B1E24] transition-colors"></i>
@@ -31,5 +31,6 @@
         </a>
     </div>
     
-    {% include "components/auth/auth_footer.html" with text="Vous avez déjà un compte ?" link_text="Connectez-vous" link_url="login.html" %}
+    {% url 'login' as login_url %}
+    {% include "components/auth/auth_footer.html" with text="Vous avez déjà un compte ?" link_text="Connectez-vous" link_url=login_url %}
 {% endblock %}

@@ -1,0 +1,14 @@
+{
+  "name": "dekouway-e2e",
+  "version": "1.0.0",
+  "description": "Tests E2E Playwright pour la plateforme DEKOUWAY",
+  "scripts": {
+    "test:e2e": "playwright test",
+    "test:e2e:ui": "playwright test --ui",
+    "test:e2e:report": "playwright show-report tests/e2e/reports"
+  },
+  "devDependencies": {
+    "@playwright/test": "^1.42.0",
+    "typescript": "^5.3.3"
+  }
+}

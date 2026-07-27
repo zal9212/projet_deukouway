@@ -1,0 +1,118 @@
+{% extends "layouts/dashboard.html" %}
+
+{% block title %}Validation Réservations - DEKOUWAY ERP{% endblock %}
+
+{% block page_header %}
+<div class="md:flex md:items-center md:justify-between mb-8 mt-2">
+    <div class="min-w-0 flex-1">
+        <h2 class="text-2xl font-bold leading-7 text-gray-900 sm:truncate sm:text-3xl sm:tracking-tight flex items-center">
+            Validation des Demandes
+            <span class="ml-3 inline-flex items-center rounded-full bg-red-100 px-3 py-1 text-sm font-medium text-red-700">
+                {{ pending_requests.count|default:0 }} demande(s) en attente
+            </span>
+        </h2>
+        <p class="mt-1 text-sm text-gray-500">Vérifiez chaque demande avant transmission au propriétaire.</p>
+    </div>
+</div>
+{% endblock %}
+
+{% block content %}
+{% if pending_requests %}
+<div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+
+    <!-- File d'attente -->
+    <div class="lg:col-span-1 border border-gray-200 bg-white rounded-xl shadow-sm overflow-hidden lg:h-[calc(100vh-16rem)] h-auto flex flex-col">
+        <div class="px-4 py-4 border-b border-gray-200 bg-gray-50">
+            <h3 class="font-semibold text-gray-900 text-sm">Demandes à traiter</h3>
+        </div>
+        <ul role="list" class="flex-1 overflow-y-auto divide-y divide-gray-100">
+            {% for req in pending_requests %}
+            <li class="relative px-4 py-4 {% if forloop.first %}bg-blue-50/50 border-l-4 border-blue-600{% else %}hover:bg-gray-50{% endif %} cursor-pointer">
+                <div class="flex justify-between">
+                    <div>
+                        <p class="text-sm font-bold text-gray-900">{{ req.property.title }}</p>
+                        <p class="text-xs text-gray-500 mt-1">{{ req.client.email }} · {{ req.created_at|date:"d M Y" }}</p>
+                    </div>
+                    <span class="inline-flex items-center rounded-md bg-yellow-50 px-2 py-1 text-xs font-medium text-yellow-800 ring-1 ring-inset ring-yellow-600/20 h-fit">En attente</span>
+                </div>
+            </li>
+            {% endfor %}
+        </ul>
+    </div>
+
+    <!-- Zone d'Analyse Centrale -->
+    {% with active_req=pending_requests.0 %}
+    <div class="lg:col-span-2">
+        <div class="bg-white border border-gray-200 rounded-xl shadow-sm overflow-hidden flex flex-col lg:h-[calc(100vh-16rem)] h-auto">
+
+            <div class="border-b border-gray-200 px-6 py-5 flex items-center justify-between bg-white">
+                <div class="flex items-center">
+                    <div class="h-12 w-12 rounded-full bg-[#8B1E24] text-white flex items-center justify-center font-bold text-lg">
+                        {{ active_req.client.email|slice:":2"|upper }}
+                    </div>
+                    <div class="ml-4">
+                        <h3 class="text-lg font-bold leading-6 text-gray-900">{{ active_req.property.title }}</h3>
+                        <p class="text-sm text-gray-500">Demandé par {{ active_req.client.email }} le {{ active_req.created_at|date:"d M Y" }}</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="flex-1 overflow-y-auto p-6 space-y-8 bg-gray-50">
+                <section class="bg-white p-6 border border-gray-200 rounded-xl shadow-sm">
+                    <h4 class="text-sm font-semibold text-gray-900 mb-4 border-b border-gray-100 pb-2">Détails du séjour</h4>
+                    <div class="grid grid-cols-2 gap-6">
+                        <div>
+                            <p class="text-xs text-gray-500 uppercase tracking-wider font-semibold">Arrivée</p>
+                            <p class="mt-1 font-medium text-gray-900">{{ active_req.check_in|date:"d M Y" }}</p>
+                        </div>
+                        <div>
+                            <p class="text-xs text-gray-500 uppercase tracking-wider font-semibold">Départ</p>
+                            <p class="mt-1 font-medium text-gray-900">{{ active_req.check_out|date:"d M Y" }}</p>
+                        </div>
+                        <div>
+                            <p class="text-xs text-gray-500 uppercase tracking-wider font-semibold">Voyageurs</p>
+                            <p class="mt-1 font-medium text-gray-900">{{ active_req.guests }}</p>
+                        </div>
+                        <div>
+                            <p class="text-xs text-gray-500 uppercase tracking-wider font-semibold">Propriétaire</p>
+                            <p class="mt-1 font-medium text-gray-900">{{ active_req.property.owner.email }}</p>
+                        </div>
+                    </div>
+                    {% if active_req.special_requests %}
+                    <div class="mt-4 pt-4 border-t border-gray-100">
+                        <p class="text-xs text-gray-500 uppercase tracking-wider font-semibold">Demandes spéciales</p>
+                        <p class="mt-1 text-sm text-gray-700">{{ active_req.special_requests }}</p>
+                    </div>
+                    {% endif %}
+                </section>
+            </div>
+
+            <div class="border-t border-gray-200 px-6 py-4 bg-white flex justify-between items-center">
+                <form method="POST" class="inline">
+                    {% csrf_token %}
+                    <input type="hidden" name="request_id" value="{{ active_req.id }}">
+                    <input type="hidden" name="action" value="reject">
+                    <button type="submit" class="text-red-600 hover:text-red-800 text-sm font-semibold flex items-center">
+                        <i data-lucide="x-circle" class="w-4 h-4 mr-1.5"></i> Rejeter la demande
+                    </button>
+                </form>
+
+                <form method="POST" class="inline">
+                    {% csrf_token %}
+                    <input type="hidden" name="request_id" value="{{ active_req.id }}">
+                    <input type="hidden" name="action" value="approve">
+                    <button type="submit" class="rounded-md bg-green-600 px-4 py-2 text-sm font-semibold text-white shadow-sm hover:bg-green-500 flex items-center">
+                        <i data-lucide="check-circle-2" class="w-4 h-4 mr-1.5"></i> Valider et transmettre au propriétaire
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+    {% endwith %}
+</div>
+{% else %}
+<div class="bg-white border border-gray-200 rounded-xl p-12 text-center shadow-sm">
+    {% include "components/empty_state.html" with title="Aucune demande en attente" description="Toutes les demandes de réservation ont été traitées." icon="calendar-check" %}
+</div>
+{% endif %}
+{% endblock %}

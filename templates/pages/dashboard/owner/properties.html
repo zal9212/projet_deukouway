@@ -12,7 +12,7 @@
     </div>
     
     <div class="mt-4 flex md:ml-4 md:mt-0 space-x-3">
-        <a href="property_add.html" class="inline-flex items-center rounded-md bg-[#8B1E24] px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-[#6F171C]">
+        <a href="{% url 'dashboard:owner_add_property' %}" class="inline-flex items-center rounded-md bg-[#8B1E24] px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-[#6F171C]">
             <i data-lucide="plus" class="h-4 w-4 mr-1.5"></i>
             Ajouter un logement
         </a>
@@ -24,105 +24,98 @@
 <div class="px-4 sm:px-6 lg:px-8 bg-white border border-gray-200 rounded-xl py-6 shadow-sm">
     
     <!-- Filtres & Recherche -->
-    <div class="sm:flex sm:items-center justify-between mb-6">
+    <form method="GET" class="sm:flex sm:items-center justify-between mb-6">
         <div class="flex space-x-2 overflow-x-auto pb-2 sm:pb-0">
-            <button class="whitespace-nowrap px-4 py-2 text-sm font-medium rounded-full bg-gray-900 text-white">Tous</button>
-            <button class="whitespace-nowrap px-4 py-2 text-sm font-medium rounded-full bg-white text-gray-700 border border-gray-300 hover:bg-gray-50">Publiés</button>
-            <button class="whitespace-nowrap px-4 py-2 text-sm font-medium rounded-full bg-white text-gray-700 border border-gray-300 hover:bg-gray-50">En attente (1)</button>
-            <button class="whitespace-nowrap px-4 py-2 text-sm font-medium rounded-full bg-white text-gray-700 border border-gray-300 hover:bg-gray-50">Brouillons</button>
+            <a href="{% url 'dashboard:owner_properties' %}" class="whitespace-nowrap px-4 py-2 text-sm font-medium rounded-full {% if not request.GET.status %}bg-gray-900 text-white{% else %}bg-white text-gray-700 border border-gray-300 hover:bg-gray-50{% endif %}">Tous</a>
+            <a href="?status=published{% if request.GET.search %}&search={{ request.GET.search }}{% endif %}" class="whitespace-nowrap px-4 py-2 text-sm font-medium rounded-full {% if request.GET.status == 'published' %}bg-gray-900 text-white{% else %}bg-white text-gray-700 border border-gray-300 hover:bg-gray-50{% endif %}">Publiés</a>
+            <a href="?status=pending{% if request.GET.search %}&search={{ request.GET.search }}{% endif %}" class="whitespace-nowrap px-4 py-2 text-sm font-medium rounded-full {% if request.GET.status == 'pending' %}bg-gray-900 text-white{% else %}bg-white text-gray-700 border border-gray-300 hover:bg-gray-50{% endif %}">En attente ({{ pending_count }})</a>
+            <a href="?status=draft{% if request.GET.search %}&search={{ request.GET.search }}{% endif %}" class="whitespace-nowrap px-4 py-2 text-sm font-medium rounded-full {% if request.GET.status == 'draft' %}bg-gray-900 text-white{% else %}bg-white text-gray-700 border border-gray-300 hover:bg-gray-50{% endif %}">Brouillons</a>
         </div>
         <div class="mt-4 sm:ml-4 sm:mt-0 sm:flex-none">
             <div class="relative max-w-xs">
                 <i data-lucide="search" class="absolute left-3 top-1/2 -mt-2 h-4 w-4 text-gray-400"></i>
-                <input type="text" class="block w-full rounded-md border-0 py-1.5 pl-10 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-[#8B1E24] sm:text-sm sm:leading-6" placeholder="Rechercher une annonce...">
+                {% if request.GET.status %}<input type="hidden" name="status" value="{{ request.GET.status }}">{% endif %}
+                <input type="text" name="search" value="{{ request.GET.search|default:'' }}" class="block w-full rounded-md border-0 py-1.5 pl-10 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-[#8B1E24] sm:text-sm sm:leading-6" placeholder="Rechercher une annonce...">
             </div>
         </div>
-    </div>
+    </form>
 
     <!-- Vue Cards (Grille pour logements) -->
     <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 mt-6">
-        <!-- Logement 1 (Publié) -->
-        <div class="group relative bg-white border border-gray-200 rounded-xl overflow-hidden shadow-sm hover:shadow-md transition-all flex flex-col">
-            <div class="aspect-w-3 aspect-h-2 relative bg-gray-200">
-                <img src="https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?auto=format&fit=crop&w=600" alt="Logement" class="object-cover w-full h-48">
+        {% for property in properties %}
+        <div class="group relative bg-white border border-gray-200 rounded-xl overflow-hidden shadow-sm hover:shadow-md transition-all flex flex-col {% if property.status == 'DRAFT' or property.status == 'REJECTED' %}opacity-85 hover:opacity-100{% endif %}">
+            <div class="aspect-w-3 aspect-h-2 relative bg-gray-200 h-48">
+                {% if property.images.all %}
+                    <img src="{{ property.images.all.0.image.url }}" alt="{{ property.title }}" class="object-cover w-full h-full">
+                {% else %}
+                    <div class="w-full h-full flex items-center justify-center bg-gray-100">
+                        <i data-lucide="image" class="w-12 h-12 text-gray-400"></i>
+                    </div>
+                {% endif %}
                 <div class="absolute top-3 left-3">
-                    {% include "components/dashboard/status_badge.html" with status="success" label="Publié" %}
+                    {% if property.status == 'PUBLISHED' %}
+                        {% include "components/dashboard/status_badge.html" with status="success" label="Publié" %}
+                    {% elif property.status == 'PENDING' or property.status == 'UNDER_REVIEW' %}
+                        {% include "components/dashboard/status_badge.html" with status="warning" label="Analyse en cours" %}
+                    {% elif property.status == 'APPROVED' %}
+                        {% include "components/dashboard/status_badge.html" with status="success" label="Approuvé (Non publié)" %}
+                    {% elif property.status == 'REJECTED' %}
+                        {% include "components/dashboard/status_badge.html" with status="error" label="Rejeté" %}
+                    {% elif property.status == 'DRAFT' %}
+                        {% include "components/dashboard/status_badge.html" with status="pending" label="Brouillon" %}
+                    {% else %}
+                        {% include "components/dashboard/status_badge.html" with status="error" label="Suspendu / Archivé" %}
+                    {% endif %}
                 </div>
             </div>
             <div class="p-5 flex-1 flex flex-col">
-                <h3 class="text-lg font-bold text-gray-900 line-clamp-1">Villa Teranga Saly</h3>
-                <p class="text-sm text-gray-500 mt-1">Saly Portudal, Sénégal</p>
+                <h3 class="text-lg font-bold text-gray-900 line-clamp-1">{{ property.title }}</h3>
+                <p class="text-sm text-gray-500 mt-1">{{ property.city }}, {{ property.district }}</p>
                 
                 <div class="mt-4 grid grid-cols-2 gap-4 text-sm text-gray-700 border-t border-b border-gray-100 py-3">
                     <div>
                         <span class="block text-gray-500 text-xs">Tarif / Nuit</span>
-                        <span class="font-semibold text-gray-900">35 000 F</span>
+                        <span class="font-semibold text-gray-900">{{ property.price }} F</span>
                     </div>
                     <div>
-                        <span class="block text-gray-500 text-xs">Dernière mise à jour</span>
-                        <span class="font-semibold text-gray-900">il y a 5 jours</span>
+                        <span class="block text-gray-500 text-xs">Capacité</span>
+                        <span class="font-semibold text-gray-900">{{ property.max_guests }} pers. ({{ property.bedrooms }} ch.)</span>
                     </div>
                 </div>
                 
-                <div class="mt-4 grid grid-cols-2 gap-3">
-                    <button class="w-full rounded-md bg-white px-3 py-2 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50 text-center">Modifier</button>
-                    <button class="w-full rounded-md bg-white px-3 py-2 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50 text-center text-red-600 hover:text-red-700">Archiver</button>
+                <div class="mt-4 grid grid-cols-2 gap-3 mt-auto">
+                    <a href="{% url 'dashboard:owner_edit_property' property.id %}" class="w-full rounded-md bg-white px-3 py-2 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50 text-center flex items-center justify-center">
+                        <i data-lucide="edit-3" class="w-4 h-4 mr-1"></i> Modifier
+                    </a>
+                    {% if property.status == 'PUBLISHED' or property.status == 'APPROVED' %}
+                    <form method="POST" class="w-full">
+                        {% csrf_token %}
+                        <input type="hidden" name="property_id" value="{{ property.id }}">
+                        <input type="hidden" name="action" value="archive">
+                        <button type="submit" onclick="return confirm('Archiver ce logement ? Il ne sera plus visible par les voyageurs.');" class="w-full rounded-md bg-white px-3 py-2 text-sm font-semibold text-red-600 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50 text-center flex items-center justify-center">
+                            <i data-lucide="archive" class="w-4 h-4 mr-1"></i> Archiver
+                        </button>
+                    </form>
+                    {% else %}
+                    <div class="w-full rounded-md bg-gray-100 px-3 py-2 text-sm font-semibold text-gray-500 text-center flex items-center justify-center cursor-not-allowed" title="Ce logement n'est pas publié.">
+                        <i data-lucide="lock" class="w-4 h-4 mr-1"></i> Bloqué
+                    </div>
+                    {% endif %}
                 </div>
             </div>
         </div>
-
-        <!-- Logement 2 (En attente) -->
-        <div class="group relative bg-white border border-gray-200 rounded-xl overflow-hidden shadow-sm hover:shadow-md transition-all flex flex-col">
-            <div class="aspect-w-3 aspect-h-2 relative bg-gray-200">
-                <img src="https://images.unsplash.com/photo-1512917774080-9991f1c4c750?auto=format&fit=crop&w=600" alt="Logement" class="object-cover w-full h-48 opacity-80">
-                <div class="absolute top-3 left-3">
-                    {% include "components/dashboard/status_badge.html" with status="pending" label="En attente de validation SuperAdmin" %}
-                </div>
-            </div>
-            <div class="p-5 flex-1 flex flex-col">
-                <h3 class="text-lg font-bold text-gray-900 line-clamp-1">Appartement Dakar Plateau</h3>
-                <p class="text-sm text-gray-500 mt-1">Dakar, Sénégal</p>
-                
-                <div class="mt-4 grid grid-cols-2 gap-4 text-sm text-gray-700 border-t border-b border-gray-100 py-3">
-                    <div>
-                        <span class="block text-gray-500 text-xs">Tarif / Nuit</span>
-                        <span class="font-semibold text-gray-900">45 000 F</span>
-                    </div>
-                    <div>
-                        <span class="block text-gray-500 text-xs">Soumis le</span>
-                        <span class="font-semibold text-gray-900">19 Juil 2024</span>
-                    </div>
-                </div>
-                
-                <div class="mt-4">
-                    <button class="w-full rounded-md bg-gray-100 px-3 py-2 text-sm font-semibold text-gray-500 cursor-not-allowed text-center" disabled>Verrouillé pendant l'analyse</button>
-                </div>
+        {% empty %}
+        <div class="col-span-full py-12 text-center">
+            <i data-lucide="home" class="w-12 h-12 text-gray-400 mx-auto mb-4"></i>
+            <h3 class="text-sm font-semibold text-gray-900">Aucun logement</h3>
+            <p class="text-sm text-gray-500 mt-1">Commencez par ajouter votre premier logement pour le proposer sur la plateforme.</p>
+            <div class="mt-6">
+                <a href="{% url 'dashboard:owner_add_property' %}" class="inline-flex items-center rounded-md bg-[#8B1E24] px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-[#6F171C]">
+                    <i data-lucide="plus" class="w-4 h-4 mr-1.5"></i> Ajouter un logement
+                </a>
             </div>
         </div>
-
-        <!-- Logement 3 (Brouillon) -->
-        <div class="group relative bg-gray-50 border border-gray-200 rounded-xl overflow-hidden shadow-sm transition-all flex flex-col opacity-80 hover:opacity-100">
-            <div class="aspect-w-3 aspect-h-2 relative bg-gray-200 flex items-center justify-center">
-                <i data-lucide="image" class="w-12 h-12 text-gray-400"></i>
-                <div class="absolute top-3 left-3">
-                    <span class="inline-flex items-center rounded-md bg-gray-100 px-2 py-1 text-xs font-medium text-gray-600 ring-1 ring-inset ring-gray-500/10">Brouillon</span>
-                </div>
-            </div>
-            <div class="p-5 flex-1 flex flex-col">
-                <h3 class="text-lg font-bold text-gray-900 line-clamp-1">Studio Somone (Incomplet)</h3>
-                <p class="text-sm text-gray-500 mt-1">Étape 4 / 9 (Galerie)</p>
-                
-                <div class="mt-4 pt-3 border-t border-gray-100">
-                    <div class="w-full bg-gray-200 rounded-full h-2 mb-4">
-                        <div class="bg-blue-600 h-2 rounded-full" style="width: 45%"></div>
-                    </div>
-                </div>
-                
-                <div class="mt-auto pt-2">
-                    <a href="property_add.html" class="block w-full rounded-md bg-white px-3 py-2 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50 text-center border-blue-500 border-2">Continuer la création</a>
-                </div>
-            </div>
-        </div>
+        {% endfor %}
     </div>
     
     <div class="mt-6 border-t border-gray-200 pt-4">

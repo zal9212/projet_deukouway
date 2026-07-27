@@ -98,7 +98,7 @@
 
                     <div class="mt-8 border-t border-[#E5E7EB] pt-6">
                         <button type="submit" class="w-full py-3.5 bg-[#8B1E24] hover:bg-[#6F171C] text-white text-xs font-bold rounded-lg shadow-sm transition-colors uppercase tracking-wider">
-                            Régler {{ booking.total_price }} FCFA
+                            Régler {{ total_price }} FCFA
                         </button>
                     </div>
                 </form>
@@ -119,11 +119,19 @@
                         <span>Dates</span>
                         <span class="font-semibold text-[#1F2937]">{{ booking.check_in|date:"d M" }} - {{ booking.check_out|date:"d M Y" }}</span>
                     </div>
+                    <div class="flex justify-between border-t border-[#E5E7EB] pt-2.5">
+                        <span>Sous-total hébergement</span>
+                        <span class="font-semibold text-[#1F2937]">{{ rental_subtotal }} F</span>
+                    </div>
+                    <div class="flex justify-between">
+                        <span>Frais de service</span>
+                        <span class="font-semibold text-[#1F2937]">{{ service_fee }} F</span>
+                    </div>
                 </div>
 
                 <div class="border-t border-[#E5E7EB] pt-4 flex justify-between items-center font-extrabold text-base text-[#1F2937]">
                     <span>Total à régler</span>
-                    <span class="text-[#8B1E24]">{{ booking.total_price }} FCFA</span>
+                    <span class="text-[#8B1E24]">{{ total_price }} FCFA</span>
                 </div>
             </div>
         </div>

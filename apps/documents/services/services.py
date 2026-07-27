@@ -1,17 +1,29 @@
 from django.db import transaction
+from django.core.exceptions import ValidationError
 from django.utils import timezone
 from apps.accounts.models import User
+from apps.core.forms import validate_max_file_size, validate_allowed_file_extensions, validate_file_content_type
 from apps.documents.models import Document, DocumentCategory, DocumentVerification
 from apps.documents.services.exceptions import DocumentAlreadyVerified
 import logging
 
 logger = logging.getLogger(__name__)
 
+ALLOWED_DOCUMENT_EXTENSIONS = ('pdf', 'jpg', 'jpeg', 'png', 'docx')
+
 class DocumentService:
 
     @staticmethod
     @transaction.atomic
     def upload(user: User, category: DocumentCategory, title: str, file) -> Document:
+        # Ces validateurs sont déjà déclarés sur le modèle mais Django ne les
+        # applique jamais sur un simple .create() : on les appelle explicitement
+        # ici pour qu'un fichier non autorisé (extension ou contenu réel) soit
+        # rejeté avant tout enregistrement, quel que soit l'appelant.
+        validate_allowed_file_extensions(file, ALLOWED_DOCUMENT_EXTENSIONS)
+        validate_file_content_type(file, ALLOWED_DOCUMENT_EXTENSIONS)
+        validate_max_file_size(file, max_size_mb=10.0)
+
         doc = Document.objects.create(
             user=user,
             category=category,

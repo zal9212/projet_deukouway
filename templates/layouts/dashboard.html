@@ -40,19 +40,21 @@
 
 <!-- Etat global de l'application -->
 <body class="h-full overflow-hidden flex" 
-      x-data="{ 
-          sidebarOpen: false, 
-          searchOpen: false, 
-          notificationOpen: false, 
-          profileOpen: false 
+      x-data="{
+          sidebarOpen: false,
+          sidebarCollapsed: localStorage.getItem('sidebarCollapsed') === 'true',
+          notificationOpen: false,
+          profileOpen: false
       }"
-      @keydown.window.escape="sidebarOpen = false; searchOpen = false"
-      @keydown.window.ctrl.k.prevent="searchOpen = true">
+      @keydown.window.escape="sidebarOpen = false">
 
     <!-- A11y: Skip to main content -->
     <a href="#main-content" class="sr-only focus:not-sr-only focus:absolute focus:top-4 focus:left-4 z-50 bg-[#8B1E24] text-white px-4 py-2 rounded-md font-semibold">
         Aller au contenu principal
     </a>
+
+    <!-- Messages flash (succès / erreur / info) -->
+    {% include "components/messages.html" %}
 
     <!-- Sidebar Mobile (Drawer) -->
     {% include "components/dashboard/mobile_sidebar.html" %}
@@ -61,7 +63,8 @@
     {% include "components/dashboard/sidebar.html" %}
 
     <!-- Zone principale (Content + Topbar) -->
-    <div class="flex-1 flex flex-col h-screen min-w-0 bg-gray-50">
+    <div class="flex-1 flex flex-col h-screen min-w-0 bg-gray-50 transition-all duration-300 ease-in-out"
+         :class="sidebarCollapsed ? 'lg:pl-16' : 'lg:pl-64'">
         
         <!-- Topbar Fixe -->
         {% include "components/dashboard/topbar.html" %}
@@ -70,32 +73,30 @@
         <main id="main-content" class="flex-1 overflow-y-auto focus:outline-none">
             
             <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 w-full">
-                <!-- Breadcrumb -->
-                {% block breadcrumb %}
-                    {% include "components/dashboard/breadcrumb.html" %}
-                {% endblock %}
+                <!-- Breadcrumb (facultatif) -->
+                {% block breadcrumb %}{% endblock %}
                 
                 <!-- Page Header (Titre + Actions) -->
                 {% block page_header %}{% endblock %}
                 
                 <!-- Contenu dynamique de la vue -->
-                <div class="mt-8">
+                <div class="mt-4">
                     {% block content %}{% endblock %}
                 </div>
             </div>
-            
-            <!-- Footer du Dashboard -->
-            {% include "components/dashboard/dashboard_footer.html" %}
             
         </main>
         
     </div>
 
-    <!-- Modale globale de recherche (Ctrl+K) -->
-    {% include "components/dashboard/search_bar.html" %}
+    <!-- Chatbot Assistant Flottant -->
+    {% include "components/support/chatbot_floating_widget.html" %}
 
     <!-- Initialisation des icônes -->
     <script>
+        document.addEventListener('alpine:init', () => {
+            Alpine.store('chat', { open: false });
+        });
         document.addEventListener('alpine:initialized', () => {
             lucide.createIcons();
         });

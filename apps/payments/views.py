@@ -1,86 +1,110 @@
-from django.shortcuts import render, get_object_or_404, redirect
-from django.views import View
-from django.contrib.auth.mixins import LoginRequiredMixin
+import uuid as uuid_lib
+
 from django.contrib import messages
-from bookings.models import Booking
-from .models import Payment
+from django.contrib.auth.mixins import LoginRequiredMixin
+from django.shortcuts import redirect, render
+from django.views import View
+
+from apps.payments.choices import PaymentMethodChoices
+from apps.reservations.choices import ReservationStatusChoices
+from apps.reservations.services.exceptions import InvalidWorkflowTransition
+from apps.reservations.services.selectors import ReservationSelector
+from apps.reservations.services.services import ReservationService
+from apps.payments.services.selectors import PaymentSelector
+from apps.payments.services.services import PaymentService
+
+
+def _compute_rental_subtotal(req):
+    nights = (req.check_out - req.check_in).days
+    return req.property.price * nights
+
 
 class PaymentCheckoutView(LoginRequiredMixin, View):
-    """
-    Renders checkout review panel with interactive card & mobile gateway simulators.
-    """
+    """Panneau de règlement pour une demande acceptée par le propriétaire."""
+
     def get(self, request, booking_id):
-        booking = get_object_or_404(Booking, id=booking_id, client=request.user)
-        
-        # Verify booking is approved and eligible for payment
-        if booking.status != 'approved':
-            messages.error(request, "Cette réservation n'est pas approuvée ou a déjà été réglée.")
+        req = ReservationSelector.get_request_by_id(booking_id)
+        if not req or req.client_id != request.user.id:
+            messages.error(request, "Demande de réservation introuvable.")
             return redirect('bookings_list')
 
+        if req.status != ReservationStatusChoices.PAYMENT_PENDING:
+            messages.error(request, "Cette réservation n'est pas encore prête pour le paiement.")
+            return redirect('bookings_list')
+
+        rental_subtotal = _compute_rental_subtotal(req)
+        service_fee = PaymentSelector.get_platform_settings().client_service_fee
         context = {
-            'booking': booking,
-            'price_per_night': booking.property.price_per_night,
-            'total_price': booking.total_price
+            'booking': req,
+            'price_per_night': req.property.price,
+            'rental_subtotal': rental_subtotal,
+            'service_fee': service_fee,
+            'total_price': rental_subtotal + service_fee,
         }
         return render(request, 'pages/client/payment.html', context)
 
 
 class PaymentProcessView(LoginRequiredMixin, View):
-    """
-    Processes simulated transaction and updates booking state on success.
-    """
-    def post(self, request, booking_id):
-        booking = get_object_or_404(Booking, id=booking_id, client=request.user)
+    """Traite le règlement simulé et confirme la réservation."""
 
-        if booking.status != 'approved':
+    def post(self, request, booking_id):
+        req = ReservationSelector.get_request_by_id(booking_id)
+        if not req or req.client_id != request.user.id:
+            messages.error(request, "Demande de réservation introuvable.")
+            return redirect('bookings_list')
+
+        if req.status != ReservationStatusChoices.PAYMENT_PENDING:
             messages.error(request, "Statut de réservation invalide pour le paiement.")
             return redirect('bookings_list')
 
         payment_method = request.POST.get('payment_method')
-        if not payment_method:
-            messages.error(request, "Veuillez choisir un moyen de paiement.")
-            return redirect('payment_checkout', booking_id=booking.id)
+        if payment_method not in PaymentMethodChoices.values:
+            messages.error(request, "Veuillez choisir un moyen de paiement valide.")
+            return redirect('payment_checkout', booking_id=req.id)
 
-        # Create Payment Record
-        payment = Payment.objects.create(
-            booking=booking,
-            amount=booking.total_price,
-            payment_method=payment_method,
-            status='completed'  # Simulated success
-        )
+        rental_subtotal = _compute_rental_subtotal(req)
+        service_fee = PaymentSelector.get_platform_settings().client_service_fee
+        amount_charged = rental_subtotal + service_fee
 
-        # Update Booking Status to Confirmed (Paid)
-        booking.status = 'confirmed'
-        booking.save()
+        try:
+            reservation = ReservationService.confirm_payment(req, rental_subtotal)
+        except InvalidWorkflowTransition as exc:
+            messages.error(request, str(exc))
+            return redirect('bookings_list')
+
+        payment = PaymentService.create_payment(reservation, request.user, amount_charged, payment_method)
+        PaymentService.verify_payment(payment, gateway_transaction_id=str(uuid_lib.uuid4()))
+        PaymentService.create_commission(payment)
 
         messages.success(
-            request, 
-            f"Paiement de {booking.total_price} FCFA reçu avec succès ! Votre réservation est confirmée."
+            request,
+            f"Paiement de {amount_charged} FCFA reçu avec succès ! Votre réservation est confirmée."
         )
-        return redirect('payment_receipt', booking_id=booking.id)
+        return redirect('payment_receipt', booking_id=reservation.id)
 
 
 class PaymentReceiptView(LoginRequiredMixin, View):
-    """
-    Renders printable receipt showing booking and transaction details.
-    """
-    def get(self, request, booking_id):
-        booking = get_object_or_404(Booking, id=booking_id)
-        
-        # Ensure only the owner, client, or admin can access the receipt
-        if request.user != booking.client and request.user != booking.property.owner and not request.user.is_superuser:
-            messages.error(request, "Accès non autorisé au reçu.")
-            return redirect('home')
+    """Affiche le reçu imprimable d'une réservation payée."""
 
-        # Safely retrieve payment record or create a dummy in case of inconsistencies
-        payment = getattr(booking, 'payment', None)
+    def get(self, request, booking_id):
+        reservation = ReservationSelector.get_reservation_by_id(booking_id)
+        if not reservation:
+            messages.error(request, "Réservation introuvable.")
+            return redirect('bookings_list')
+
+        user = request.user
+        if user.id != reservation.client_id and user.id != reservation.property.owner_id and not user.is_superuser:
+            messages.error(request, "Accès non autorisé au reçu.")
+            return redirect('public:home')
+
+        payment = reservation.payments.order_by('-created_at').first()
         if not payment:
             messages.error(request, "Aucun paiement enregistré pour cette réservation.")
             return redirect('bookings_list')
 
         context = {
-            'booking': booking,
+            'booking': reservation,
             'payment': payment,
-            'days': (booking.check_out - booking.check_in).days
+            'days': (reservation.check_out - reservation.check_in).days,
         }
         return render(request, 'pages/client/receipt.html', context)

@@ -1,25 +1,11 @@
+{% if similar_properties %}
 <div class="py-10">
     <h2 class="text-2xl font-bold text-gray-900 mb-6">Logements similaires à Dakar</h2>
     
     <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-        {% if similar_properties %}
-            {% for property in similar_properties %}
-                {% include "components/property_card.html" with property=property %}
-            {% endfor %}
-        {% else %}
-            <!-- Mocks for UI testing without backend -->
-            <div class="bg-gray-100 rounded-2xl h-[300px] flex items-center justify-center border border-gray-200">
-                <span class="text-gray-500 font-medium">Logement similaire 1</span>
-            </div>
-            <div class="bg-gray-100 rounded-2xl h-[300px] flex items-center justify-center border border-gray-200">
-                <span class="text-gray-500 font-medium">Logement similaire 2</span>
-            </div>
-            <div class="bg-gray-100 rounded-2xl h-[300px] flex items-center justify-center border border-gray-200 hidden sm:flex">
-                <span class="text-gray-500 font-medium">Logement similaire 3</span>
-            </div>
-            <div class="bg-gray-100 rounded-2xl h-[300px] flex items-center justify-center border border-gray-200 hidden xl:flex">
-                <span class="text-gray-500 font-medium">Logement similaire 4</span>
-            </div>
-        {% endif %}
+        {% for property in similar_properties %}
+            {% include "components/property_card.html" with property=property %}
+        {% endfor %}
     </div>
 </div>
+{% endif %}

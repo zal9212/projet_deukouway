@@ -1,20 +1,34 @@
 {% extends "layouts/dashboard.html" %}
 
-{% block title %}Ajouter un logement - DEKOUWAY{% endblock %}
+{% block title %}{% if property %}Modifier le logement{% else %}Ajouter un logement{% endif %} - DEKOUWAY{% endblock %}
+
+{% block extra_head %}
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="" />
+{% endblock %}
 
 {% block content %}
-<div class="max-w-4xl mx-auto" x-data="{ step: 1, maxStep: 9 }">
-    
+{% if initial_data %}{{ initial_data|json_script:"property-initial-data" }}{% endif %}
+<div class="max-w-4xl mx-auto" x-data="propertyWizard('{% url 'dashboard:owner_resolve_map_link' %}', '{{ csrf_token }}')">
+
+    {% if not request.user.is_verified %}
+    <div class="mb-6 p-4 bg-amber-50 border border-amber-200 rounded-xl text-sm text-amber-900 flex items-start gap-3">
+        <i data-lucide="clock" class="w-5 h-5 text-amber-600 shrink-0 mt-0.5"></i>
+        <div>
+            <p class="font-semibold">Votre compte est en attente de vérification.</p>
+            <p class="mt-1 text-amber-800">Vous pouvez préparer votre annonce, mais la publication ne sera possible qu'une fois votre pièce d'identité validée par notre équipe (24 à 48h ouvrées).</p>
+        </div>
+    </div>
+    {% endif %}
+
     <!-- En-tête avec navigation des étapes -->
     <div class="mb-8">
         <h2 class="text-2xl font-bold leading-7 text-gray-900 sm:truncate sm:text-3xl sm:tracking-tight mb-6">
-            Proposer un nouveau logement
+            {% if property %}Modifier le logement{% else %}Proposer un nouveau logement{% endif %}
         </h2>
-        
+
         <!-- Progress Bar -->
         <nav aria-label="Progress">
             <ol role="list" class="flex items-center">
-                <!-- Étape dynamique générée par Alpine -->
                 <template x-for="i in maxStep" :key="i">
                     <li class="relative pr-8 sm:pr-20" :class="i !== maxStep ? '' : 'pr-0 sm:pr-0'">
                         <div class="absolute inset-0 flex items-center" aria-hidden="true" x-show="i !== maxStep">
@@ -30,109 +44,522 @@
         </nav>
     </div>
 
-    <div class="bg-white shadow-sm ring-1 ring-gray-900/5 sm:rounded-xl">
-        <div class="px-4 py-6 sm:p-8">
-            
-            <!-- ETAPE 1: Informations de base -->
-            <div x-show="step === 1">
-                <h3 class="text-lg font-semibold leading-7 text-gray-900 mb-6">Étape 1 : Informations générales</h3>
-                <div class="grid grid-cols-1 gap-x-6 gap-y-8 sm:grid-cols-6">
-                    <div class="sm:col-span-4">
-                        <label class="block text-sm font-medium leading-6 text-gray-900">Titre de l'annonce</label>
-                        <div class="mt-2">
-                            <input type="text" class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-[#8B1E24] sm:text-sm sm:leading-6" placeholder="Ex: Superbe villa avec piscine à Saly">
+    <form method="POST" enctype="multipart/form-data" @submit="if (!latitude || !longitude) { $event.preventDefault(); step = 2; mapError = 'Veuillez positionner votre logement sur la carte avant de continuer.'; }">
+        {% csrf_token %}
+        <input type="hidden" name="latitude" :value="latitude">
+        <input type="hidden" name="longitude" :value="longitude">
+        <div class="bg-white shadow-sm ring-1 ring-gray-900/5 sm:rounded-xl">
+            <div class="px-4 py-6 sm:p-8">
+
+                <!-- ETAPE 1: Informations générales -->
+                <div id="property-step-1" x-show="step === 1">
+                    <h3 class="text-lg font-semibold leading-7 text-gray-900 mb-6">Étape 1 : Informations générales</h3>
+                    <div class="grid grid-cols-1 gap-x-6 gap-y-6 sm:grid-cols-6">
+                        <div class="sm:col-span-6">
+                            <label class="block text-sm font-medium leading-6 text-gray-900">Titre de l'annonce</label>
+                            <div class="mt-2">
+                                <input type="text" name="title" x-model="title" required
+                                       class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-[#8B1E24] sm:text-sm sm:leading-6"
+                                       placeholder="Ex: Superbe villa avec piscine à Saly">
+                            </div>
+                        </div>
+
+                        <div class="sm:col-span-6">
+                            <label class="block text-sm font-medium leading-6 text-gray-900">Type de logement</label>
+                            <div class="mt-2">
+                                <select name="property_type_id" x-model="property_type_id" @change="onTypeChange($event)" required
+                                        class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-[#8B1E24] sm:text-sm sm:leading-6">
+                                    <option value="" disabled selected>Sélectionnez un type</option>
+                                    {% for category in categories %}
+                                    <optgroup label="{{ category.name }}">
+                                        {% for type in types %}
+                                            {% if type.category_id == category.id %}
+                                            <option value="{{ type.id }}" data-category-slug="{{ category.slug }}">{{ type.name }}</option>
+                                            {% endif %}
+                                        {% endfor %}
+                                    </optgroup>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                            <p class="mt-2 text-xs text-gray-500" x-show="selectedCategorySlug" x-cloak
+                               x-text="isPrivateRoom
+                                   ? 'Vous proposez une chambre au sein de votre logement : les espaces communs peuvent être partagés avec vous ou d\'autres voyageurs.'
+                                   : 'Vous proposez l\'intégralité du logement, réservé exclusivement à vos voyageurs.'"></p>
+                        </div>
+
+                        <div class="sm:col-span-6">
+                            <label class="block text-sm font-medium leading-6 text-gray-900">Description</label>
+                            <div class="mt-2">
+                                <textarea name="description" x-model="description" rows="4" required
+                                          class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-[#8B1E24] sm:text-sm sm:leading-6"
+                                          placeholder="Décrivez votre logement, son ambiance, ses points forts..."></textarea>
+                            </div>
                         </div>
                     </div>
-                    
-                    <div class="col-span-full">
-                        <label class="block text-sm font-medium leading-6 text-gray-900">Type de logement</label>
-                        <div class="mt-2 grid grid-cols-1 gap-4 sm:grid-cols-3">
-                            <div class="relative flex cursor-pointer rounded-lg border bg-white p-4 shadow-sm focus:outline-none hover:border-[#8B1E24] border-[#8B1E24] ring-1 ring-[#8B1E24]">
-                                <div class="flex flex-1">
-                                    <div class="flex flex-col">
-                                        <span class="block text-sm font-medium text-gray-900">Logement entier</span>
-                                        <span class="mt-1 flex items-center text-sm text-gray-500">Villa, appartement</span>
-                                    </div>
+                    <div class="mt-8 flex justify-end">
+                        <button type="button" @click="goToStep(1, 2)" class="rounded-md bg-gray-900 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-gray-800">Suivant</button>
+                    </div>
+                </div>
+
+                <!-- ETAPE 2: Localisation -->
+                <div id="property-step-2" x-show="step === 2" x-cloak>
+                    <h3 class="text-lg font-semibold leading-7 text-gray-900 mb-6">Étape 2 : Localisation</h3>
+                    <div class="grid grid-cols-1 gap-x-6 gap-y-6 sm:grid-cols-6">
+                        <div class="sm:col-span-6">
+                            <label class="block text-sm font-medium leading-6 text-gray-900">Adresse</label>
+                            <div class="mt-2">
+                                <input type="text" name="address" x-model="address" required
+                                       class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-[#8B1E24] sm:text-sm sm:leading-6"
+                                       placeholder="Ex: Route de Ngor, Villa n°12">
+                            </div>
+                        </div>
+                        <div class="sm:col-span-3">
+                            <label class="block text-sm font-medium leading-6 text-gray-900">Ville</label>
+                            <div class="mt-2">
+                                <input type="text" name="city" x-model="city" required
+                                       class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-[#8B1E24] sm:text-sm sm:leading-6"
+                                       placeholder="Dakar">
+                            </div>
+                        </div>
+                        <div class="sm:col-span-3">
+                            <label class="block text-sm font-medium leading-6 text-gray-900">Quartier</label>
+                            <div class="mt-2">
+                                <input type="text" name="district" x-model="district" required
+                                       class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-[#8B1E24] sm:text-sm sm:leading-6"
+                                       placeholder="Almadies">
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="mt-6 border-t border-gray-200 pt-6">
+                        <label class="block text-sm font-medium leading-6 text-gray-900">Positionner le logement sur la carte</label>
+                        <p class="mt-1 text-xs text-gray-500">Cliquez directement sur la carte, ou collez un lien Google Maps (ou des coordonnées GPS) et cliquez sur « Positionner ».</p>
+                        <div class="mt-3 flex gap-2">
+                            <input type="text" x-model="mapLinkInput" @keydown.enter.prevent="resolveMapLink()"
+                                   class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-[#8B1E24] sm:text-sm sm:leading-6"
+                                   placeholder="Ex: https://maps.app.goo.gl/xxxx ou 14.7167, -17.4677">
+                            <button type="button" @click="resolveMapLink()" :disabled="resolvingLink"
+                                    class="shrink-0 rounded-md bg-gray-900 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-gray-800 disabled:opacity-50">
+                                <span x-show="!resolvingLink">Positionner</span>
+                                <span x-show="resolvingLink" x-cloak>Recherche...</span>
+                            </button>
+                        </div>
+                        <p x-show="mapError" x-text="mapError" class="mt-2 text-xs text-red-600"></p>
+                        <p x-show="latitude && longitude" x-cloak class="mt-2 text-xs text-emerald-700 flex items-center gap-1">
+                            <i data-lucide="check-circle-2" class="w-3.5 h-3.5"></i>
+                            <span>Position enregistrée : <span x-text="latitude"></span>, <span x-text="longitude"></span></span>
+                        </p>
+
+                        <div id="property-location-map" class="mt-3 w-full h-72 rounded-xl overflow-hidden border border-gray-200"></div>
+                    </div>
+
+                    <div class="mt-8 flex justify-between">
+                        <button type="button" @click="step = 1" class="text-sm font-semibold text-gray-900">Précédent</button>
+                        <button type="button" @click="goToStep(2, 3)" class="rounded-md bg-gray-900 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-gray-800">Suivant</button>
+                    </div>
+                </div>
+
+                <!-- ETAPE 3: Caractéristiques & Tarif -->
+                <div id="property-step-3" x-show="step === 3" x-cloak>
+                    <h3 class="text-lg font-semibold leading-7 text-gray-900 mb-6">Étape 3 : Caractéristiques & tarif</h3>
+                    <div class="grid grid-cols-1 gap-x-6 gap-y-6 sm:grid-cols-4">
+                        <div class="sm:col-span-2">
+                            <label class="block text-sm font-medium leading-6 text-gray-900"
+                                   x-text="isPrivateRoom ? 'Surface de la chambre (m²)' : 'Surface totale (m²)'">Surface (m²)</label>
+                            <div class="mt-2">
+                                <input type="number" name="surface" x-model="surface" min="1" required
+                                       class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-[#8B1E24] sm:text-sm sm:leading-6">
+                            </div>
+                        </div>
+                        <div class="sm:col-span-2">
+                            <label class="block text-sm font-medium leading-6 text-gray-900">Capacité (voyageurs)</label>
+                            <div class="mt-2">
+                                <input type="number" name="max_guests" x-model="max_guests" min="1" required
+                                       class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-[#8B1E24] sm:text-sm sm:leading-6">
+                            </div>
+                        </div>
+                        <div class="sm:col-span-2">
+                            <label class="block text-sm font-medium leading-6 text-gray-900">Chambres</label>
+                            <div class="mt-2">
+                                <input type="number" name="bedrooms" x-model="bedrooms" min="0" required
+                                       :readonly="isPrivateRoom"
+                                       :class="isPrivateRoom ? 'bg-gray-100 text-gray-500 cursor-not-allowed' : ''"
+                                       class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-[#8B1E24] sm:text-sm sm:leading-6">
+                            </div>
+                            <p x-show="isPrivateRoom" x-cloak class="mt-1 text-xs text-gray-500">Une chambre privée compte pour 1 chambre.</p>
+                        </div>
+                        <div class="sm:col-span-2">
+                            <label class="block text-sm font-medium leading-6 text-gray-900">Salles de bain</label>
+                            <div class="mt-2">
+                                <input type="number" name="bathrooms" x-model="bathrooms" min="0" required
+                                       class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-[#8B1E24] sm:text-sm sm:leading-6">
+                            </div>
+                        </div>
+                        <div class="sm:col-span-4">
+                            <label class="block text-sm font-medium leading-6 text-gray-900">Prix par nuit (FCFA)</label>
+                            <div class="mt-2">
+                                <input type="number" name="price" x-model="price" min="1" step="1" required
+                                       class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-[#8B1E24] sm:text-sm sm:leading-6"
+                                       placeholder="Ex: 35000">
+                            </div>
+                        </div>
+                    </div>
+                    <div class="mt-8 flex justify-between">
+                        <button type="button" @click="step = 2" class="text-sm font-semibold text-gray-900">Précédent</button>
+                        <button type="button" @click="goToStep(3, 4)" class="rounded-md bg-gray-900 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-gray-800">Suivant</button>
+                    </div>
+                </div>
+
+                <!-- ETAPE 4: Équipements -->
+                <div id="property-step-4" x-show="step === 4" x-cloak>
+                    <h3 class="text-lg font-semibold leading-7 text-gray-900 mb-6">Étape 4 : Équipements</h3>
+                    <div class="grid grid-cols-2 sm:grid-cols-3 gap-4">
+                        {% for amenity in common_amenities %}
+                        <label class="flex items-center gap-2 rounded-lg border border-gray-300 px-3 py-2.5 cursor-pointer hover:border-[#8B1E24]">
+                            <input type="checkbox" name="amenities" value="{{ amenity }}" x-model="amenities"
+                                   class="rounded border-gray-300 text-[#8B1E24] focus:ring-[#8B1E24]">
+                            <span class="text-sm text-gray-900">{{ amenity }}</span>
+                        </label>
+                        {% endfor %}
+                    </div>
+
+                    <div class="mt-6" x-show="selectedCategorySlug === 'chambre-privee'" x-cloak>
+                        <p class="text-sm font-medium text-gray-900 mb-3">Spécifique à une chambre privée</p>
+                        <div class="grid grid-cols-2 sm:grid-cols-3 gap-4">
+                            {% for amenity in private_room_amenities %}
+                            <label class="flex items-center gap-2 rounded-lg border border-gray-300 px-3 py-2.5 cursor-pointer hover:border-[#8B1E24]">
+                                <input type="checkbox" name="amenities" value="{{ amenity }}" x-model="amenities"
+                                       class="rounded border-gray-300 text-[#8B1E24] focus:ring-[#8B1E24]">
+                                <span class="text-sm text-gray-900">{{ amenity }}</span>
+                            </label>
+                            {% endfor %}
+                        </div>
+                    </div>
+
+                    <div class="mt-6" x-show="selectedCategorySlug === 'logement-entier'" x-cloak>
+                        <p class="text-sm font-medium text-gray-900 mb-3">Spécifique à un logement entier</p>
+                        <div class="grid grid-cols-2 sm:grid-cols-3 gap-4">
+                            {% for amenity in entire_home_amenities %}
+                            <label class="flex items-center gap-2 rounded-lg border border-gray-300 px-3 py-2.5 cursor-pointer hover:border-[#8B1E24]">
+                                <input type="checkbox" name="amenities" value="{{ amenity }}" x-model="amenities"
+                                       class="rounded border-gray-300 text-[#8B1E24] focus:ring-[#8B1E24]">
+                                <span class="text-sm text-gray-900">{{ amenity }}</span>
+                            </label>
+                            {% endfor %}
+                        </div>
+                    </div>
+
+                    <div class="mt-8 flex justify-between">
+                        <button type="button" @click="step = 3" class="text-sm font-semibold text-gray-900">Précédent</button>
+                        <button type="button" @click="step = 5" class="rounded-md bg-gray-900 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-gray-800">Suivant</button>
+                    </div>
+                </div>
+
+                <!-- ETAPE 5: Règles de la maison -->
+                <div id="property-step-5" x-show="step === 5" x-cloak>
+                    <h3 class="text-lg font-semibold leading-7 text-gray-900 mb-6">Étape 5 : Règles de la maison</h3>
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-6">
+                        {% for rule in common_rules %}
+                        <label class="flex items-center gap-2 rounded-lg border border-gray-300 px-3 py-2.5 cursor-pointer hover:border-[#8B1E24]">
+                            <input type="checkbox" name="rules" value="{{ rule }}" x-model="rules"
+                                   class="rounded border-gray-300 text-[#8B1E24] focus:ring-[#8B1E24]">
+                            <span class="text-sm text-gray-900">{{ rule }}</span>
+                        </label>
+                        {% endfor %}
+                    </div>
+                    <label class="block text-sm font-medium leading-6 text-gray-900">Autre règle (optionnel)</label>
+                    <div class="mt-2">
+                        <input type="text" name="extra_rule" x-model="extra_rule"
+                               class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-[#8B1E24] sm:text-sm sm:leading-6"
+                               placeholder="Ex: Ménage à la charge du voyageur">
+                    </div>
+                    <div class="mt-8 flex justify-between">
+                        <button type="button" @click="step = 4" class="text-sm font-semibold text-gray-900">Précédent</button>
+                        <button type="button" @click="step = 6" class="rounded-md bg-gray-900 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-gray-800">Suivant</button>
+                    </div>
+                </div>
+
+                <!-- ETAPE 6: Photos -->
+                <div id="property-step-6" x-show="step === 6" x-cloak>
+                    <h3 class="text-lg font-semibold leading-7 text-gray-900 mb-6">Étape 6 : Photos</h3>
+
+                    {% if property and property.images.all %}
+                    <div class="mb-6">
+                        <p class="text-sm font-medium text-gray-900 mb-3">Photos actuelles</p>
+                        <div class="grid grid-cols-3 sm:grid-cols-4 gap-3">
+                            {% for img in property.images.all %}
+                            <div class="relative aspect-square rounded-lg overflow-hidden border border-gray-200">
+                                <img src="{{ img.image.url }}" class="w-full h-full object-cover">
+                                {% if img.is_cover %}
+                                <span class="absolute top-1 left-1 bg-[#8B1E24] text-white text-[10px] font-bold px-1.5 py-0.5 rounded">Couverture</span>
+                                {% endif %}
+                            </div>
+                            {% endfor %}
+                        </div>
+                    </div>
+                    {% endif %}
+
+                    <label for="property-images" class="flex flex-col items-center justify-center gap-2 rounded-xl border-2 border-dashed border-gray-300 p-8 cursor-pointer hover:border-[#8B1E24] transition-colors">
+                        <i data-lucide="image-plus" class="w-8 h-8 text-gray-400"></i>
+                        <span class="text-sm font-semibold text-gray-900">{% if property %}Cliquez pour ajouter d'autres photos{% else %}Cliquez pour ajouter des photos{% endif %}</span>
+                        <span class="text-xs text-gray-500">JPG, PNG, WEBP — 8 Mo max par photo.{% if not property %} La première photo sera la couverture.{% endif %}</span>
+                        <input id="property-images" type="file" name="images" multiple accept=".jpg,.jpeg,.png,.webp" {% if not property %}required{% endif %}
+                               class="sr-only" @change="onImagesChange($event)">
+                    </label>
+                    <div class="mt-6 grid grid-cols-3 sm:grid-cols-4 gap-3" x-show="imagePreviews.length > 0">
+                        <template x-for="(src, index) in imagePreviews" :key="index">
+                            <div class="relative aspect-square rounded-lg overflow-hidden border border-gray-200">
+                                <img :src="src" class="w-full h-full object-cover">
+                                <span x-show="index === 0 && !hasExistingImages" class="absolute top-1 left-1 bg-[#8B1E24] text-white text-[10px] font-bold px-1.5 py-0.5 rounded">Couverture</span>
+                            </div>
+                        </template>
+                    </div>
+                    <div class="mt-8 flex justify-between">
+                        <button type="button" @click="step = 5" class="text-sm font-semibold text-gray-900">Précédent</button>
+                        <button type="button" @click="goToStep(6, 7)" class="rounded-md bg-gray-900 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-gray-800">Suivant</button>
+                    </div>
+                </div>
+
+                <!-- ETAPE 7: Résumé et Soumission -->
+                <div id="property-step-7" x-show="step === 7" x-cloak>
+                    <h3 class="text-lg font-semibold leading-7 text-gray-900 mb-6">Étape 7 : Vérification et soumission</h3>
+
+                    <div class="rounded-md bg-blue-50 p-4 mb-6">
+                        <div class="flex">
+                            <div class="flex-shrink-0">
+                                <i data-lucide="info" class="h-5 w-5 text-blue-400"></i>
+                            </div>
+                            <div class="ml-3">
+                                {% if property %}
+                                <h3 class="text-sm font-medium text-blue-800">Modification d'un logement existant</h3>
+                                <div class="mt-2 text-sm text-blue-700">
+                                    <p>Vos modifications seront enregistrées immédiatement et n'affectent pas le statut de validation actuel du logement.</p>
                                 </div>
-                            </div>
-                            <div class="relative flex cursor-pointer rounded-lg border border-gray-300 bg-white p-4 shadow-sm focus:outline-none hover:border-gray-400">
-                                <div class="flex flex-1">
-                                    <div class="flex flex-col">
-                                        <span class="block text-sm font-medium text-gray-900">Chambre privée</span>
-                                        <span class="mt-1 flex items-center text-sm text-gray-500">Dans un logement partagé</span>
-                                    </div>
+                                {% else %}
+                                <h3 class="text-sm font-medium text-blue-800">Processus de validation DEKOUWAY</h3>
+                                <div class="mt-2 text-sm text-blue-700">
+                                    <p>Une fois soumis, votre logement sera analysé par un SuperAdmin. Il ne sera pas visible par les clients tant qu'il n'aura pas été officiellement validé (sous 48h).</p>
                                 </div>
+                                {% endif %}
                             </div>
                         </div>
                     </div>
-                    
-                    <div class="col-span-full">
-                        <label class="block text-sm font-medium leading-6 text-gray-900">Description</label>
-                        <div class="mt-2">
-                            <textarea rows="4" class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-[#8B1E24] sm:text-sm sm:leading-6"></textarea>
-                        </div>
-                    </div>
-                </div>
-            </div>
 
-            <!-- ETAPE 9: Résumé et Soumission -->
-            <div x-show="step === 9" x-cloak>
-                <h3 class="text-lg font-semibold leading-7 text-gray-900 mb-6">Étape 9 : Vérification et soumission</h3>
-                
-                <div class="rounded-md bg-blue-50 p-4 mb-6">
-                    <div class="flex">
-                        <div class="flex-shrink-0">
-                            <i data-lucide="info" class="h-5 w-5 text-blue-400"></i>
-                        </div>
-                        <div class="ml-3">
-                            <h3 class="text-sm font-medium text-blue-800">Processus de validation DEKOUWAY</h3>
-                            <div class="mt-2 text-sm text-blue-700">
-                                <p>Une fois soumis, votre logement sera analysé par un SuperAdmin. Il ne sera pas visible par les clients tant qu'il n'aura pas été officiellement validé (sous 48h).</p>
+                    <div class="border-t border-b border-gray-200 py-6 mb-6">
+                        <dl class="divide-y divide-gray-100">
+                            <div class="px-4 py-4 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-0">
+                                <dt class="text-sm font-medium leading-6 text-gray-900">Titre</dt>
+                                <dd class="mt-1 text-sm leading-6 text-gray-700 sm:col-span-2 sm:mt-0" x-text="title || '—'"></dd>
                             </div>
-                        </div>
+                            <div class="px-4 py-4 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-0">
+                                <dt class="text-sm font-medium leading-6 text-gray-900">Localisation</dt>
+                                <dd class="mt-1 text-sm leading-6 text-gray-700 sm:col-span-2 sm:mt-0" x-text="(district || '—') + ', ' + (city || '—')"></dd>
+                            </div>
+                            <div class="px-4 py-4 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-0">
+                                <dt class="text-sm font-medium leading-6 text-gray-900">Position GPS</dt>
+                                <dd class="mt-1 text-sm leading-6 text-gray-700 sm:col-span-2 sm:mt-0" x-text="(latitude && longitude) ? (latitude + ', ' + longitude) : 'Non positionné'"></dd>
+                            </div>
+                            <div class="px-4 py-4 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-0">
+                                <dt class="text-sm font-medium leading-6 text-gray-900">Tarif de base</dt>
+                                <dd class="mt-1 text-sm leading-6 text-gray-700 sm:col-span-2 sm:mt-0" x-text="(price || '—') + ' FCFA / nuit'"></dd>
+                            </div>
+                            <div class="px-4 py-4 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-0">
+                                <dt class="text-sm font-medium leading-6 text-gray-900">Capacité</dt>
+                                <dd class="mt-1 text-sm leading-6 text-gray-700 sm:col-span-2 sm:mt-0" x-text="(max_guests || '—') + ' voyageurs, ' + (bedrooms || '0') + ' chambres, ' + (bathrooms || '0') + ' salles de bain'"></dd>
+                            </div>
+                            <div class="px-4 py-4 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-0">
+                                <dt class="text-sm font-medium leading-6 text-gray-900">Photos</dt>
+                                <dd class="mt-1 text-sm leading-6 text-gray-700 sm:col-span-2 sm:mt-0" x-text="(existingImagesCount + imagePreviews.length) + ' photo(s) au total'"></dd>
+                            </div>
+                        </dl>
+                    </div>
+                    <div class="mt-8 flex justify-between">
+                        <button type="button" @click="step = 6" class="text-sm font-semibold text-gray-900">Précédent</button>
+                        <button type="submit" class="rounded-md bg-[#8B1E24] px-4 py-2 text-sm font-semibold text-white shadow-sm hover:bg-[#6F171C]">
+                            {% if property %}Enregistrer les modifications{% else %}Envoyer pour validation (SuperAdmin){% endif %}
+                        </button>
                     </div>
                 </div>
 
-                <div class="border-t border-b border-gray-200 py-6 mb-6">
-                    <dl class="divide-y divide-gray-100">
-                        <div class="px-4 py-4 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-0">
-                            <dt class="text-sm font-medium leading-6 text-gray-900">Titre</dt>
-                            <dd class="mt-1 text-sm leading-6 text-gray-700 sm:col-span-2 sm:mt-0">Villa Teranga Saly</dd>
-                        </div>
-                        <div class="px-4 py-4 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-0">
-                            <dt class="text-sm font-medium leading-6 text-gray-900">Tarif de base</dt>
-                            <dd class="mt-1 text-sm leading-6 text-gray-700 sm:col-span-2 sm:mt-0">35 000 FCFA / nuit</dd>
-                        </div>
-                    </dl>
-                </div>
             </div>
-
-            <!-- Placeholder pour les autres étapes -->
-            <div x-show="step > 1 && step < 9" x-cloak class="py-12 text-center">
-                <div class="mx-auto flex h-12 w-12 items-center justify-center rounded-full bg-gray-100">
-                    <i data-lucide="settings" class="h-6 w-6 text-gray-600 animate-spin-slow"></i>
-                </div>
-                <h3 class="mt-4 text-sm font-semibold text-gray-900">Étape <span x-text="step"></span> en cours de construction</h3>
-                <p class="mt-2 text-sm text-gray-500">Composant simulé pour l'interface utilisateur.</p>
-            </div>
-
         </div>
-        
-        <!-- Pied de formulaire (Boutons Précédent / Suivant) -->
-        <div class="flex items-center justify-between border-t border-gray-900/10 px-4 py-4 sm:px-8 bg-gray-50 rounded-b-xl">
-            <button type="button" @click="if (step > 1) step--" class="text-sm font-semibold leading-6 text-gray-900" :class="step === 1 ? 'invisible' : ''">
-                Précédent
-            </button>
-            
-            <button type="button" @click="if (step < 9) step++" x-show="step < 9" class="rounded-md bg-gray-900 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-gray-800 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2">
-                Suivant
-            </button>
-
-            <!-- Bouton final strict -->
-            <a href="properties.html" x-show="step === 9" x-cloak class="rounded-md bg-[#8B1E24] px-4 py-2 text-sm font-semibold text-white shadow-sm hover:bg-[#6F171C] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2">
-                Envoyer pour validation (SuperAdmin)
-            </a>
-        </div>
-    </div>
+    </form>
 </div>
+{% endblock %}
+
+{% block extra_scripts %}
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
+<script>
+    function propertyWizard(resolveMapLinkUrl, csrfToken) {
+        return {
+            step: 1, maxStep: 7,
+            title: '', description: '', property_type_id: '', selectedCategorySlug: '',
+            address: '', city: '', district: '',
+            price: '', surface: '', bedrooms: '', bathrooms: '', max_guests: '',
+            amenities: [], rules: [], extra_rule: '',
+            imagePreviews: [], existingImagesCount: 0, hasExistingImages: false,
+            latitude: null, longitude: null,
+            mapLinkInput: '', mapError: '', resolvingLink: false,
+            map: null, marker: null, mapInitialized: false,
+
+            get isPrivateRoom() {
+                return this.selectedCategorySlug === 'chambre-privee';
+            },
+
+            onTypeChange(event) {
+                const selected = event.target.selectedOptions[0];
+                this.selectedCategorySlug = selected ? (selected.dataset.categorySlug || '') : '';
+                if (this.isPrivateRoom) {
+                    this.bedrooms = 1;
+                }
+            },
+
+            onImagesChange(event) {
+                this.imagePreviews = Array.from(event.target.files).map(f => URL.createObjectURL(f));
+            },
+
+            goToStep(current, next) {
+                const stepEl = document.getElementById('property-step-' + current);
+                const invalidField = stepEl.querySelector(':invalid');
+                if (invalidField) {
+                    invalidField.reportValidity();
+                    return;
+                }
+                if (current === 2 && (!this.latitude || !this.longitude)) {
+                    this.mapError = 'Veuillez positionner votre logement sur la carte avant de continuer.';
+                    return;
+                }
+                this.step = next;
+            },
+
+            initLocationMap() {
+                if (this.mapInitialized || typeof L === 'undefined') return;
+                this.mapInitialized = true;
+
+                const hasInitialPosition = this.latitude && this.longitude;
+                const initialCenter = hasInitialPosition ? [this.latitude, this.longitude] : [14.7167, -17.4677];
+                this.map = L.map('property-location-map').setView(initialCenter, hasInitialPosition ? 15 : 12);
+                L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png', {
+                    attribution: '&copy; OpenStreetMap, &copy; CARTO',
+                    maxZoom: 19
+                }).addTo(this.map);
+
+                this.map.on('click', (e) => this.setPosition(e.latlng.lat, e.latlng.lng));
+
+                if (hasInitialPosition) {
+                    this.setPosition(this.latitude, this.longitude);
+                }
+
+                setTimeout(() => this.map.invalidateSize(), 150);
+            },
+
+            setPosition(lat, lng) {
+                this.latitude = Math.round(lat * 1000000) / 1000000;
+                this.longitude = Math.round(lng * 1000000) / 1000000;
+                this.mapError = '';
+
+                if (this.marker) {
+                    this.marker.setLatLng([lat, lng]);
+                } else {
+                    this.marker = L.marker([lat, lng], { draggable: true }).addTo(this.map);
+                    this.marker.on('dragend', () => {
+                        const pos = this.marker.getLatLng();
+                        this.setPosition(pos.lat, pos.lng);
+                    });
+                }
+                this.map.setView([lat, lng], 15);
+            },
+
+            extractCoordinatesLocally(text) {
+                const patterns = [
+                    /@(-?\d{1,2}\.\d+),(-?\d{1,3}\.\d+)/,
+                    /!3d(-?\d{1,2}\.\d+)!4d(-?\d{1,3}\.\d+)/,
+                    /[?&]q=(-?\d{1,2}\.\d+),\+?(-?\d{1,3}\.\d+)/,
+                    /\/maps\/search\/(-?\d{1,2}\.\d+),\+?(-?\d{1,3}\.\d+)/,
+                    /^\s*(-?\d{1,2}\.\d+)\s*,\s*(-?\d{1,3}\.\d+)\s*$/,
+                    /(-?\d{1,2}\.\d{4,}),\+?\s*(-?\d{1,3}\.\d{4,})/,
+                ];
+                for (const pattern of patterns) {
+                    const match = text.match(pattern);
+                    if (match) {
+                        const lat = parseFloat(match[1]);
+                        const lng = parseFloat(match[2]);
+                        if (lat >= -90 && lat <= 90 && lng >= -180 && lng <= 180) {
+                            return { lat, lng };
+                        }
+                    }
+                }
+                return null;
+            },
+
+            async resolveMapLink() {
+                const text = this.mapLinkInput.trim();
+                if (!text) {
+                    this.mapError = 'Collez un lien Google Maps ou des coordonnées.';
+                    return;
+                }
+                this.mapError = '';
+
+                const localCoords = this.extractCoordinatesLocally(text);
+                if (localCoords) {
+                    this.setPosition(localCoords.lat, localCoords.lng);
+                    return;
+                }
+
+                this.resolvingLink = true;
+                try {
+                    const response = await fetch(resolveMapLinkUrl, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/x-www-form-urlencoded',
+                            'X-CSRFToken': csrfToken,
+                        },
+                        body: 'text=' + encodeURIComponent(text),
+                    });
+                    const data = await response.json();
+                    if (response.ok && data.lat && data.lng) {
+                        this.setPosition(data.lat, data.lng);
+                    } else {
+                        this.mapError = data.error || "Impossible de déterminer la position à partir de ce lien.";
+                    }
+                } catch (e) {
+                    this.mapError = "Erreur réseau lors de la résolution du lien.";
+                } finally {
+                    this.resolvingLink = false;
+                }
+            },
+
+            init() {
+                const initialEl = document.getElementById('property-initial-data');
+                if (initialEl) {
+                    const data = JSON.parse(initialEl.textContent);
+                    this.title = data.title || '';
+                    this.description = data.description || '';
+                    this.property_type_id = data.property_type_id || '';
+                    this.selectedCategorySlug = data.category_slug || '';
+                    this.address = data.address || '';
+                    this.city = data.city || '';
+                    this.district = data.district || '';
+                    this.latitude = data.latitude;
+                    this.longitude = data.longitude;
+                    this.price = data.price;
+                    this.surface = data.surface;
+                    this.bedrooms = data.bedrooms;
+                    this.bathrooms = data.bathrooms;
+                    this.max_guests = data.max_guests;
+                    this.amenities = data.amenities || [];
+                    this.rules = data.rules || [];
+                    this.existingImagesCount = data.existing_images_count || 0;
+                    this.hasExistingImages = this.existingImagesCount > 0;
+                }
+
+                this.$watch('step', (value) => {
+                    if (value === 2) {
+                        this.$nextTick(() => this.initLocationMap());
+                    }
+                });
+            }
+        }
+    }
+</script>
 {% endblock %}

@@ -19,9 +19,18 @@
             <a href="{% url 'properties_list' %}" class="text-xs font-bold tracking-wider text-[#6B7280] hover:text-[#1F2937] transition-colors uppercase">
                 Explorer
             </a>
-            <a href="{% url 'support' %}" class="text-xs font-bold tracking-wider text-[#6B7280] hover:text-[#1F2937] transition-colors uppercase">
-                Assistance
+            <a href="{% url 'public:about' %}" class="text-xs font-bold tracking-wider text-[#6B7280] hover:text-[#1F2937] transition-colors uppercase">
+                À propos
             </a>
+            <a href="{% url 'public:contact' %}" class="text-xs font-bold tracking-wider text-[#6B7280] hover:text-[#1F2937] transition-colors uppercase">
+                Contact
+            </a>
+            {% if user.is_authenticated %}
+                <a href="{% url 'dashboard:home' %}" class="text-xs font-bold tracking-wider text-[#8B1E24] hover:text-[#6F171C] transition-colors uppercase flex items-center space-x-1.5">
+                    <i data-lucide="layout-dashboard" class="w-4 h-4 text-[#8B1E24]"></i>
+                    <span>Tableau de bord</span>
+                </a>
+            {% endif %}
         </nav>
 
         <!-- Right Side actions (Reome Pill Button Style) -->
@@ -45,15 +54,39 @@
                     </button>
                     <!-- Dropdown list -->
                     <div x-show="dropdownOpen" @click.outside="dropdownOpen = false" x-cloak 
-                         class="absolute right-0 mt-2 w-48 bg-white border border-[#E5E7EB] rounded-xl shadow-lg py-1 z-50">
-                        <a href="{% url 'profile' %}" class="flex items-center px-4 py-2.5 text-xs font-bold text-[#1F2937] hover:bg-[#FAFAFA] space-x-2">
-                            <i data-lucide="user" class="w-4 h-4 text-[#6B7280]"></i>
-                            <span>Mon Profil</span>
+                         class="absolute right-0 mt-2 w-52 bg-white border border-[#E5E7EB] rounded-xl shadow-lg py-1 z-50">
+                        <a href="{% url 'dashboard:home' %}" class="flex items-center px-4 py-2.5 text-xs font-bold text-[#8B1E24] hover:bg-[#FAFAFA] space-x-2 border-b border-[#E5E7EB]">
+                            <i data-lucide="layout-dashboard" class="w-4 h-4 text-[#8B1E24]"></i>
+                            <span>Tableau de bord</span>
                         </a>
-                        <a href="{% url 'bookings_list' %}" class="flex items-center px-4 py-2.5 text-xs font-bold text-[#1F2937] hover:bg-[#FAFAFA] space-x-2">
-                            <i data-lucide="calendar" class="w-4 h-4 text-[#6B7280]"></i>
-                            <span>Mes Réservations</span>
-                        </a>
+                        {% if user.is_owner %}
+                            <a href="{% url 'dashboard:owner_profile' %}" class="flex items-center px-4 py-2.5 text-xs font-bold text-[#1F2937] hover:bg-[#FAFAFA] space-x-2">
+                                <i data-lucide="user" class="w-4 h-4 text-[#6B7280]"></i>
+                                <span>Mon Profil</span>
+                            </a>
+                            <a href="{% url 'dashboard:owner_requests' %}" class="flex items-center px-4 py-2.5 text-xs font-bold text-[#1F2937] hover:bg-[#FAFAFA] space-x-2">
+                                <i data-lucide="calendar" class="w-4 h-4 text-[#6B7280]"></i>
+                                <span>Réservations</span>
+                            </a>
+                        {% elif user.is_superadmin or user.is_staff %}
+                            <a href="{% url 'dashboard:admin_profile' %}" class="flex items-center px-4 py-2.5 text-xs font-bold text-[#1F2937] hover:bg-[#FAFAFA] space-x-2">
+                                <i data-lucide="user" class="w-4 h-4 text-[#6B7280]"></i>
+                                <span>Mon Profil</span>
+                            </a>
+                            <a href="{% url 'dashboard:admin_reservations' %}" class="flex items-center px-4 py-2.5 text-xs font-bold text-[#1F2937] hover:bg-[#FAFAFA] space-x-2">
+                                <i data-lucide="calendar" class="w-4 h-4 text-[#6B7280]"></i>
+                                <span>Réservations</span>
+                            </a>
+                        {% else %}
+                            <a href="{% url 'profile' %}" class="flex items-center px-4 py-2.5 text-xs font-bold text-[#1F2937] hover:bg-[#FAFAFA] space-x-2">
+                                <i data-lucide="user" class="w-4 h-4 text-[#6B7280]"></i>
+                                <span>Mon Profil</span>
+                            </a>
+                            <a href="{% url 'bookings_list' %}" class="flex items-center px-4 py-2.5 text-xs font-bold text-[#1F2937] hover:bg-[#FAFAFA] space-x-2">
+                                <i data-lucide="calendar" class="w-4 h-4 text-[#6B7280]"></i>
+                                <span>Mes Réservations</span>
+                            </a>
+                        {% endif %}
                         <form action="{% url 'logout' %}" method="post" class="border-t border-[#E5E7EB]">
                             {% csrf_token %}
                             <button type="submit" class="w-full text-left flex items-center px-4 py-2.5 text-xs font-bold text-[#DC2626] hover:bg-[#FAFAFA] space-x-2 cursor-pointer">
@@ -80,7 +113,4 @@
             <i data-lucide="x" class="w-5 h-5" x-show="mobileMenuOpen" x-cloak></i>
         </button>
     </div>
-
-    <!-- Mobile Nav Slide drawer -->
-    {% include "components/mobile_nav.html" %}
 </header>

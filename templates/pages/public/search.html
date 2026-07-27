@@ -86,21 +86,14 @@
                         {% endfor %}
                     </div>
                 {% else %}
-                    <!-- MOCK DATA FOR DEMONSTRATION IF NO PROPERTIES -->
-                    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 pb-24 lg:pb-8">
-                        <!-- Simulation de cartes avec les IDs mockés dans leaflet_map.html -->
-                        <div @mouseenter="activeProperty = 1" @mouseleave="activeProperty = null" class="transition-transform hover:-translate-y-1 bg-white border border-gray-200 rounded-2xl p-4 shadow-sm h-64 flex items-center justify-center text-center">Studio moderne Ngor (ID 1)</div>
-                        <div @mouseenter="activeProperty = 2" @mouseleave="activeProperty = null" class="transition-transform hover:-translate-y-1 bg-white border border-gray-200 rounded-2xl p-4 shadow-sm h-64 flex items-center justify-center text-center">Appartement vue mer (ID 2)</div>
-                        <div @mouseenter="activeProperty = 3" @mouseleave="activeProperty = null" class="transition-transform hover:-translate-y-1 bg-white border border-gray-200 rounded-2xl p-4 shadow-sm h-64 flex items-center justify-center text-center">Chambre étudiante (ID 3)</div>
-                        <div @mouseenter="activeProperty = 4" @mouseleave="activeProperty = null" class="transition-transform hover:-translate-y-1 bg-white border border-gray-200 rounded-2xl p-4 shadow-sm h-64 flex items-center justify-center text-center">Villa Almadies (ID 4)</div>
-                    </div>
+                    {% include "components/empty_state.html" with title="Aucun logement trouvé" description="Aucune annonce ne correspond à vos critères de recherche pour le moment." icon="home" %}
                 {% endif %}
             </div>
         </div>
 
         <!-- Zone Carte (Plein écran quand showMap = true) -->
         <div class="fixed inset-0 z-20 bg-white"
-             style="top: 170px;"
+             style="top: 135px;"
              x-show="showMap"
              x-cloak>
             {% include "components/leaflet_map.html" %}

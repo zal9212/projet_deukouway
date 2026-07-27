@@ -4,7 +4,7 @@
 <div class="min-h-full flex flex-col pb-16 md:pb-0">
     <!-- Navbar -->
     {% include "components/navbar.html" %}
-    
+
     <!-- Main Content -->
     <main class="flex-grow">
         {% block content %}{% endblock %}
@@ -15,16 +15,5 @@
 
     <!-- Mobile bottom nav -->
     {% include "components/mobile_nav.html" %}
-
-    <!-- FAB Chat — Desktop uniquement -->
-    <a href="{% url 'support' %}"
-       aria-label="Ouvrir le chat d'assistance"
-       class="hidden md:flex fixed bottom-16 right-8 z-50 items-center justify-center w-14 h-14 bg-[#8B1E24] hover:bg-[#6F171C] text-white rounded-full shadow-lg hover:shadow-xl transition-all duration-200 group">
-        <i data-lucide="message-square" class="w-6 h-6"></i>
-        <!-- Tooltip -->
-        <span class="absolute right-16 bg-[#1F2937] text-white text-xs font-semibold px-3 py-1.5 rounded-lg whitespace-nowrap opacity-0 group-hover:opacity-100 transition-opacity duration-150 pointer-events-none shadow-md">
-            Assistance
-        </span>
-    </a>
 </div>
 {% endblock %}

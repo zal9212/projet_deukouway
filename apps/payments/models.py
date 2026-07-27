@@ -1,6 +1,7 @@
+from decimal import Decimal
 from django.db import models
 from django.conf import settings
-from django.core.validators import MinValueValidator, FileExtensionValidator
+from django.core.validators import MinValueValidator, MaxValueValidator, FileExtensionValidator
 from django.utils.translation import gettext_lazy as _
 from apps.core.models import BaseModel
 from apps.reservations.models import Reservation
@@ -144,3 +145,34 @@ class PaymentHistory(BaseModel):
 
     def __str__(self) -> str:
         return f"{self.payment.id}: {self.old_status} -> {self.new_status}"
+
+
+class PlatformSettings(BaseModel):
+    """
+    Règles financières globales de la plateforme DEKOUWAY (singleton).
+    """
+    commission_percentage = models.DecimalField(
+        _('Commission Propriétaire (%)'),
+        max_digits=5, decimal_places=2, default=Decimal('15.00'),
+        validators=[MinValueValidator(Decimal('0.00')), MaxValueValidator(Decimal('100.00'))]
+    )
+    client_service_fee = models.DecimalField(
+        _('Frais de service Client (Fixe en FCFA)'),
+        max_digits=12, decimal_places=2, default=Decimal('5000.00'),
+        validators=[MinValueValidator(Decimal('0.00'))]
+    )
+
+    class Meta(BaseModel.Meta):
+        verbose_name = _('Configuration de la Plateforme')
+        verbose_name_plural = _('Configuration de la Plateforme')
+        db_table = 'payments_platform_settings'
+
+    def __str__(self) -> str:
+        return f"Configuration Plateforme (Commission {self.commission_percentage}%)"
+
+    @classmethod
+    def load(cls) -> 'PlatformSettings':
+        obj = cls.objects.filter(is_deleted=False).order_by('created_at').first()
+        if not obj:
+            obj = cls.objects.create()
+        return obj

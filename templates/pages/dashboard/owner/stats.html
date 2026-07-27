@@ -9,31 +9,20 @@
             Performance & Statistiques
         </h2>
     </div>
-    <div class="mt-4 flex md:ml-4 md:mt-0">
-        <select class="block w-full rounded-md border-0 py-1.5 pl-3 pr-10 text-gray-900 ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-[#8B1E24] sm:text-sm sm:leading-6">
-            <option>Tous les logements</option>
-            <option>Villa Teranga Saly</option>
-            <option>Studio Dakar</option>
-        </select>
-    </div>
 </div>
 {% endblock %}
 
 {% block content %}
 <div class="space-y-8">
-    
+
     <div class="grid grid-cols-1 gap-5 sm:grid-cols-3">
         <!-- Chiffre d'affaires -->
         <div class="overflow-hidden rounded-xl bg-white px-4 py-5 shadow-sm border border-gray-200 sm:p-6">
             <dt class="truncate text-sm font-medium text-gray-500">Revenus nets générés</dt>
             <dd class="mt-1 flex items-baseline justify-between md:block lg:flex">
                 <div class="flex items-baseline text-2xl font-semibold text-gray-900">
-                    120 000 F
-                    <span class="ml-2 text-sm font-medium text-gray-500">en 2024</span>
-                </div>
-                <div class="inline-flex items-baseline rounded-full px-2.5 py-0.5 text-sm font-medium bg-green-100 text-green-800 md:mt-2 lg:mt-0">
-                    <i data-lucide="arrow-up" class="-ml-1 mr-0.5 h-4 w-4 shrink-0 text-green-500"></i>
-                    12%
+                    {{ stats.annual_revenue }} F
+                    <span class="ml-2 text-sm font-medium text-gray-500">cette année</span>
                 </div>
             </dd>
         </div>
@@ -42,7 +31,7 @@
             <dt class="truncate text-sm font-medium text-gray-500">Taux d'occupation</dt>
             <dd class="mt-1 flex items-baseline justify-between md:block lg:flex">
                 <div class="flex items-baseline text-2xl font-semibold text-gray-900">
-                    65%
+                    {{ stats.occupancy_rate }}%
                 </div>
             </dd>
         </div>
@@ -50,28 +39,90 @@
         <div class="overflow-hidden rounded-xl bg-white px-4 py-5 shadow-sm border border-gray-200 sm:p-6">
             <dt class="truncate text-sm font-medium text-gray-500">Note moyenne</dt>
             <dd class="mt-1 flex items-baseline justify-between md:block lg:flex">
+                {% if stats.total_reviews %}
                 <div class="flex items-baseline text-2xl font-semibold text-gray-900">
-                    4.8 / 5
+                    {{ stats.avg_rating }} / 5
+                    <span class="ml-2 text-sm font-medium text-gray-500">{{ stats.total_reviews }} avis</span>
                 </div>
+                {% else %}
+                <div class="flex items-baseline text-2xl font-semibold text-gray-400">
+                    Aucun avis
+                </div>
+                {% endif %}
             </dd>
         </div>
     </div>
 
-    <!-- Graphiques (Placeholders) -->
+    <!-- Graphiques -->
     <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
         <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
-            <h3 class="text-base font-semibold leading-6 text-gray-900 mb-6">Évolution des revenus</h3>
-            <div class="h-64 bg-gray-50 rounded-lg flex items-center justify-center border border-dashed border-gray-300">
-                {% include "components/dashboard/chart_placeholder.html" with title="Graphique des revenus (Sprint 6)" %}
+            <h3 class="text-base font-semibold leading-6 text-gray-900 mb-6">Évolution des revenus (6 derniers mois)</h3>
+            <div class="h-64">
+                <canvas id="revenueChart"></canvas>
             </div>
         </div>
         <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
             <h3 class="text-base font-semibold leading-6 text-gray-900 mb-6">Taux d'occupation mensuel</h3>
-            <div class="h-64 bg-gray-50 rounded-lg flex items-center justify-center border border-dashed border-gray-300">
-                {% include "components/dashboard/chart_placeholder.html" with title="Graphique d'occupation (Sprint 6)" %}
+            <div class="h-64">
+                <canvas id="occupancyChart"></canvas>
             </div>
         </div>
     </div>
 
 </div>
+{% endblock %}
+
+{% block extra_scripts %}
+{{ charts.labels|json_script:"charts-labels-data" }}
+{{ charts.revenue_data|json_script:"charts-revenue-data" }}
+{{ charts.occupancy_data|json_script:"charts-occupancy-data" }}
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+    document.addEventListener("DOMContentLoaded", function() {
+        const labels = JSON.parse(document.getElementById('charts-labels-data').textContent);
+        const revenueData = JSON.parse(document.getElementById('charts-revenue-data').textContent);
+        const occupancyData = JSON.parse(document.getElementById('charts-occupancy-data').textContent);
+
+        new Chart(document.getElementById('revenueChart').getContext('2d'), {
+            type: 'line',
+            data: {
+                labels: labels,
+                datasets: [{
+                    label: 'Revenus (FCFA)',
+                    data: revenueData,
+                    borderColor: '#8B1E24',
+                    backgroundColor: 'rgba(139, 30, 36, 0.1)',
+                    fill: true,
+                    tension: 0.4,
+                    borderWidth: 2
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: { legend: { display: false } },
+                scales: { y: { beginAtZero: true }, x: { grid: { display: false } } }
+            }
+        });
+
+        new Chart(document.getElementById('occupancyChart').getContext('2d'), {
+            type: 'bar',
+            data: {
+                labels: labels,
+                datasets: [{
+                    label: "Taux d'occupation (%)",
+                    data: occupancyData,
+                    backgroundColor: '#0F172A',
+                    borderRadius: 4
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: { legend: { display: false } },
+                scales: { y: { beginAtZero: true, max: 100 }, x: { grid: { display: false } } }
+            }
+        });
+    });
+</script>
 {% endblock %}

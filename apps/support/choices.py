@@ -4,6 +4,7 @@ from django.utils.translation import gettext_lazy as _
 class TicketStatusChoices(models.TextChoices):
     OPEN = 'OPEN', _('Ouvert')
     IN_PROGRESS = 'IN_PROGRESS', _('En cours')
+    ESCALATED = 'ESCALATED', _('Escaladé')
     RESOLVED = 'RESOLVED', _('Résolu')
     CLOSED = 'CLOSED', _('Fermé')
 

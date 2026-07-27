@@ -13,20 +13,17 @@
         <div class="h-6 w-px bg-gray-300 mx-1 flex-shrink-0"></div>
 
         <!-- Quick Filters -->
-        <button class="flex-shrink-0 inline-flex items-center px-4 py-2 bg-white border border-gray-300 rounded-full text-sm font-medium text-gray-700 hover:border-gray-900 transition-all">
+        <a href="{% url 'properties_list' %}?type=appartement" class="flex-shrink-0 inline-flex items-center px-4 py-2 bg-white border border-gray-300 rounded-full text-sm font-medium text-gray-700 hover:border-gray-900 transition-all {% if request.GET.type == 'appartement' %}border-gray-900 bg-gray-50{% endif %}">
             Appartements
-        </button>
-        <button class="flex-shrink-0 inline-flex items-center px-4 py-2 bg-white border border-gray-300 rounded-full text-sm font-medium text-gray-700 hover:border-gray-900 transition-all">
+        </a>
+        <a href="{% url 'properties_list' %}?type=villa" class="flex-shrink-0 inline-flex items-center px-4 py-2 bg-white border border-gray-300 rounded-full text-sm font-medium text-gray-700 hover:border-gray-900 transition-all {% if request.GET.type == 'villa' %}border-gray-900 bg-gray-50{% endif %}">
             Villas
-        </button>
-        <button class="flex-shrink-0 inline-flex items-center px-4 py-2 bg-white border border-gray-300 rounded-full text-sm font-medium text-gray-700 hover:border-gray-900 transition-all">
+        </a>
+        <a href="{% url 'properties_list' %}?type=studio" class="flex-shrink-0 inline-flex items-center px-4 py-2 bg-white border border-gray-300 rounded-full text-sm font-medium text-gray-700 hover:border-gray-900 transition-all {% if request.GET.type == 'studio' %}border-gray-900 bg-gray-50{% endif %}">
             Studios
-        </button>
-        <button class="flex-shrink-0 inline-flex items-center px-4 py-2 bg-white border border-gray-300 rounded-full text-sm font-medium text-gray-700 hover:border-gray-900 transition-all">
-            Meublé
-        </button>
-        <button class="flex-shrink-0 inline-flex items-center px-4 py-2 bg-white border border-gray-300 rounded-full text-sm font-medium text-gray-700 hover:border-gray-900 transition-all">
+        </a>
+        <a href="{% url 'properties_list' %}?vue_mer=1" class="flex-shrink-0 inline-flex items-center px-4 py-2 bg-white border border-gray-300 rounded-full text-sm font-medium text-gray-700 hover:border-gray-900 transition-all {% if request.GET.vue_mer %}border-gray-900 bg-gray-50{% endif %}">
             Vue sur mer
-        </button>
+        </a>
     </div>
 </div>

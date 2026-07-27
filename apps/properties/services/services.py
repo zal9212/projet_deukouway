@@ -1,9 +1,11 @@
 from django.db import transaction
 from django.utils import timezone
 from apps.accounts.models import User
-from apps.properties.models import Property, PropertyStatusHistory
+from apps.properties.models import Property, PropertyStatusHistory, PropertyAmenity, PropertyRule, PropertyImage, PropertyAvailability
 from apps.properties.choices import PropertyStatusChoices
-from apps.properties.services.exceptions import PropertyAlreadyPublished, InvalidPropertyStatus, UnauthorizedPropertyAction
+from apps.properties.services.exceptions import PropertyAlreadyPublished, InvalidPropertyStatus, UnauthorizedPropertyAction, DatesAlreadyBooked
+from apps.core.forms import validate_max_file_size, validate_allowed_file_extensions
+import datetime
 import logging
 
 logger = logging.getLogger(__name__)
@@ -24,6 +26,45 @@ class PropertyService:
         )
         logger.info(f"Propriété créée par le propriétaire {owner.email} : {prop.id}")
         return prop
+
+    @staticmethod
+    @transaction.atomic
+    def add_amenities(prop: Property, amenity_names: list) -> None:
+        PropertyAmenity.objects.bulk_create([
+            PropertyAmenity(property=prop, name=name) for name in amenity_names if name and name.strip()
+        ])
+
+    @staticmethod
+    @transaction.atomic
+    def add_rules(prop: Property, rule_texts: list) -> None:
+        PropertyRule.objects.bulk_create([
+            PropertyRule(property=prop, rule=rule) for rule in rule_texts if rule and rule.strip()
+        ])
+
+    @staticmethod
+    @transaction.atomic
+    def set_amenities(prop: Property, amenity_names: list) -> None:
+        """Remplace la liste d'équipements du logement (utilisé lors d'une modification)."""
+        prop.amenities.all().delete()
+        PropertyService.add_amenities(prop, amenity_names)
+
+    @staticmethod
+    @transaction.atomic
+    def set_rules(prop: Property, rule_texts: list) -> None:
+        """Remplace la liste de règles du logement (utilisé lors d'une modification)."""
+        prop.rules.all().delete()
+        PropertyService.add_rules(prop, rule_texts)
+
+    @staticmethod
+    @transaction.atomic
+    def add_images(prop: Property, image_files: list, cover_index: int = 0) -> None:
+        for image_file in image_files:
+            validate_allowed_file_extensions(image_file, ('jpg', 'jpeg', 'png', 'webp'))
+            validate_max_file_size(image_file, max_size_mb=8.0)
+        for index, image_file in enumerate(image_files):
+            PropertyImage.objects.create(
+                property=prop, image=image_file, is_cover=(index == cover_index), order=index
+            )
 
     @staticmethod
     @transaction.atomic
@@ -170,13 +211,13 @@ class PropertyService:
             raise InvalidPropertyStatus("La propriété n'est pas suspendue.")
 
         old_status = prop.status
-        prop.status = PropertyStatusChoices.VALIDATED
+        prop.status = PropertyStatusChoices.PUBLISHED
         prop.save(update_fields=['status'])
-        
+
         PropertyStatusHistory.objects.create(
             property=prop,
             old_status=old_status,
-            new_status=PropertyStatusChoices.VALIDATED,
+            new_status=PropertyStatusChoices.PUBLISHED,
             reason=f"Restauré par {admin_user.email}"
         )
         
@@ -191,3 +232,28 @@ class PropertyService:
             
         prop.soft_delete()
         logger.info(f"Propriété supprimée logiquement : {prop.id}")
+
+    @staticmethod
+    @transaction.atomic
+    def block_dates(prop: Property, owner: User, start_date, end_date, reason: str = "") -> int:
+        """Bloque une plage de dates (maintenance/usage personnel) sur le calendrier du logement."""
+        from apps.reservations.services.selectors import ReservationSelector
+
+        if prop.owner_id != owner.id:
+            raise UnauthorizedPropertyAction("Non autorisé.")
+        if end_date < start_date:
+            raise InvalidPropertyStatus("La date de fin doit être postérieure à la date de début.")
+        if ReservationSelector.has_overlapping_active_booking(prop.id, start_date, end_date + datetime.timedelta(days=1)):
+            raise DatesAlreadyBooked("Ces dates chevauchent une réservation ou une demande active. Impossible de les bloquer.")
+
+        current = start_date
+        count = 0
+        while current <= end_date:
+            _, created = PropertyAvailability.objects.update_or_create(
+                property=prop, date=current, defaults={'is_available': False}
+            )
+            count += 1
+            current += datetime.timedelta(days=1)
+
+        logger.info(f"{count} date(s) bloquée(s) pour la propriété {prop.id} par {owner.email} : {reason}")
+        return count

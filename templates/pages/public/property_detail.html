@@ -8,11 +8,11 @@
     
     <!-- Section 1 : Fil d'Ariane -->
     <nav class="flex items-center text-sm text-gray-500 font-medium mb-6 mt-16 md:mt-20">
-        <a href="#" class="hover:text-gray-900 transition-colors">Accueil</a>
+        <a href="{% url 'public:home' %}" class="hover:text-gray-900 transition-colors">Accueil</a>
         <i data-lucide="chevron-right" class="w-4 h-4 mx-2"></i>
-        <a href="#" class="hover:text-gray-900 transition-colors">Recherche</a>
+        <a href="{% url 'public:search' %}" class="hover:text-gray-900 transition-colors">Recherche</a>
         <i data-lucide="chevron-right" class="w-4 h-4 mx-2"></i>
-        <span class="text-gray-900 line-clamp-1">Superbe appartement vue mer avec piscine</span>
+        <span class="text-gray-900 line-clamp-1">{{ property.title }}</span>
     </nav>
     
     <!-- Section 2 : Galerie -->

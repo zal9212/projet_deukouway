@@ -3,22 +3,23 @@
 {% block title %}Mes Réservations - DEKOUWAY{% endblock %}
 
 {% block content %}
-<section class="max-w-4xl mx-auto py-12 px-4 sm:px-6 lg:px-8 space-y-8">
-    
+<section class="max-w-4xl mx-auto py-12 px-4 sm:px-6 lg:px-8 space-y-10">
+
     <div>
         <h1 class="text-2xl font-bold text-[#1F2937]">Mes Réservations</h1>
-        <p class="text-xs text-[#6B7280]">Suivez vos demandes et historiques de séjours.</p>
+        <p class="text-xs text-[#6B7280]">Suivez vos demandes et vos séjours confirmés.</p>
     </div>
 
-    <!-- Bookings listings -->
+    <!-- Demandes en cours -->
     <div class="space-y-4">
-        {% for booking in bookings %}
+        <h2 class="text-sm font-bold uppercase tracking-wider text-[#6B7280]">Demandes en cours</h2>
+        {% for req in requests %}
             <div class="bg-white border border-[#E5E7EB] rounded-2xl p-5 shadow-sm flex flex-col md:flex-row justify-between items-start md:items-center gap-6">
-                
+
                 <div class="flex items-start space-x-4">
                     <div class="w-16 h-16 bg-[#FAFAFA] border border-[#E5E7EB] rounded-xl overflow-hidden flex-shrink-0">
-                        {% if booking.property.images.all %}
-                            <img src="{{ booking.property.images.first.image.url }}" alt="{{ booking.property.title }}" class="w-full h-full object-cover">
+                        {% if req.property.images.all %}
+                            <img src="{{ req.property.images.first.image.url }}" alt="{{ req.property.title }}" class="w-full h-full object-cover">
                         {% else %}
                             <div class="w-full h-full flex items-center justify-center text-[#9CA3AF]">
                                 <i data-lucide="image" class="w-5 h-5"></i>
@@ -27,14 +28,77 @@
                     </div>
                     <div>
                         <h4 class="font-bold text-sm text-[#1F2937] hover:text-[#8B1E24] transition-colors">
-                            <a href="{% url 'property_detail' booking.property.id %}">{{ booking.property.title }}</a>
+                            <a href="{% url 'public:property_detail' req.property.id %}">{{ req.property.title }}</a>
                         </h4>
                         <p class="text-[10px] text-[#6B7280] mt-1 flex items-center">
                             <i data-lucide="map-pin" class="w-3.5 h-3.5 mr-1 text-[#9CA3AF]"></i>
-                            {{ booking.property.neighborhood }}, {{ booking.property.city }}
+                            {{ req.property.district }}, {{ req.property.city }}
                         </p>
                         <p class="text-[10px] text-[#6B7280] mt-1.5 font-semibold">
-                            Du {{ booking.check_in|date:"d M Y" }} au {{ booking.check_out|date:"d M Y" }}
+                            Du {{ req.check_in|date:"d M Y" }} au {{ req.check_out|date:"d M Y" }} · {{ req.guests }} voyageur{{ req.guests|pluralize }}
+                        </p>
+                    </div>
+                </div>
+
+                <div class="w-full md:w-auto flex flex-row md:flex-col justify-between md:items-end border-t md:border-t-0 border-[#E5E7EB] pt-4 md:pt-0">
+                    <div class="mt-1">
+                        <span class="inline-flex items-center px-2 py-0.5 rounded text-[10px] font-bold
+                            {% if req.status == 'PAYMENT_PENDING' %} bg-blue-50 text-[#2563EB] border border-blue-200
+                            {% elif req.status == 'OWNER_DECLINED' or req.status == 'REJECTED' %} bg-red-50 text-[#DC2626] border border-red-200
+                            {% elif req.status == 'CANCELLED' %} bg-gray-50 text-[#6B7280] border border-[#E5E7EB]
+                            {% else %} bg-yellow-50 text-[#F59E0B] border border-yellow-200 {% endif %}">
+                            {{ req.get_status_display }}
+                        </span>
+                    </div>
+                </div>
+
+                <div class="w-full md:w-auto flex justify-end space-x-2 pt-2 md:pt-0 border-t md:border-0 border-[#E5E7EB]">
+                    {% if req.status == 'PAYMENT_PENDING' %}
+                        <a href="{% url 'payment_checkout' req.id %}"
+                           class="px-4 py-2 bg-[#16A34A] hover:bg-[#15803D] text-white text-xs font-bold rounded-lg shadow-sm transition-colors">
+                            Payer
+                        </a>
+                    {% endif %}
+
+                    {% if req.status == 'REQUESTED' or req.status == 'UNDER_REVIEW' or req.status == 'SENT_TO_OWNER' or req.status == 'OWNER_ACCEPTED' or req.status == 'PAYMENT_PENDING' %}
+                        <form action="{% url 'booking_action' req.id %}" method="POST">
+                            {% csrf_token %}
+                            <input type="hidden" name="action" value="cancel">
+                            <button type="submit" class="px-3 py-2 border border-red-200 text-[#DC2626] hover:bg-red-50 text-xs font-semibold rounded-lg transition-colors">
+                                Annuler
+                            </button>
+                        </form>
+                    {% endif %}
+                </div>
+
+            </div>
+        {% empty %}
+            {% include "components/empty_state.html" with title="Aucune demande" description="Vous n'avez pas encore effectué de demande de réservation." icon="calendar" %}
+        {% endfor %}
+    </div>
+
+    <!-- Séjours confirmés -->
+    <div class="space-y-4">
+        <h2 class="text-sm font-bold uppercase tracking-wider text-[#6B7280]">Séjours confirmés</h2>
+        {% for reservation in reservations %}
+            <div class="bg-white border border-[#E5E7EB] rounded-2xl p-5 shadow-sm flex flex-col md:flex-row justify-between items-start md:items-center gap-6">
+
+                <div class="flex items-start space-x-4">
+                    <div class="w-16 h-16 bg-[#FAFAFA] border border-[#E5E7EB] rounded-xl overflow-hidden flex-shrink-0">
+                        {% if reservation.property.images.all %}
+                            <img src="{{ reservation.property.images.first.image.url }}" alt="{{ reservation.property.title }}" class="w-full h-full object-cover">
+                        {% else %}
+                            <div class="w-full h-full flex items-center justify-center text-[#9CA3AF]">
+                                <i data-lucide="image" class="w-5 h-5"></i>
+                            </div>
+                        {% endif %}
+                    </div>
+                    <div>
+                        <h4 class="font-bold text-sm text-[#1F2937] hover:text-[#8B1E24] transition-colors">
+                            <a href="{% url 'public:property_detail' reservation.property.id %}">{{ reservation.property.title }}</a>
+                        </h4>
+                        <p class="text-[10px] text-[#6B7280] mt-1.5 font-semibold">
+                            Du {{ reservation.check_in|date:"d M Y" }} au {{ reservation.check_out|date:"d M Y" }} · Code {{ reservation.confirmation_code }}
                         </p>
                     </div>
                 </div>
@@ -42,52 +106,25 @@
                 <div class="w-full md:w-auto flex flex-row md:flex-col justify-between md:items-end border-t md:border-t-0 border-[#E5E7EB] pt-4 md:pt-0">
                     <div class="text-left md:text-right">
                         <span class="text-[10px] text-[#6B7280] uppercase tracking-wider block font-bold">Total</span>
-                        <span class="text-base font-extrabold text-[#8B1E24]">{{ booking.total_price }} F</span>
+                        <span class="text-base font-extrabold text-[#8B1E24]">{{ reservation.total_price }} F</span>
                     </div>
                     <div class="mt-1">
-                        <span class="inline-flex items-center px-2 py-0.5 rounded text-[10px] font-bold 
-                            {% if booking.status == 'pending' %} bg-yellow-50 text-[#F59E0B] border border-yellow-200
-                            {% elif booking.status == 'approved' %} bg-blue-50 text-[#2563EB] border border-blue-200
-                            {% elif booking.status == 'confirmed' %} bg-emerald-50 text-[#16A34A] border border-emerald-200
-                            {% elif booking.status == 'rejected' %} bg-red-50 text-[#DC2626] border border-red-200
-                            {% elif booking.status == 'cancelled' %} bg-gray-50 text-[#6B7280] border border-[#E5E7EB] {% endif %}">
-                            {{ booking.get_status_display }}
+                        <span class="inline-flex items-center px-2 py-0.5 rounded text-[10px] font-bold bg-emerald-50 text-[#16A34A] border border-emerald-200">
+                            {{ reservation.get_status_display }}
                         </span>
                     </div>
                 </div>
 
-                <!-- Client actions -->
                 <div class="w-full md:w-auto flex justify-end space-x-2 pt-2 md:pt-0 border-t md:border-0 border-[#E5E7EB]">
-                    {% if user.role == 'client' %}
-                        {% if booking.status == 'approved' %}
-                            <a href="{% url 'payment_checkout' booking.id %}" 
-                               class="px-4 py-2 bg-[#16A34A] hover:bg-[#15803D] text-white text-xs font-bold rounded-lg shadow-sm transition-colors">
-                                Payer
-                            </a>
-                        {% endif %}
-                        
-                        {% if booking.status == 'confirmed' %}
-                            <a href="{% url 'payment_receipt' booking.id %}" 
-                               class="px-4 py-2 bg-[#FAFAFA] border border-[#E5E7EB] text-[#1F2937] hover:bg-[#8B1E24] hover:text-white text-xs font-bold rounded-lg transition-all">
-                                Reçu
-                            </a>
-                        {% endif %}
-
-                        {% if booking.status == 'pending' or booking.status == 'approved' %}
-                            <form action="{% url 'booking_action' booking.id %}" method="POST">
-                                {% csrf_token %}
-                                <input type="hidden" name="action" value="cancel">
-                                <button type="submit" class="px-3 py-2 border border-red-200 text-[#DC2626] hover:bg-red-50 text-xs font-semibold rounded-lg transition-colors">
-                                    Annuler
-                                </button>
-                            </form>
-                        {% endif %}
-                    {% endif %}
+                    <a href="{% url 'payment_receipt' reservation.id %}"
+                       class="px-4 py-2 bg-[#FAFAFA] border border-[#E5E7EB] text-[#1F2937] hover:bg-[#8B1E24] hover:text-white text-xs font-bold rounded-lg transition-all">
+                        Reçu
+                    </a>
                 </div>
 
             </div>
         {% empty %}
-            {% include "components/empty_state.html" with title="Aucune réservation" description="Vous n'avez pas encore effectué de demande de réservation." icon="calendar" %}
+            {% include "components/empty_state.html" with title="Aucun séjour confirmé" description="Vos réservations payées apparaîtront ici." icon="check-circle" %}
         {% endfor %}
     </div>
 

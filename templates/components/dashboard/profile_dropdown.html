@@ -6,9 +6,15 @@
             aria-haspopup="true"
             @click="profileOpen = !profileOpen">
         <span class="sr-only">Ouvrir le menu utilisateur</span>
-        <img class="h-8 w-8 rounded-full bg-gray-50 object-cover border border-gray-200" src="https://ui-avatars.com/api/?name=Admin+User&background=8B1E24&color=fff" alt="Avatar">
+        {% if request.user.profile.avatar %}
+            <img class="h-8 w-8 rounded-full bg-gray-50 object-cover border border-gray-200" src="{{ request.user.profile.avatar.url }}" alt="Avatar">
+        {% else %}
+            <img class="h-8 w-8 rounded-full bg-gray-50 object-cover border border-gray-200" src="https://ui-avatars.com/api/?name={{ request.user.profile.first_name|default:request.user.email }}&background=8B1E24&color=fff" alt="Avatar">
+        {% endif %}
         <span class="hidden lg:flex lg:items-center">
-            <span class="ml-4 text-sm font-semibold leading-6 text-gray-900" aria-hidden="true">Admin User</span>
+            <span class="ml-4 text-sm font-semibold leading-6 text-gray-900" aria-hidden="true">
+                {{ request.user.profile.first_name|default:request.user.email|truncatechars:20 }}
+            </span>
             <i data-lucide="chevron-down" class="ml-2 h-4 w-4 text-gray-400"></i>
         </span>
     </button>
@@ -29,21 +35,48 @@
          tabindex="-1">
          
         <div class="px-4 py-3 border-b border-gray-100">
-            <p class="text-sm font-medium text-gray-900 truncate">admin@dekouway.com</p>
-            <p class="text-xs text-gray-500 mt-0.5">Rôle: SuperAdmin</p>
+            <p class="text-sm font-medium text-gray-900 truncate">{{ request.user.email }}</p>
+            <p class="text-xs text-gray-500 mt-0.5">
+                {% if request.user.is_staff or request.user.is_superuser or request.user.is_superadmin %}
+                    Gestionnaire (Admin)
+                {% elif request.user.is_owner %}
+                    Hôte (Propriétaire)
+                {% else %}
+                    Voyageur (Client)
+                {% endif %}
+            </p>
         </div>
          
-        <a href="#" class="block px-4 py-2 text-sm leading-6 text-gray-700 hover:bg-gray-50 flex items-center" role="menuitem" tabindex="-1">
-            <i data-lucide="user" class="w-4 h-4 mr-2 text-gray-400"></i> Mon profil
-        </a>
-        <a href="#" class="block px-4 py-2 text-sm leading-6 text-gray-700 hover:bg-gray-50 flex items-center" role="menuitem" tabindex="-1">
-            <i data-lucide="settings" class="w-4 h-4 mr-2 text-gray-400"></i> Paramètres
-        </a>
+        {% if request.user.is_staff or request.user.is_superuser or request.user.is_superadmin %}
+            <a href="{% url 'dashboard:admin_profile' %}" class="block px-4 py-2 text-sm leading-6 text-gray-700 hover:bg-gray-50 flex items-center" role="menuitem" tabindex="-1">
+                <i data-lucide="user" class="w-4 h-4 mr-2 text-gray-400"></i> Mon profil
+            </a>
+            <a href="{% url 'dashboard:admin_settings' %}" class="block px-4 py-2 text-sm leading-6 text-gray-700 hover:bg-gray-50 flex items-center" role="menuitem" tabindex="-1">
+                <i data-lucide="settings" class="w-4 h-4 mr-2 text-gray-400"></i> Paramètres
+            </a>
+        {% elif request.user.is_owner %}
+            <a href="{% url 'dashboard:owner_profile' %}" class="block px-4 py-2 text-sm leading-6 text-gray-700 hover:bg-gray-50 flex items-center" role="menuitem" tabindex="-1">
+                <i data-lucide="user" class="w-4 h-4 mr-2 text-gray-400"></i> Mon profil
+            </a>
+            <a href="{% url 'dashboard:owner_settings' %}" class="block px-4 py-2 text-sm leading-6 text-gray-700 hover:bg-gray-50 flex items-center" role="menuitem" tabindex="-1">
+                <i data-lucide="settings" class="w-4 h-4 mr-2 text-gray-400"></i> Paramètres
+            </a>
+        {% else %}
+            <a href="{% url 'dashboard:client_profile' %}" class="block px-4 py-2 text-sm leading-6 text-gray-700 hover:bg-gray-50 flex items-center" role="menuitem" tabindex="-1">
+                <i data-lucide="user" class="w-4 h-4 mr-2 text-gray-400"></i> Mon profil
+            </a>
+            <a href="{% url 'dashboard:client_settings' %}" class="block px-4 py-2 text-sm leading-6 text-gray-700 hover:bg-gray-50 flex items-center" role="menuitem" tabindex="-1">
+                <i data-lucide="settings" class="w-4 h-4 mr-2 text-gray-400"></i> Paramètres
+            </a>
+        {% endif %}
         
         <div class="border-t border-gray-100 my-1"></div>
         
-        <a href="#" class="block px-4 py-2 text-sm leading-6 text-red-600 hover:bg-red-50 flex items-center font-medium" role="menuitem" tabindex="-1">
-            <i data-lucide="log-out" class="w-4 h-4 mr-2 text-red-500"></i> Se déconnecter
-        </a>
+        <form action="{% url 'accounts:logout' %}" method="post">
+            {% csrf_token %}
+            <button type="submit" class="w-full text-left px-4 py-2 text-sm leading-6 text-red-600 hover:bg-red-50 flex items-center font-medium cursor-pointer" role="menuitem" tabindex="-1">
+                <i data-lucide="log-out" class="w-4 h-4 mr-2 text-red-500"></i> Se déconnecter
+            </button>
+        </form>
     </div>
 </div>

@@ -68,12 +68,16 @@
             },
 
             addMockMarkers() {
-                // Données mockées pour simuler l'API
-                const mockData = [
-                    { id: 1, lat: 14.7167, lng: -17.4677, price: '150k CFA', title: 'Studio moderne Ngor', neighborhood: 'Ngor Almadies', rating: '4.8', image: 'https://images.unsplash.com/photo-1522708323590-d24dbb6b0267?auto=format&fit=crop&q=80&w=400' },
-                    { id: 2, lat: 14.7220, lng: -17.4500, price: '300k CFA', title: 'Appartement vue mer', neighborhood: 'Plateau', rating: '4.9', image: 'https://images.unsplash.com/photo-1502672260266-1c1e52db06ac?auto=format&fit=crop&q=80&w=400' },
-                    { id: 3, lat: 14.7450, lng: -17.4850, price: '85k CFA', title: 'Chambre étudiante', neighborhood: 'Fann Hock', rating: '4.5', image: 'https://images.unsplash.com/photo-1554995207-c18c203602cb?auto=format&fit=crop&q=80&w=400' }
-                ];
+                let mockData = [];
+                const el = document.getElementById('properties-data');
+                if (el && el.textContent.trim()) {
+                    try {
+                        mockData = JSON.parse(el.textContent);
+                    } catch(e) {
+                        console.error("Erreur parsing annonces carte:", e);
+                    }
+                }
+                if (!mockData.length) return;
 
                 const markerTemplate = document.getElementById('property-marker-template').innerHTML;
                 const popupTemplate = document.getElementById('map-popup-template').innerHTML;
@@ -151,3 +155,20 @@
         border: none;
     }
 </style>
+
+<script id="properties-data" type="application/json">
+[
+    {% for property in properties %}
+    {
+        "id": "{{ property.id }}",
+        "lat": {{ property.latitude|default:14.7167 }},
+        "lng": {{ property.longitude|default:-17.4677 }},
+        "price": "{{ property.price_per_night|default:property.price }} CFA",
+        "title": "{{ property.title|escapejs }}",
+        "neighborhood": "{{ property.city|default:'Dakar'|escapejs }}",
+        "rating": "{{ property.rating|default:'4.8' }}",
+        "image": "{% if property.main_image %}{{ property.main_image.url }}{% else %}https://images.unsplash.com/photo-1522708323590-d24dbb6b0267?auto=format&fit=crop&q=80&w=400{% endif %}"
+    }{% if not forloop.last %},{% endif %}
+    {% endfor %}
+]
+</script>

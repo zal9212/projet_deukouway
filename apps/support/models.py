@@ -24,6 +24,29 @@ class SupportCategory(BaseModel):
         return str(self.name)
 
 
+class ContactMessage(BaseModel):
+    """
+    Message envoyé depuis le formulaire de contact public (visiteur anonyme ou connecté).
+    """
+    name = models.CharField(_('Nom'), max_length=150)
+    email = models.EmailField(_('Email'))
+    subject = models.CharField(_('Sujet'), max_length=255)
+    message = models.TextField(_('Message'))
+    user = models.ForeignKey(
+        settings.AUTH_USER_MODEL, on_delete=models.SET_NULL, null=True, blank=True,
+        related_name='contact_messages', verbose_name=_('Utilisateur (si connecté)')
+    )
+    is_processed = models.BooleanField(_('Traité'), default=False)
+
+    class Meta(BaseModel.Meta):
+        verbose_name = _('Message de Contact')
+        verbose_name_plural = _('Messages de Contact')
+        db_table = 'support_contact_message'
+
+    def __str__(self) -> str:
+        return f"{self.subject} - {self.name} ({self.email})"
+
+
 class Ticket(BaseModel):
     """
     Ticket de support standard (Demande d'aide, question).

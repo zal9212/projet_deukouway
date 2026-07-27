@@ -3,7 +3,7 @@
 {% block title %}Calendrier - DEKOUWAY{% endblock %}
 
 {% block page_header %}
-<div class="md:flex md:items-center md:justify-between mb-8 mt-2">
+<div class="md:flex md:items-center md:justify-between mb-8 mt-2" x-data="{ blockModalOpen: false }">
     <div class="min-w-0 flex-1">
         <h2 class="text-2xl font-bold leading-7 text-gray-900 sm:truncate sm:text-3xl sm:tracking-tight">
             Calendrier des disponibilités
@@ -11,13 +11,56 @@
         <p class="mt-1 text-sm text-gray-500">Visualisez les réservations gérées par DEKOUWAY et bloquez vos dates pour maintenance ou usage personnel.</p>
     </div>
     <div class="mt-4 flex md:ml-4 md:mt-0 space-x-3">
-        <select class="block w-full rounded-md border-0 py-1.5 pl-3 pr-10 text-gray-900 ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-[#8B1E24] sm:text-sm sm:leading-6">
-            <option>Villa Teranga Saly</option>
-            <option>Appartement Dakar</option>
-        </select>
-        <button class="inline-flex items-center rounded-md bg-white px-3 py-2 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50 whitespace-nowrap">
+        {% if properties %}
+        <form method="GET" id="property-select-form">
+            <input type="hidden" name="year" value="{{ year }}">
+            <input type="hidden" name="month" value="{{ month }}">
+            <select name="property" onchange="document.getElementById('property-select-form').submit()"
+                    class="block w-full rounded-md border-0 py-1.5 pl-3 pr-10 text-gray-900 ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-[#8B1E24] sm:text-sm sm:leading-6">
+                {% for property in properties %}
+                <option value="{{ property.id }}" {% if selected_property.id == property.id %}selected{% endif %}>{{ property.title }}</option>
+                {% endfor %}
+            </select>
+        </form>
+        <button type="button" @click="blockModalOpen = true" class="inline-flex items-center rounded-md bg-white px-3 py-2 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50 whitespace-nowrap">
             Bloquer des dates
         </button>
+        {% endif %}
+    </div>
+
+    <!-- Modal Bloquer des dates -->
+    <div x-show="blockModalOpen" x-cloak class="relative z-50" @keydown.escape.window="blockModalOpen = false">
+        <div class="fixed inset-0 bg-gray-500/75" x-show="blockModalOpen" x-transition></div>
+        <div class="fixed inset-0 z-10 overflow-y-auto">
+            <div class="flex min-h-full items-center justify-center p-4">
+                <div class="relative bg-white rounded-xl shadow-xl max-w-md w-full p-6" x-show="blockModalOpen" x-transition @click.outside="blockModalOpen = false">
+                    <h3 class="text-base font-semibold text-gray-900 mb-4">Bloquer des dates</h3>
+                    <form method="POST">
+                        {% csrf_token %}
+                        <input type="hidden" name="property_id" value="{{ selected_property.id }}">
+                        <input type="hidden" name="year" value="{{ year }}">
+                        <input type="hidden" name="month" value="{{ month }}">
+                        <div class="grid grid-cols-2 gap-4 mb-4">
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-1">Du</label>
+                                <input type="date" name="start_date" required class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-[#8B1E24] sm:text-sm">
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-1">Au</label>
+                                <input type="date" name="end_date" required class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-[#8B1E24] sm:text-sm">
+                            </div>
+                        </div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Motif (optionnel)</label>
+                        <input type="text" name="reason" placeholder="Ex: Maintenance, usage personnel"
+                               class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-[#8B1E24] sm:text-sm mb-6">
+                        <div class="flex justify-end gap-3">
+                            <button type="button" @click="blockModalOpen = false" class="text-sm font-semibold text-gray-900">Annuler</button>
+                            <button type="submit" class="rounded-md bg-[#8B1E24] px-4 py-2 text-sm font-semibold text-white shadow-sm hover:bg-[#6F171C]">Bloquer</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
     </div>
 </div>
 {% endblock %}
@@ -27,17 +70,17 @@
     <!-- En-tête calendrier -->
     <div class="flex items-center justify-between border-b border-gray-200 px-6 py-4">
         <div class="flex items-center">
-            <button type="button" class="flex h-9 w-9 items-center justify-center rounded-md text-gray-400 hover:text-gray-500 focus:relative">
+            <a href="?property={{ selected_property.id }}&year={{ prev_year }}&month={{ prev_month }}" class="flex h-9 w-9 items-center justify-center rounded-md text-gray-400 hover:text-gray-500 focus:relative">
                 <span class="sr-only">Mois précédent</span>
                 <i data-lucide="chevron-left" class="h-5 w-5"></i>
-            </button>
-            <h2 class="mx-4 text-base font-semibold text-gray-900">Août 2024</h2>
-            <button type="button" class="flex h-9 w-9 items-center justify-center rounded-md text-gray-400 hover:text-gray-500 focus:relative">
+            </a>
+            <h2 class="mx-4 text-base font-semibold text-gray-900">{{ first_of_month|date:"F Y"|capfirst }}</h2>
+            <a href="?property={{ selected_property.id }}&year={{ next_year }}&month={{ next_month }}" class="flex h-9 w-9 items-center justify-center rounded-md text-gray-400 hover:text-gray-500 focus:relative">
                 <span class="sr-only">Mois suivant</span>
                 <i data-lucide="chevron-right" class="h-5 w-5"></i>
-            </button>
+            </a>
         </div>
-        
+
         <div class="hidden md:flex items-center space-x-4 text-xs font-medium text-gray-500">
             <div class="flex items-center"><span class="w-3 h-3 rounded-full bg-green-500 mr-2"></span>Confirmé (DEKOUWAY)</div>
             <div class="flex items-center"><span class="w-3 h-3 rounded-full bg-yellow-400 mr-2"></span>Demande en attente</div>
@@ -45,7 +88,12 @@
         </div>
     </div>
 
-    <!-- Grille Calendrier (Placeholder statique) -->
+    {% if not selected_property %}
+    <div class="p-12 text-center text-sm text-gray-500">
+        Vous n'avez encore aucun logement. Ajoutez-en un pour gérer son calendrier de disponibilités.
+    </div>
+    {% else %}
+    <!-- Grille Calendrier -->
     <div class="lg:flex lg:h-full lg:flex-col">
         <div class="grid grid-cols-7 gap-px border-b border-gray-200 bg-gray-200 text-center text-xs font-semibold leading-6 text-gray-700 lg:flex-none">
             <div class="bg-white py-2">Lun</div>
@@ -56,82 +104,31 @@
             <div class="bg-white py-2">Sam</div>
             <div class="bg-white py-2">Dim</div>
         </div>
-        
+
         <div class="flex bg-gray-200 text-xs leading-6 text-gray-700 lg:flex-auto">
             <div class="hidden w-full lg:grid lg:grid-cols-7 lg:grid-rows-5 lg:gap-px">
-                <!-- Semaine 1 -->
-                <div class="relative bg-gray-50 px-3 py-2 text-gray-500">29</div>
-                <div class="relative bg-gray-50 px-3 py-2 text-gray-500">30</div>
-                <div class="relative bg-gray-50 px-3 py-2 text-gray-500">31</div>
-                <div class="relative bg-white px-3 py-2 text-gray-900">1</div>
-                <div class="relative bg-white px-3 py-2 text-gray-900">2</div>
-                <div class="relative bg-white px-3 py-2 text-gray-900">3</div>
-                <div class="relative bg-white px-3 py-2 text-gray-900">4</div>
-                
-                <!-- Semaine 2 -->
-                <div class="relative bg-white px-3 py-2 text-gray-900">5</div>
-                <div class="relative bg-white px-3 py-2 text-gray-900">6</div>
-                <div class="relative bg-white px-3 py-2 text-gray-900">7</div>
-                <div class="relative bg-white px-3 py-2 text-gray-900">8</div>
-                <div class="relative bg-white px-3 py-2 text-gray-900">9</div>
-                <div class="relative bg-white px-3 py-2 text-gray-900">10</div>
-                <div class="relative bg-white px-3 py-2 text-gray-900">11</div>
-                
-                <!-- Semaine 3 avec Réservation et Demande -->
-                <div class="relative bg-white px-3 py-2 text-gray-900">12
-                    <div class="absolute inset-x-0 bottom-0 top-8 bg-yellow-100 border-l-4 border-yellow-400 p-1 opacity-75">
-                        <p class="truncate font-medium text-yellow-800 text-[10px]">Demande #REQ-9821</p>
+                {% for week in weeks %}
+                    {% for day in week %}
+                    <div class="relative {% if day.is_current_month %}bg-white text-gray-900{% else %}bg-gray-50 text-gray-500{% endif %} px-3 py-2">
+                        {{ day.day }}
+                        {% if day.status == 'confirmed' %}
+                        <div class="absolute inset-x-0 bottom-0 top-8 bg-green-100 border-l-4 border-green-500 p-1"></div>
+                        {% elif day.status == 'pending' %}
+                        <div class="absolute inset-x-0 bottom-0 top-8 bg-yellow-100 border-l-4 border-yellow-400 p-1"></div>
+                        {% elif day.status == 'blocked' %}
+                        <div class="absolute inset-x-0 bottom-0 top-8 bg-gray-200 border-l-4 border-gray-400 p-1"></div>
+                        {% endif %}
                     </div>
-                </div>
-                <div class="relative bg-white px-3 py-2 text-gray-900">13
-                    <div class="absolute inset-x-0 bottom-0 top-8 bg-yellow-100 p-1 opacity-75"></div>
-                </div>
-                <div class="relative bg-white px-3 py-2 text-gray-900">14
-                    <div class="absolute inset-x-0 bottom-0 top-8 bg-yellow-100 p-1 opacity-75"></div>
-                </div>
-                <div class="relative bg-white px-3 py-2 text-gray-900">15
-                    <div class="absolute inset-x-0 bottom-0 top-8 bg-yellow-100 p-1 opacity-75"></div>
-                </div>
-                <div class="relative bg-white px-3 py-2 text-gray-900">16</div>
-                <div class="relative bg-white px-3 py-2 text-gray-900">17</div>
-                <div class="relative bg-white px-3 py-2 text-gray-900">18</div>
-
-                <!-- Semaine 4 avec Réservation confirmée -->
-                <div class="relative bg-white px-3 py-2 text-gray-900">19</div>
-                <div class="relative bg-white px-3 py-2 text-gray-900">20
-                    <div class="absolute inset-x-0 bottom-0 top-8 bg-green-100 border-l-4 border-green-500 p-1">
-                        <p class="truncate font-medium text-green-800 text-[10px]">Confirmé: Jean D.</p>
-                    </div>
-                </div>
-                <div class="relative bg-white px-3 py-2 text-gray-900">21
-                    <div class="absolute inset-x-0 bottom-0 top-8 bg-green-100 p-1"></div>
-                </div>
-                <div class="relative bg-white px-3 py-2 text-gray-900">22
-                    <div class="absolute inset-x-0 bottom-0 top-8 bg-green-100 p-1"></div>
-                </div>
-                <div class="relative bg-white px-3 py-2 text-gray-900">23</div>
-                <div class="relative bg-white px-3 py-2 text-gray-900">24</div>
-                <div class="relative bg-white px-3 py-2 text-gray-900">25</div>
-
-                <!-- Semaine 5 -->
-                <div class="relative bg-white px-3 py-2 text-gray-900">26</div>
-                <div class="relative bg-white px-3 py-2 text-gray-900">27
-                    <div class="absolute inset-x-0 bottom-0 top-8 bg-gray-200 border-l-4 border-gray-400 p-1">
-                        <p class="truncate font-medium text-gray-700 text-[10px]">Maintenance</p>
-                    </div>
-                </div>
-                <div class="relative bg-white px-3 py-2 text-gray-900">28</div>
-                <div class="relative bg-white px-3 py-2 text-gray-900">29</div>
-                <div class="relative bg-white px-3 py-2 text-gray-900">30</div>
-                <div class="relative bg-white px-3 py-2 text-gray-900">31</div>
-                <div class="relative bg-gray-50 px-3 py-2 text-gray-500">1</div>
+                    {% endfor %}
+                {% endfor %}
             </div>
-            
+
             <!-- Mobile View (Liste) -->
             <div class="isolate grid w-full grid-cols-1 gap-px lg:hidden">
                 <p class="text-sm text-center p-4">La vue calendrier est optimisée pour les écrans larges.</p>
             </div>
         </div>
     </div>
+    {% endif %}
 </div>
 {% endblock %}

@@ -29,23 +29,21 @@
         </div>
         
         <div class="max-h-96 overflow-y-auto">
-            <!-- Item non lu -->
-            <a href="#" class="block px-4 py-3 hover:bg-gray-50 transition-colors border-l-2 border-[#8B1E24] bg-gray-50/50" role="menuitem" tabindex="-1">
-                <p class="text-sm font-semibold text-gray-900">Nouvelle réservation confirmée</p>
-                <p class="text-xs text-gray-500 mt-1 line-clamp-2">Jean Dupont a confirmé sa réservation pour "Villa Teranga" du 12 au 15 Août.</p>
-                <p class="text-[10px] text-gray-400 mt-2">Il y a 5 min</p>
-            </a>
-            
-            <!-- Item lu -->
-            <a href="#" class="block px-4 py-3 hover:bg-gray-50 transition-colors border-l-2 border-transparent" role="menuitem" tabindex="-1">
-                <p class="text-sm font-medium text-gray-900">Paiement reçu</p>
-                <p class="text-xs text-gray-500 mt-1 line-clamp-2">Le paiement de 150 000 FCFA a été viré sur votre compte bancaire.</p>
-                <p class="text-[10px] text-gray-400 mt-2">Hier à 14:30</p>
-            </a>
+            {% if notifications %}
+                {% for notif in notifications %}
+                    <a href="#" class="block px-4 py-3 hover:bg-gray-50 transition-colors {% if not notif.is_read %}border-l-2 border-[#8B1E24] bg-gray-50/50{% else %}border-l-2 border-transparent{% endif %}" role="menuitem" tabindex="-1">
+                        <p class="text-sm font-semibold text-gray-900">{{ notif.title }}</p>
+                        <p class="text-xs text-gray-500 mt-1 line-clamp-2">{{ notif.message|default:notif.description }}</p>
+                        <p class="text-[10px] text-gray-400 mt-2">{{ notif.created_at|date:"d M H:i" }}</p>
+                    </a>
+                {% endfor %}
+            {% else %}
+                <div class="px-4 py-6 text-center text-xs text-gray-500">Aucune notification.</div>
+            {% endif %}
         </div>
         
         <div class="px-4 py-2 border-t border-gray-100 text-center bg-gray-50 rounded-b-md">
-            <a href="notifications.html" class="text-sm font-semibold text-[#8B1E24] hover:text-[#6F171C]">Ouvrir le centre de notifications &rarr;</a>
+            <a href="#" @click.prevent="notificationOpen = false" class="text-sm font-semibold text-[#8B1E24] hover:text-[#6F171C]">Fermer</a>
         </div>
     </div>
 </div>

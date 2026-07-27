@@ -1,5 +1,8 @@
 from django.db import transaction
 from django.utils import timezone
+from django.contrib.auth.tokens import default_token_generator
+from django.utils.http import urlsafe_base64_encode
+from django.utils.encoding import force_bytes
 from apps.accounts.models import User, UserProfile, IdentityDocument
 from apps.accounts.services.exceptions import UserAlreadyExists, InvalidRoleException
 from apps.accounts.services.selectors import UserSelector
@@ -29,10 +32,10 @@ class AccountService:
         if UserSelector.get_user_by_email(email):
             raise UserAlreadyExists(f"L'utilisateur avec l'email {email} existe déjà.")
             
+        # is_active reste True : le propriétaire doit pouvoir se connecter dès l'inscription.
+        # is_verified (défaut False) bloque uniquement la publication de logements, tant que
+        # le SuperAdmin n'a pas validé sa pièce d'identité.
         user = User.objects.create_user(email=email, password=password, is_client=False, is_owner=True)
-        # Le propriétaire n'est généralement pas actif tant qu'il n'est pas approuvé
-        user.is_active = False
-        user.save()
         UserProfile.objects.create(user=user, first_name=first_name, last_name=last_name)
         
         logger.info(f"Propriétaire inscrit et en attente d'approbation : {email}")
@@ -44,9 +47,9 @@ class AccountService:
         """Approuve un compte propriétaire (Action SuperAdmin)."""
         if not user.is_owner:
             raise InvalidRoleException("L'utilisateur n'est pas un propriétaire.")
-            
-        user.is_active = True
-        user.save()
+
+        user.is_verified = True
+        user.save(update_fields=['is_verified'])
         logger.info(f"Propriétaire {user.email} approuvé par {admin_user.email}")
         return user
 
@@ -109,9 +112,17 @@ class AccountService:
         return user
 
     @staticmethod
+    def generate_email_verification_token(user: User) -> tuple:
+        """Génère un couple (uid, token) signé et à usage unique pour la vérification d'email."""
+        uid = urlsafe_base64_encode(force_bytes(user.pk))
+        token = default_token_generator.make_token(user)
+        return uid, token
+
+    @staticmethod
     @transaction.atomic
     def verify_email(user: User) -> bool:
-        # Logique métier pour vérifier le jeton d'email
+        user.email_verified = True
+        user.save(update_fields=['email_verified'])
         logger.info(f"Email vérifié pour l'utilisateur {user.email}")
         return True
 
@@ -124,12 +135,13 @@ class AccountService:
 
     @staticmethod
     @transaction.atomic
-    def upload_identity_document(user: User, document_type: str, document_number: str, file) -> IdentityDocument:
+    def upload_identity_document(user: User, document_type: str, document_number: str, file, selfie_file=None) -> IdentityDocument:
         doc = IdentityDocument.objects.create(
             user=user,
             document_type=document_type,
             document_number=document_number,
-            file=file
+            file=file,
+            selfie_file=selfie_file
         )
-        logger.info(f"Document d'identité téléchargé pour l'utilisateur {user.email}")
+        logger.info(f"Document d'identité (+ selfie: {bool(selfie_file)}) téléchargé pour l'utilisateur {user.email}")
         return doc

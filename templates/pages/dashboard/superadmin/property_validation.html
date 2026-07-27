@@ -7,7 +7,9 @@
     <div class="min-w-0 flex-1">
         <h2 class="text-2xl font-bold leading-7 text-gray-900 sm:truncate sm:text-3xl sm:tracking-tight flex items-center">
             Validation des Logements
-            <span class="ml-3 inline-flex items-center rounded-full bg-yellow-100 px-3 py-1 text-sm font-medium text-yellow-800">7 annonces en attente</span>
+            <span class="ml-3 inline-flex items-center rounded-full bg-yellow-100 px-3 py-1 text-sm font-medium text-yellow-800">
+                {{ pending_properties.count|default:0 }} annonce(s) en attente
+            </span>
         </h2>
         <p class="mt-1 text-sm text-gray-500">Vérifiez la conformité des annonces soumises par les partenaires avant leur publication sur le catalogue client.</p>
     </div>
@@ -15,120 +17,97 @@
 {% endblock %}
 
 {% block content %}
+{% if pending_properties %}
 <div class="grid grid-cols-1 xl:grid-cols-4 gap-8">
     
     <!-- File d'attente (Sidebar gauche) -->
-    <div class="xl:col-span-1 border border-gray-200 bg-white rounded-xl shadow-sm overflow-hidden h-[calc(100vh-16rem)] flex flex-col">
+    <div class="xl:col-span-1 border border-gray-200 bg-white rounded-xl shadow-sm overflow-hidden xl:h-[calc(100vh-16rem)] h-auto flex flex-col">
         <div class="px-4 py-4 border-b border-gray-200 bg-gray-50">
             <h3 class="font-semibold text-gray-900 text-sm">Annonces à contrôler</h3>
         </div>
         <ul role="list" class="flex-1 overflow-y-auto divide-y divide-gray-100">
-            <!-- Dossier actif -->
-            <li class="relative px-4 py-4 bg-blue-50/50 border-l-4 border-blue-600 cursor-pointer">
+            {% for prop in pending_properties %}
+            <li class="relative px-4 py-4 {% if forloop.first %}bg-blue-50/50 border-l-4 border-blue-600{% else %}hover:bg-gray-50{% endif %} cursor-pointer">
                 <div class="flex justify-between">
                     <div>
-                        <p class="text-sm font-bold text-gray-900">Appartement Plateau</p>
-                        <p class="text-xs text-gray-500 mt-1">Soumis par Mamadou Ba</p>
+                        <p class="text-sm font-bold text-gray-900">{{ prop.title }}</p>
+                        <p class="text-xs text-gray-500 mt-1">Soumis par {{ prop.owner.email }}</p>
                     </div>
                 </div>
             </li>
-            <!-- Dossier en attente -->
-            <li class="relative px-4 py-4 hover:bg-gray-50 cursor-pointer">
-                <div class="flex justify-between">
-                    <div>
-                        <p class="text-sm font-medium text-gray-900">Studio Almadies</p>
-                        <p class="text-xs text-gray-500 mt-1">Soumis par Awa Ndiaye</p>
-                    </div>
-                </div>
-            </li>
+            {% endfor %}
         </ul>
     </div>
 
     <!-- Zone d'Analyse Centrale -->
+    {% with active_prop=pending_properties.0 %}
     <div class="xl:col-span-3">
-        <div class="bg-white border border-gray-200 rounded-xl shadow-sm overflow-hidden flex flex-col h-[calc(100vh-16rem)]">
+        <div class="bg-white border border-gray-200 rounded-xl shadow-sm overflow-hidden flex flex-col xl:h-[calc(100vh-16rem)] h-auto">
             
             <div class="border-b border-gray-200 px-6 py-5 flex items-center justify-between bg-white">
                 <div class="flex items-center">
-                    <h3 class="text-xl font-bold leading-6 text-gray-900">Appartement Dakar Plateau</h3>
-                    <span class="ml-3 inline-flex items-center rounded-md bg-yellow-50 px-2 py-1 text-xs font-medium text-yellow-800 ring-1 ring-inset ring-yellow-600/20">En analyse</span>
+                    <h3 class="text-xl font-bold leading-6 text-gray-900">{{ active_prop.title }}</h3>
+                    <span class="ml-3 inline-flex items-center rounded-md bg-yellow-50 px-2 py-1 text-xs font-medium text-yellow-800 ring-1 ring-inset ring-yellow-600/20">En attente</span>
                 </div>
                 <div class="text-sm text-gray-500">
-                    Propriétaire : <a href="owners.html" class="text-[#8B1E24] font-semibold hover:underline">Mamadou Ba</a>
+                    Propriétaire : <span class="font-semibold text-gray-900">{{ active_prop.owner.email }}</span>
                 </div>
             </div>
 
             <div class="flex-1 overflow-y-auto p-6 space-y-8 bg-gray-50">
-                
                 <!-- Checklist ERP -->
                 <div class="bg-white p-6 border border-gray-200 rounded-xl shadow-sm">
-                    <h4 class="text-sm font-semibold text-gray-900 mb-4 border-b border-gray-100 pb-2">Checklist de Conformité</h4>
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                        <label class="flex items-center space-x-3 text-sm">
-                            <input type="checkbox" class="h-4 w-4 rounded border-gray-300 text-[#8B1E24] focus:ring-[#8B1E24]">
-                            <span class="text-gray-700">Titre sans majuscules excessives ni émojis</span>
-                        </label>
-                        <label class="flex items-center space-x-3 text-sm">
-                            <input type="checkbox" class="h-4 w-4 rounded border-gray-300 text-[#8B1E24] focus:ring-[#8B1E24]">
-                            <span class="text-gray-700">Au moins 5 photos de haute qualité</span>
-                        </label>
-                        <label class="flex items-center space-x-3 text-sm">
-                            <input type="checkbox" class="h-4 w-4 rounded border-gray-300 text-[#8B1E24] focus:ring-[#8B1E24]">
-                            <span class="text-gray-700">Prix cohérent avec le marché (Dakar Plateau)</span>
-                        </label>
-                        <label class="flex items-center space-x-3 text-sm">
-                            <input type="checkbox" class="h-4 w-4 rounded border-gray-300 text-[#8B1E24] focus:ring-[#8B1E24]">
-                            <span class="text-gray-700">Localisation GPS exacte</span>
-                        </label>
+                    <h4 class="text-sm font-semibold text-gray-900 mb-4 border-b border-gray-100 pb-2">Détails de l'Annonce</h4>
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-4 text-sm">
+                        <div>
+                            <span class="text-gray-500">Prix par nuit :</span>
+                            <span class="font-semibold text-gray-900 block mt-0.5">{{ active_prop.price }} CFA</span>
+                        </div>
+                        <div>
+                            <span class="text-gray-500">Ville / Quartier :</span>
+                            <span class="font-semibold text-gray-900 block mt-0.5">{{ active_prop.city|default:"Dakar" }}</span>
+                        </div>
+                        <div>
+                            <span class="text-gray-500">Chambres / SDB :</span>
+                            <span class="font-semibold text-gray-900 block mt-0.5">{{ active_prop.bedrooms }} ch. / {{ active_prop.bathrooms }} sdb.</span>
+                        </div>
                     </div>
                 </div>
 
-                <!-- Analyse du Contenu -->
-                <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
-                    <div class="bg-white p-6 border border-gray-200 rounded-xl shadow-sm">
-                        <h4 class="text-sm font-semibold text-gray-900 mb-4 border-b border-gray-100 pb-2">Description soumise</h4>
-                        <p class="text-sm text-gray-700 leading-relaxed">
-                            Bel appartement situé au cœur du plateau. Sécurisé H24. Proche de toutes commodités. Idéal pour séjours professionnels.
-                            <br><br>
-                            Contactez moi au 77 123 45 67 si intéressé.
-                        </p>
-                        <div class="mt-4 p-3 bg-red-50 border border-red-200 rounded-lg text-sm text-red-800 flex items-start">
-                            <i data-lucide="alert-triangle" class="w-5 h-5 mr-2 shrink-0 text-red-500"></i>
-                            Attention : Le propriétaire a inclus son numéro de téléphone dans la description. Ceci enfreint la règle de désintermédiation DEKOUWAY.
-                        </div>
-                    </div>
-                    
-                    <div class="bg-white p-6 border border-gray-200 rounded-xl shadow-sm">
-                        <h4 class="text-sm font-semibold text-gray-900 mb-4 border-b border-gray-100 pb-2">Photos soumises (3)</h4>
-                        <div class="grid grid-cols-2 gap-2">
-                            <img src="https://images.unsplash.com/photo-1512917774080-9991f1c4c750?auto=format&fit=crop&w=300" class="rounded object-cover h-24 w-full">
-                            <div class="bg-gray-100 rounded flex items-center justify-center h-24 w-full border-2 border-dashed border-gray-300">
-                                <span class="text-xs text-gray-500">Manquant</span>
-                            </div>
-                        </div>
-                        <div class="mt-4 p-3 bg-red-50 border border-red-200 rounded-lg text-sm text-red-800 flex items-start">
-                            <i data-lucide="alert-triangle" class="w-5 h-5 mr-2 shrink-0 text-red-500"></i>
-                            Attention : Seulement 3 photos (5 minimum requises).
-                        </div>
-                    </div>
+                <!-- Description soumise -->
+                <div class="bg-white p-6 border border-gray-200 rounded-xl shadow-sm">
+                    <h4 class="text-sm font-semibold text-gray-900 mb-4 border-b border-gray-100 pb-2">Description</h4>
+                    <p class="text-sm text-gray-700 leading-relaxed">{{ active_prop.description }}</p>
                 </div>
             </div>
 
             <!-- Barre de décision ERP -->
             <div class="border-t border-gray-200 px-6 py-4 bg-white flex justify-between items-center">
-                <button type="button" class="text-red-600 hover:text-red-800 text-sm font-semibold flex items-center">
-                    <i data-lucide="ban" class="w-4 h-4 mr-1.5"></i> Refuser définitivement
-                </button>
-                <div class="flex space-x-3">
-                    <button type="button" class="rounded-md bg-white px-4 py-2 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50 flex items-center">
-                        <i data-lucide="message-square" class="w-4 h-4 mr-1.5"></i> Demander corrections au proprio
+                <form method="POST" class="inline">
+                    {% csrf_token %}
+                    <input type="hidden" name="property_id" value="{{ active_prop.id }}">
+                    <input type="hidden" name="action" value="reject">
+                    <button type="submit" class="text-red-600 hover:text-red-800 text-sm font-semibold flex items-center">
+                        <i data-lucide="ban" class="w-4 h-4 mr-1.5"></i> Rejeter l'annonce
                     </button>
-                    <button type="button" class="rounded-md bg-green-600 px-4 py-2 text-sm font-semibold text-white shadow-sm hover:bg-green-500 flex items-center opacity-50 cursor-not-allowed" disabled>
+                </form>
+                
+                <form method="POST" class="inline">
+                    {% csrf_token %}
+                    <input type="hidden" name="property_id" value="{{ active_prop.id }}">
+                    <input type="hidden" name="action" value="approve">
+                    <button type="submit" class="rounded-md bg-green-600 px-4 py-2 text-sm font-semibold text-white shadow-sm hover:bg-green-500 flex items-center">
                         <i data-lucide="check-circle-2" class="w-4 h-4 mr-1.5"></i> Publier l'annonce
                     </button>
-                </div>
+                </form>
             </div>
         </div>
     </div>
+    {% endwith %}
 </div>
+{% else %}
+<div class="bg-white border border-gray-200 rounded-xl p-12 text-center shadow-sm">
+    {% include "components/empty_state.html" with title="Aucune annonce en attente" description="Toutes les annonces soumises par les hôtes ont été contrôlées et validées." icon="home" %}
+</div>
+{% endif %}
 {% endblock %}

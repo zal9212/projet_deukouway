@@ -20,14 +20,15 @@
             <p class="mt-1 text-sm leading-6 text-gray-600">Ces informations seront affichées publiquement aux propriétaires lorsque vous ferez une demande de réservation.</p>
         </div>
 
-        <form class="bg-white shadow-sm ring-1 ring-gray-900/5 sm:rounded-xl md:col-span-2">
+        <form method="POST" class="bg-white shadow-xs border border-slate-200 sm:rounded-xl md:col-span-2">
+            {% csrf_token %}
             <div class="px-4 py-6 sm:p-8">
                 <div class="grid max-w-2xl grid-cols-1 gap-x-6 gap-y-8 sm:grid-cols-6">
                     <!-- Photo -->
                     <div class="col-span-full">
                         <label class="block text-sm font-medium leading-6 text-gray-900">Photo de profil</label>
                         <div class="mt-2 flex items-center gap-x-3">
-                            <img src="https://ui-avatars.com/api/?name=Saliou&background=E5E7EB&color=374151" class="h-12 w-12 rounded-full" alt="">
+                            <img src="https://ui-avatars.com/api/?name={{ profile.first_name|default:request.user.email }}&background=E5E7EB&color=374151" class="h-12 w-12 rounded-full" alt="">
                             <button type="button" class="rounded-md bg-white px-2.5 py-1.5 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50">Changer</button>
                         </div>
                     </div>
@@ -35,28 +36,28 @@
                     <div class="sm:col-span-3">
                         <label for="first-name" class="block text-sm font-medium leading-6 text-gray-900">Prénom</label>
                         <div class="mt-2">
-                            <input type="text" name="first-name" id="first-name" value="Saliou" class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-[#8B1E24] sm:text-sm sm:leading-6">
+                            <input type="text" name="first-name" id="first-name" value="{{ profile.first_name }}" class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-[#8B1E24] sm:text-sm sm:leading-6">
                         </div>
                     </div>
 
                     <div class="sm:col-span-3">
                         <label for="last-name" class="block text-sm font-medium leading-6 text-gray-900">Nom</label>
                         <div class="mt-2">
-                            <input type="text" name="last-name" id="last-name" value="Diop" class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-[#8B1E24] sm:text-sm sm:leading-6">
+                            <input type="text" name="last-name" id="last-name" value="{{ profile.last_name }}" class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-[#8B1E24] sm:text-sm sm:leading-6">
                         </div>
                     </div>
 
                     <div class="sm:col-span-4">
                         <label for="email" class="block text-sm font-medium leading-6 text-gray-900">Adresse email</label>
                         <div class="mt-2">
-                            <input id="email" name="email" type="email" value="saliou7393@gmail.com" class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-[#8B1E24] sm:text-sm sm:leading-6">
+                            <input id="email" name="email" type="email" value="{{ request.user.email }}" class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-[#8B1E24] sm:text-sm sm:leading-6">
                         </div>
                     </div>
 
                     <div class="sm:col-span-4">
                         <label for="phone" class="block text-sm font-medium leading-6 text-gray-900">Téléphone</label>
                         <div class="mt-2">
-                            <input id="phone" name="phone" type="tel" value="+221 77 123 45 67" class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-[#8B1E24] sm:text-sm sm:leading-6">
+                            <input id="phone" name="phone" type="tel" value="{{ profile.phone|default:'' }}" class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-[#8B1E24] sm:text-sm sm:leading-6">
                         </div>
                     </div>
                 </div>

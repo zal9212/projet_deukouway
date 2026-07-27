@@ -18,25 +18,25 @@
     <!-- Solde actuel -->
     <div class="overflow-hidden rounded-xl bg-gray-900 px-4 py-5 shadow-sm sm:p-6 text-white flex items-center justify-between">
         <div>
-            <dt class="truncate text-sm font-medium text-gray-400">Prochain versement estimé (16 Août)</dt>
-            <dd class="mt-1 text-3xl font-bold tracking-tight text-white">85 000 FCFA</dd>
+            <dt class="truncate text-sm font-medium text-gray-400">Montant en attente de versement</dt>
+            <dd class="mt-1 text-3xl font-bold tracking-tight text-white">{{ pending_payout_total }} FCFA</dd>
         </div>
         <div class="hidden sm:block">
-            <button class="inline-flex items-center rounded-md bg-white/10 px-3 py-2 text-sm font-semibold text-white hover:bg-white/20 ring-1 ring-inset ring-white/20">
+            <a href="{% url 'dashboard:owner_profile' %}" class="inline-flex items-center rounded-md bg-white/10 px-3 py-2 text-sm font-semibold text-white hover:bg-white/20 ring-1 ring-inset ring-white/20">
                 Gérer mes comptes
-            </button>
+            </a>
         </div>
     </div>
 
     <!-- Table des Versements -->
     <div class="px-4 sm:px-6 lg:px-8 bg-white border border-gray-200 rounded-xl py-6 shadow-sm">
-        
+
         <div class="sm:flex sm:items-center justify-between mb-6">
             <h3 class="text-base font-semibold leading-6 text-gray-900">Transactions effectuées</h3>
             <div class="mt-4 sm:mt-0 flex space-x-3">
-                <button class="inline-flex items-center rounded-md bg-white px-3 py-2 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50">
+                <a href="{% url 'dashboard:owner_payouts_export' %}" class="inline-flex items-center rounded-md bg-white px-3 py-2 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50">
                     <i data-lucide="download" class="w-4 h-4 mr-2 text-gray-400"></i> Exporter (.csv)
-                </button>
+                </a>
             </div>
         </div>
 
@@ -54,38 +54,48 @@
                             </tr>
                         </thead>
                         <tbody class="divide-y divide-gray-200 bg-white">
-                            <!-- Versement 1 -->
+                            {% for payout in payouts %}
                             <tr>
                                 <td class="whitespace-nowrap py-4 pl-4 pr-3 text-sm font-medium text-gray-900 sm:pl-0">
-                                    <span class="text-[#8B1E24]">#RES-2309</span>
-                                    <div class="text-xs text-gray-500 font-normal mt-0.5">Villa Teranga Saly</div>
+                                    <span class="text-[#8B1E24]">#RES-{{ payout.reservation.confirmation_code|default:payout.reservation.id|slice:":8" }}</span>
+                                    <div class="text-xs text-gray-500 font-normal mt-0.5">{{ payout.reservation.property.title }}</div>
                                 </td>
-                                <td class="whitespace-nowrap px-3 py-4 text-sm text-gray-500">01 Août 2024</td>
+                                <td class="whitespace-nowrap px-3 py-4 text-sm text-gray-500">{{ payout.created_at|date:"d M Y" }}</td>
                                 <td class="whitespace-nowrap px-3 py-4 text-sm text-gray-500 flex items-center">
-                                    <div class="w-6 h-6 rounded bg-[#10C3F9] text-white flex items-center justify-center mr-2 text-xs font-bold">W</div>
-                                    Wave (***78)
+                                    {% if payout.method == 'WAVE' %}
+                                        <div class="w-6 h-6 rounded bg-[#10C3F9] text-white flex items-center justify-center mr-2 text-xs font-bold">W</div>
+                                        Wave
+                                    {% elif payout.method == 'ORANGE_MONEY' %}
+                                        <div class="w-6 h-6 rounded bg-[#FF6600] text-white flex items-center justify-center mr-2 text-xs font-bold">OM</div>
+                                        Orange Money
+                                    {% elif payout.method == 'CREDIT_CARD' %}
+                                        <div class="w-6 h-6 rounded bg-blue-600 text-white flex items-center justify-center mr-2 text-xs font-bold">CB</div>
+                                        Carte Bancaire
+                                    {% else %}
+                                        <div class="w-6 h-6 rounded bg-gray-600 text-white flex items-center justify-center mr-2 text-xs font-bold">VI</div>
+                                        Virement
+                                    {% endif %}
                                 </td>
-                                <td class="whitespace-nowrap px-3 py-4 text-sm font-medium text-gray-900">75 000 F</td>
+                                <td class="whitespace-nowrap px-3 py-4 text-sm font-medium text-gray-900">{{ payout.amount }} {{ payout.currency }}</td>
                                 <td class="whitespace-nowrap px-3 py-4 text-sm text-gray-500">
-                                    {% include "components/dashboard/status_badge.html" with status="success" label="Transféré" %}
+                                    {% if payout.status == 'COMPLETED' %}
+                                        {% include "components/dashboard/status_badge.html" with status="success" label="Transféré" %}
+                                    {% elif payout.status == 'PENDING' %}
+                                        {% include "components/dashboard/status_badge.html" with status="pending" label="En attente" %}
+                                    {% elif payout.status == 'PROCESSING' %}
+                                        {% include "components/dashboard/status_badge.html" with status="warning" label="En cours" %}
+                                    {% else %}
+                                        {% include "components/dashboard/status_badge.html" with status="error" label="Échoué" %}
+                                    {% endif %}
                                 </td>
                             </tr>
-                            <!-- Versement 2 -->
+                            {% empty %}
                             <tr>
-                                <td class="whitespace-nowrap py-4 pl-4 pr-3 text-sm font-medium text-gray-900 sm:pl-0">
-                                    <span class="text-[#8B1E24]">#RES-1902</span>
-                                    <div class="text-xs text-gray-500 font-normal mt-0.5">Studio Dakar Plateau</div>
-                                </td>
-                                <td class="whitespace-nowrap px-3 py-4 text-sm text-gray-500">15 Juil 2024</td>
-                                <td class="whitespace-nowrap px-3 py-4 text-sm text-gray-500 flex items-center">
-                                    <div class="w-6 h-6 rounded bg-[#FF6600] text-white flex items-center justify-center mr-2 text-xs font-bold">OM</div>
-                                    Orange Money (***12)
-                                </td>
-                                <td class="whitespace-nowrap px-3 py-4 text-sm font-medium text-gray-900">45 000 F</td>
-                                <td class="whitespace-nowrap px-3 py-4 text-sm text-gray-500">
-                                    {% include "components/dashboard/status_badge.html" with status="success" label="Transféré" %}
+                                <td colspan="5" class="py-8 text-center text-gray-500 text-sm">
+                                    Aucun versement effectué pour le moment.
                                 </td>
                             </tr>
+                            {% endfor %}
                         </tbody>
                     </table>
                 </div>

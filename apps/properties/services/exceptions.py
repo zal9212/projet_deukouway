@@ -9,3 +9,7 @@ class InvalidPropertyStatus(Exception):
 class UnauthorizedPropertyAction(Exception):
     """Levée lorsqu'un utilisateur tente une action sur une propriété qu'il ne possède pas."""
     pass
+
+class DatesAlreadyBooked(Exception):
+    """Levée lorsqu'un propriétaire tente de bloquer des dates déjà couvertes par une réservation active."""
+    pass

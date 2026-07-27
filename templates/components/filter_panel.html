@@ -40,15 +40,13 @@
         <!-- Housing Type -->
         <div class="space-y-2">
             <label for="housing_type" class="block text-[10px] font-bold text-[#6B7280] uppercase tracking-wider">Type de logement</label>
-            <select name="type" id="housing_type" 
+            <select name="type" id="housing_type"
                     aria-label="Sélectionner le type de logement"
                     class="w-full px-3 py-2.5 bg-[#FAFAFA] border border-[#E5E7EB] rounded-xl text-xs focus:ring-1 focus:ring-[#8B1E24] text-[#1F2937] focus:outline-none cursor-pointer">
                 <option value="">Tous les types</option>
-                <option value="apartment" {% if request.GET.type == 'apartment' %}selected{% endif %}>Appartement</option>
-                <option value="studio" {% if request.GET.type == 'studio' %}selected{% endif %}>Studio</option>
-                <option value="villa" {% if request.GET.type == 'villa' %}selected{% endif %}>Villa</option>
-                <option value="house" {% if request.GET.type == 'house' %}selected{% endif %}>Maison</option>
-                <option value="room" {% if request.GET.type == 'room' %}selected{% endif %}>Chambre d'hôte</option>
+                {% for property_type in types %}
+                <option value="{{ property_type.slug }}" {% if request.GET.type == property_type.slug %}selected{% endif %}>{{ property_type.name }}</option>
+                {% endfor %}
             </select>
         </div>
 
@@ -102,21 +100,6 @@
                     <input type="checkbox" name="piscine" value="1" {% if request.GET.piscine %}checked{% endif %}
                            class="w-4 h-4 rounded border-[#E5E7EB] text-[#8B1E24] focus:ring-[#8B1E24] mr-2.5 cursor-pointer">
                     <span>Piscine</span>
-                </label>
-                <label class="flex items-center text-xs font-medium text-[#1F2937] cursor-pointer">
-                    <input type="checkbox" name="meuble" value="1" {% if request.GET.meuble %}checked{% endif %}
-                           class="w-4 h-4 rounded border-[#E5E7EB] text-[#8B1E24] focus:ring-[#8B1E24] mr-2.5 cursor-pointer">
-                    <span>Logement meublé</span>
-                </label>
-                <label class="flex items-center text-xs font-medium text-[#1F2937] cursor-pointer">
-                    <input type="checkbox" name="disponible" value="1" {% if request.GET.disponible %}checked{% endif %}
-                           class="w-4 h-4 rounded border-[#E5E7EB] text-[#8B1E24] focus:ring-[#8B1E24] mr-2.5 cursor-pointer">
-                    <span>Disponible immédiatement</span>
-                </label>
-                <label class="flex items-center text-xs font-medium text-[#1F2937] cursor-pointer">
-                    <input type="checkbox" name="animaux" value="1" {% if request.GET.animaux %}checked{% endif %}
-                           class="w-4 h-4 rounded border-[#E5E7EB] text-[#8B1E24] focus:ring-[#8B1E24] mr-2.5 cursor-pointer">
-                    <span>Animaux acceptés</span>
                 </label>
             </div>
         </div>

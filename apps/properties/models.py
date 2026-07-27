@@ -1,6 +1,6 @@
 from django.db import models
 from django.conf import settings
-from django.core.validators import MinValueValidator, FileExtensionValidator
+from django.core.validators import MinValueValidator, MaxValueValidator, FileExtensionValidator
 from django.utils.translation import gettext_lazy as _
 from apps.core.models import BaseModel
 from .choices import PropertyStatusChoices
@@ -222,3 +222,23 @@ class PropertyFavorite(BaseModel):
 
     def __str__(self) -> str:
         return f"{self.user.email} - {self.property.title}"
+
+
+class PropertyReview(BaseModel):
+    """
+    Avis et notes laissés par les clients sur les logements après séjour.
+    """
+    property = models.ForeignKey(Property, on_delete=models.CASCADE, related_name='reviews', verbose_name=_('Propriété'))
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='property_reviews', verbose_name=_('Auteur'))
+    reservation = models.ForeignKey('reservations.Reservation', on_delete=models.SET_NULL, null=True, blank=True, related_name='reviews', verbose_name=_('Réservation'))
+    rating = models.PositiveSmallIntegerField(_('Note (1 à 5)'), validators=[MinValueValidator(1), MaxValueValidator(5)])
+    comment = models.TextField(_('Commentaire'), blank=True)
+
+    class Meta(BaseModel.Meta):
+        verbose_name = _('Avis Logement')
+        verbose_name_plural = _('Avis Logements')
+        db_table = 'properties_review'
+
+    def __str__(self) -> str:
+        return f"{self.rating}/5 par {self.user.email} sur {self.property.title}"
+

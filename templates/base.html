@@ -76,15 +76,24 @@
     {% block extra_head %}{% endblock %}
 </head>
 <body class="min-h-full flex flex-col font-sans antialiased text-[#1F2937]">
-    
+
+    <!-- Messages flash (succès / erreur / info) -->
+    {% include "components/messages.html" %}
+
     <!-- Render main structure based on layout extensions -->
     {% block layout %}{% endblock %}
+
+    <!-- Chatbot Assistant Flottant -->
+    {% include "components/support/chatbot_floating_widget.html" %}
 
     <!-- Initialize Lucide Icons -->
     <script>
         lucide.createIcons();
         document.body.addEventListener('htmx:afterSwap', function() {
             lucide.createIcons();
+        });
+        document.addEventListener('alpine:init', () => {
+            Alpine.store('chat', { open: false });
         });
     </script>
 </body>

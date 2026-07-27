@@ -1,0 +1,98 @@
+{% extends "layouts/public.html" %}
+
+{% block title %}Politique de Confidentialité — DEKOUWAY{% endblock %}
+{% block meta_description %}Comment DEKOUWAY collecte, utilise et protège vos données personnelles.{% endblock %}
+
+{% block content %}
+<section class="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
+    <div class="mb-10">
+        <span class="inline-flex items-center px-3 py-1 rounded-full bg-[#8B1E24]/10 text-[#8B1E24] text-[10px] font-bold uppercase tracking-wider mb-4">
+            Confidentialité
+        </span>
+        <h1 class="text-3xl font-bold text-[#1F2937] mb-2">Politique de Confidentialité</h1>
+        <p class="text-xs text-[#6B7280]">Dernière mise à jour : janvier 2026</p>
+    </div>
+
+    <div class="space-y-8 text-sm text-[#374151] leading-relaxed">
+
+        <div class="bg-white border border-[#E5E7EB] rounded-2xl p-6 shadow-sm">
+            <h2 class="text-base font-bold text-[#1F2937] mb-3 flex items-center gap-2">
+                <i data-lucide="database" class="w-4 h-4 text-[#8B1E24]"></i>
+                1. Données que nous collectons
+            </h2>
+            <p class="mb-3">Lorsque vous utilisez DEKOUWAY, nous collectons les données suivantes :</p>
+            <ul class="list-disc list-inside space-y-1.5 text-[#6B7280]">
+                <li>Informations d'identification : nom, prénom, adresse email, numéro de téléphone.</li>
+                <li>Pièce d'identité (pour les propriétaires), afin de vérifier votre identité avant publication d'une annonce.</li>
+                <li>Informations de réservation : dates de séjour, logement concerné, moyen de paiement utilisé.</li>
+                <li>Données techniques : adresse IP, type d'appareil, journaux de connexion.</li>
+            </ul>
+        </div>
+
+        <div class="bg-white border border-[#E5E7EB] rounded-2xl p-6 shadow-sm">
+            <h2 class="text-base font-bold text-[#1F2937] mb-3 flex items-center gap-2">
+                <i data-lucide="target" class="w-4 h-4 text-[#8B1E24]"></i>
+                2. Pourquoi nous les utilisons
+            </h2>
+            <ul class="list-disc list-inside space-y-1.5 text-[#6B7280]">
+                <li>Créer et sécuriser votre compte utilisateur.</li>
+                <li>Traiter vos demandes de réservation et vos paiements.</li>
+                <li>Vérifier l'identité des propriétaires afin de garantir la sécurité de la plateforme.</li>
+                <li>Vous contacter en cas de besoin concernant une réservation ou un paiement.</li>
+                <li>Améliorer la qualité de nos services et prévenir la fraude.</li>
+            </ul>
+        </div>
+
+        <div class="bg-white border border-[#E5E7EB] rounded-2xl p-6 shadow-sm">
+            <h2 class="text-base font-bold text-[#1F2937] mb-3 flex items-center gap-2">
+                <i data-lucide="share-2" class="w-4 h-4 text-[#8B1E24]"></i>
+                3. Partage des données
+            </h2>
+            <p class="text-[#6B7280]">
+                Vos données ne sont jamais vendues à des tiers. Elles peuvent être partagées uniquement avec :
+                les prestataires de paiement (Wave, Orange Money, réseaux bancaires) pour le traitement des transactions,
+                et le propriétaire ou le client concerné dans le cadre strict d'une réservation en cours.
+            </p>
+        </div>
+
+        <div class="bg-white border border-[#E5E7EB] rounded-2xl p-6 shadow-sm">
+            <h2 class="text-base font-bold text-[#1F2937] mb-3 flex items-center gap-2">
+                <i data-lucide="lock" class="w-4 h-4 text-[#8B1E24]"></i>
+                4. Sécurité et conservation
+            </h2>
+            <p class="text-[#6B7280]">
+                Vos données sont stockées de manière sécurisée et conservées pendant la durée nécessaire à la
+                fourniture de nos services et au respect de nos obligations légales et comptables.
+            </p>
+        </div>
+
+        <div class="bg-white border border-[#E5E7EB] rounded-2xl p-6 shadow-sm">
+            <h2 class="text-base font-bold text-[#1F2937] mb-3 flex items-center gap-2">
+                <i data-lucide="user-check" class="w-4 h-4 text-[#8B1E24]"></i>
+                5. Vos droits
+            </h2>
+            <p class="mb-3 text-[#6B7280]">Vous disposez à tout moment d'un droit :</p>
+            <ul class="list-disc list-inside space-y-1.5 text-[#6B7280]">
+                <li>D'accès et de rectification de vos données personnelles depuis votre profil.</li>
+                <li>De suppression de votre compte et des données associées.</li>
+                <li>D'opposition au traitement de vos données à des fins non essentielles.</li>
+            </ul>
+            <p class="mt-3 text-[#6B7280]">
+                Pour exercer l'un de ces droits, contactez-nous via notre
+                <a href="{% url 'public:contact' %}" class="text-[#8B1E24] font-semibold hover:underline">formulaire de contact</a>.
+            </p>
+        </div>
+
+        <div class="bg-white border border-[#E5E7EB] rounded-2xl p-6 shadow-sm">
+            <h2 class="text-base font-bold text-[#1F2937] mb-3 flex items-center gap-2">
+                <i data-lucide="cookie" class="w-4 h-4 text-[#8B1E24]"></i>
+                6. Cookies
+            </h2>
+            <p class="text-[#6B7280]">
+                DEKOUWAY utilise des cookies strictement nécessaires au fonctionnement de la plateforme
+                (maintien de votre session de connexion, préférences d'affichage). Aucun cookie publicitaire tiers n'est utilisé.
+            </p>
+        </div>
+    </div>
+</section>
+{% endblock %}

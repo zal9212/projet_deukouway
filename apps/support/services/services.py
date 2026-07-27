@@ -1,13 +1,26 @@
 from django.db import transaction
 from django.utils import timezone
 from apps.accounts.models import User
-from apps.support.models import Ticket, TicketMessage, SupportCategory
+from apps.support.models import Ticket, TicketMessage, SupportCategory, ContactMessage
 from apps.support.services.exceptions import TicketAlreadyClosed, UnauthorizedTicketAction
 import logging
 
 logger = logging.getLogger(__name__)
 
 class SupportService:
+
+    @staticmethod
+    @transaction.atomic
+    def submit_contact_message(name: str, email: str, subject: str, message: str, user: User = None) -> ContactMessage:
+        contact_message = ContactMessage.objects.create(
+            name=name,
+            email=email,
+            subject=subject,
+            message=message,
+            user=user if (user and user.is_authenticated) else None,
+        )
+        logger.info(f"Message de contact reçu de {email} : {subject}")
+        return contact_message
 
     @staticmethod
     @transaction.atomic
@@ -36,12 +49,14 @@ class SupportService:
         )
         
         # Mettre à jour le statut du ticket si un admin répond
-        if sender.is_staff or sender.is_superuser:
+        if getattr(sender, 'is_superadmin', False) or sender.is_superuser or sender.is_staff:
             ticket.status = 'IN_PROGRESS'
             ticket.save(update_fields=['status'])
             
         logger.info(f"Réponse ajoutée au ticket : {ticket.id} par {sender.email}")
         return message
+
+    add_message_to_ticket = reply_ticket
 
     @staticmethod
     @transaction.atomic
@@ -50,7 +65,7 @@ class SupportService:
             raise TicketAlreadyClosed("Le ticket est déjà fermé.")
             
         # Seulement l'auteur ou un admin peut fermer
-        if ticket.user_id != user.id and not (user.is_staff or user.is_superuser):
+        if ticket.user_id != user.id and not (getattr(user, 'is_superadmin', False) or user.is_superuser or user.is_staff):
             raise UnauthorizedTicketAction("Vous n'êtes pas autorisé à fermer ce ticket.")
             
         ticket.status = 'CLOSED'
@@ -77,7 +92,6 @@ class SupportService:
         if ticket.status == 'CLOSED':
             raise TicketAlreadyClosed("Impossible d'escalader un ticket fermé.")
             
-        # Logique métier d'escalade (par exemple, assignation à un manager ou changement de priorité)
         ticket.status = 'ESCALATED'
         ticket.save(update_fields=['status'])
         

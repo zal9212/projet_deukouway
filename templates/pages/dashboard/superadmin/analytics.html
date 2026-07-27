@@ -1,20 +1,17 @@
 {% extends "layouts/dashboard.html" %}
 
-{% block title %}Analytics - DEKOUWAY ERP{% endblock %}
+{% block title %}Analytics IA - DEKOUWAY ERP{% endblock %}
 
 {% block page_header %}
 <div class="md:flex md:items-center md:justify-between mb-8 mt-2">
     <div class="min-w-0 flex-1">
-        <h2 class="text-2xl font-bold leading-7 text-gray-900 sm:truncate sm:text-3xl sm:tracking-tight">
-            Business Intelligence & Analytics
+        <h2 class="text-2xl font-bold leading-7 text-gray-900 sm:truncate sm:text-3xl sm:tracking-tight flex items-center gap-3">
+            Business Intelligence & IA Analytics
+            <span class="inline-flex items-center rounded-full bg-purple-100 px-3 py-0.5 text-xs font-semibold text-purple-800">
+                <i data-lucide="sparkles" class="w-3.5 h-3.5 mr-1"></i> Moteur IA Actif
+            </span>
         </h2>
-    </div>
-    <div class="mt-4 flex md:ml-4 md:mt-0 space-x-3">
-        <select class="block rounded-md border-0 py-1.5 pl-3 pr-10 text-gray-900 ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-[#8B1E24] sm:text-sm sm:leading-6">
-            <option>Ce mois-ci</option>
-            <option>Le mois dernier</option>
-            <option>Cette année</option>
-        </select>
+        <p class="mt-1 text-sm text-gray-500">Prévisions, détections automatiques d'anomalies et insights décisionnels générés par l'ORM PostgreSQL.</p>
     </div>
 </div>
 {% endblock %}
@@ -22,45 +19,181 @@
 {% block content %}
 <div class="space-y-8">
     
-    <div class="grid grid-cols-1 gap-5 sm:grid-cols-3">
-        <div class="overflow-hidden rounded-xl bg-white px-4 py-5 shadow-sm border border-gray-200">
-            <dt class="truncate text-sm font-medium text-gray-500">Marge Brute (Commissions)</dt>
-            <dd class="mt-1 flex justify-between items-baseline">
-                <span class="text-3xl font-bold tracking-tight text-gray-900">1.8M F</span>
-                <span class="text-sm font-semibold text-green-600 flex items-center"><i data-lucide="arrow-up" class="w-4 h-4 mr-1"></i> 8%</span>
-            </dd>
-        </div>
-        <div class="overflow-hidden rounded-xl bg-white px-4 py-5 shadow-sm border border-gray-200">
-            <dt class="truncate text-sm font-medium text-gray-500">Taux d'occupation global moyen</dt>
-            <dd class="mt-1 flex justify-between items-baseline">
-                <span class="text-3xl font-bold tracking-tight text-gray-900">58%</span>
-                <span class="text-sm font-semibold text-green-600 flex items-center"><i data-lucide="arrow-up" class="w-4 h-4 mr-1"></i> 2%</span>
-            </dd>
-        </div>
-        <div class="overflow-hidden rounded-xl bg-white px-4 py-5 shadow-sm border border-gray-200">
-            <dt class="truncate text-sm font-medium text-gray-500">Croissance Utilisateurs (C + P)</dt>
-            <dd class="mt-1 flex justify-between items-baseline">
-                <span class="text-3xl font-bold tracking-tight text-gray-900">+142</span>
-                <span class="text-sm font-semibold text-red-600 flex items-center"><i data-lucide="arrow-down" class="w-4 h-4 mr-1"></i> 1%</span>
-            </dd>
-        </div>
-    </div>
-
-    <!-- Graphiques (Placeholders) -->
-    <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
-        <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
-            <h3 class="text-base font-semibold leading-6 text-gray-900 mb-6">Évolution des Commissions (CA)</h3>
-            <div class="h-72 bg-gray-50 rounded-lg flex items-center justify-center border border-dashed border-gray-300">
-                {% include "components/dashboard/chart_placeholder.html" with title="Chart.js / ApexCharts: CA Marge" %}
+    <!-- Section 1 : Prévisions IA -->
+    <section>
+        <h3 class="text-base font-bold text-gray-900 mb-4 flex items-center">
+            <i data-lucide="trending-up" class="w-5 h-5 mr-2 text-[#8B1E24]"></i> Prévisions IA (Mois Prochain)
+        </h3>
+        <div class="grid grid-cols-1 gap-5 sm:grid-cols-3">
+            <div class="overflow-hidden rounded-xl bg-gradient-to-br from-white to-purple-50/30 p-5 shadow-xs border border-purple-100">
+                <dt class="truncate text-xs font-bold text-purple-700 uppercase tracking-wider">Réservations Estimées</dt>
+                <dd class="mt-2 flex justify-between items-baseline">
+                    <span class="text-3xl font-extrabold text-gray-900">{{ ai_analytics.predictions.reservations_next_month }}</span>
+                    <span class="text-xs font-semibold text-purple-700 bg-purple-100 px-2 py-0.5 rounded-full">+{{ ai_analytics.predictions.reservations_growth_pct }}% prévus</span>
+                </dd>
+            </div>
+            <div class="overflow-hidden rounded-xl bg-gradient-to-br from-white to-emerald-50/30 p-5 shadow-xs border border-emerald-100">
+                <dt class="truncate text-xs font-bold text-emerald-700 uppercase tracking-wider">Chiffre d'Affaires Estimé</dt>
+                <dd class="mt-2 flex justify-between items-baseline">
+                    <span class="text-3xl font-extrabold text-gray-900">{{ ai_analytics.predictions.revenue_next_month }} F</span>
+                    <span class="text-xs font-semibold text-emerald-700 bg-emerald-100 px-2 py-0.5 rounded-full">Tendance Hausse</span>
+                </dd>
+            </div>
+            <div class="overflow-hidden rounded-xl bg-gradient-to-br from-white to-blue-50/30 p-5 shadow-xs border border-blue-100">
+                <dt class="truncate text-xs font-bold text-blue-700 uppercase tracking-wider">Logements Disponibles Estimés</dt>
+                <dd class="mt-2 flex justify-between items-baseline">
+                    <span class="text-3xl font-extrabold text-gray-900">{{ ai_analytics.predictions.available_properties_next_month }}</span>
+                    <span class="text-xs font-semibold text-blue-700 bg-blue-100 px-2 py-0.5 rounded-full">Parc Optimal</span>
+                </dd>
             </div>
         </div>
-        <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
-            <h3 class="text-base font-semibold leading-6 text-gray-900 mb-6">Acquisition Clients vs Propriétaires</h3>
-            <div class="h-72 bg-gray-50 rounded-lg flex items-center justify-center border border-dashed border-gray-300">
-                {% include "components/dashboard/chart_placeholder.html" with title="Chart.js / ApexCharts: Utilisateurs" %}
+    </section>
+
+    <!-- Section 2 : Insights Automatiques Générés -->
+    <section class="bg-white rounded-xl shadow-xs border border-gray-200 p-6">
+        <h3 class="text-base font-bold text-gray-900 mb-4 flex items-center">
+            <i data-lucide="lightbulb" class="w-5 h-5 mr-2 text-yellow-500"></i> Insights Automatiques Générés par la Plateforme
+        </h3>
+        <ul role="list" class="space-y-3">
+            {% for insight in ai_analytics.auto_insights %}
+            <li class="flex items-start gap-3 p-3 bg-gray-50 rounded-lg border border-gray-100">
+                <i data-lucide="check-circle-2" class="w-5 h-5 text-emerald-600 shrink-0 mt-0.5"></i>
+                <p class="text-sm font-medium text-gray-800">{{ insight }}</p>
+            </li>
+            {% empty %}
+            <li class="text-sm text-gray-500">Aucun insight généré.</li>
+            {% endfor %}
+        </ul>
+    </section>
+
+    <!-- Section 3 : Détections d'Anomalies & Profils -->
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+        
+        <!-- Annonces à vérifier -->
+        <div class="bg-white rounded-xl shadow-xs border border-gray-200 p-6">
+            <h3 class="text-base font-bold text-gray-900 mb-4 flex items-center justify-between">
+                <span><i data-lucide="shield-alert" class="w-5 h-5 mr-2 text-amber-500 inline"></i> Annonces Suspectes / À Revoir</span>
+                <span class="text-xs text-gray-500 font-normal">Auto-détection</span>
+            </h3>
+            <ul role="list" class="divide-y divide-gray-100">
+                {% for prop in ai_analytics.detections.suspicious_listings %}
+                <li class="py-3 flex items-center justify-between">
+                    <div>
+                        <p class="text-sm font-semibold text-gray-900">{{ prop.title }}</p>
+                        <p class="text-xs text-gray-500">Propriétaire: {{ prop.owner.email }}</p>
+                    </div>
+                    <a href="{% url 'dashboard:admin_validate_properties' %}" class="text-xs font-semibold text-[#8B1E24] hover:underline">Analyser</a>
+                </li>
+                {% empty %}
+                <li class="py-4 text-center text-xs text-gray-500">Aucune anomalie détectée sur les annonces.</li>
+                {% endfor %}
+            </ul>
+        </div>
+
+        <!-- Hôtes à contacter / inactifs -->
+        <div class="bg-white rounded-xl shadow-xs border border-gray-200 p-6">
+            <h3 class="text-base font-bold text-gray-900 mb-4 flex items-center justify-between">
+                <span><i data-lucide="user-x" class="w-5 h-5 mr-2 text-red-500 inline"></i> Partenaires en Attente KYC</span>
+                <span class="text-xs text-gray-500 font-normal">Priorité Modération</span>
+            </h3>
+            <ul role="list" class="divide-y divide-gray-100">
+                {% for owner in ai_analytics.detections.inactive_owners %}
+                <li class="py-3 flex items-center justify-between">
+                    <div>
+                        <p class="text-sm font-semibold text-gray-900">{{ owner.profile.first_name|default:owner.email }}</p>
+                        <p class="text-xs text-gray-500">Inscrit le {{ owner.date_joined|date:"d M Y" }}</p>
+                    </div>
+                    <a href="{% url 'dashboard:admin_validate_owners' %}" class="text-xs font-semibold text-[#8B1E24] hover:underline">Vérifier</a>
+                </li>
+                {% empty %}
+                <li class="py-4 text-center text-xs text-gray-500">Aucun dossier hôte en attente.</li>
+                {% endfor %}
+            </ul>
+        </div>
+
+    </div>
+
+    <!-- Section 4 : Graphiques Interactifs (Chart.js) -->
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+        <div class="bg-white rounded-xl shadow-xs border border-gray-200 p-6">
+            <div class="flex items-center justify-between mb-4">
+                <h3 class="text-base font-semibold leading-6 text-gray-900">Évolution des Commissions (CFA)</h3>
+            </div>
+            <div class="h-72">
+                <canvas id="revenueChart"></canvas>
+            </div>
+        </div>
+        <div class="bg-white rounded-xl shadow-xs border border-gray-200 p-6">
+            <div class="flex items-center justify-between mb-4">
+                <h3 class="text-base font-semibold leading-6 text-gray-900">Répartition Utilisateurs (Clients vs Propriétaires)</h3>
+            </div>
+            <div class="h-72">
+                <canvas id="usersChart"></canvas>
             </div>
         </div>
     </div>
 
 </div>
+{% endblock %}
+
+{% block extra_scripts %}
+{{ stats.monthly_revenue_labels|json_script:"revenue-labels-data" }}
+{{ stats.monthly_revenue_data|json_script:"revenue-data-data" }}
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+    document.addEventListener("DOMContentLoaded", function() {
+        // Chart 1: Revenue & Commission Trend
+        const ctxRev = document.getElementById('revenueChart').getContext('2d');
+        const revenueLabels = JSON.parse(document.getElementById('revenue-labels-data').textContent);
+        const revenueData = JSON.parse(document.getElementById('revenue-data-data').textContent);
+
+        new Chart(ctxRev, {
+            type: 'line',
+            data: {
+                labels: revenueLabels,
+                datasets: [{
+                    label: 'Commissions (CFA)',
+                    data: revenueData,
+                    borderColor: '#8B1E24',
+                    backgroundColor: 'rgba(139, 30, 36, 0.1)',
+                    fill: true,
+                    tension: 0.4,
+                    borderWidth: 2
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: { display: false }
+                },
+                scales: {
+                    y: { beginAtZero: true, grid: { color: '#F1F5F9' } },
+                    x: { grid: { display: false } }
+                }
+            }
+        });
+
+        // Chart 2: Users Distribution
+        const ctxUsers = document.getElementById('usersChart').getContext('2d');
+        new Chart(ctxUsers, {
+            type: 'doughnut',
+            data: {
+                labels: ['Clients', 'Propriétaires'],
+                datasets: [{
+                    data: [{{ stats.total_clients|default:0 }}, {{ stats.total_owners|default:0 }}],
+                    backgroundColor: ['#0F172A', '#8B1E24'],
+                    borderWidth: 0
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: { position: 'bottom' }
+                }
+            }
+        });
+    });
+</script>
 {% endblock %}

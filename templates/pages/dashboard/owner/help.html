@@ -52,19 +52,69 @@
         </div>
 
         <!-- Contact Support -->
-        <div class="bg-[#8B1E24] rounded-xl p-6 shadow-sm text-white flex flex-col justify-between">
-            <div>
-                <h3 class="text-xl font-bold mb-2">Besoin d'aide supplémentaire ?</h3>
-                <p class="text-[#8B1E24] text-red-100 text-sm">Nos conseillers partenaires sont disponibles 7j/7 pour vous accompagner.</p>
+        <div class="bg-white border border-gray-200 rounded-xl p-6 shadow-sm">
+            <div class="flex items-center gap-3 mb-6">
+                <div class="w-10 h-10 rounded-full bg-green-50 flex items-center justify-center">
+                    <i data-lucide="message-square" class="h-6 w-6 text-green-600"></i>
+                </div>
+                <h3 class="text-lg font-bold text-gray-900">Ouvrir un ticket</h3>
             </div>
-            
-            <div class="mt-8">
-                <a href="messages.html" class="w-full block text-center rounded-md bg-white px-3 py-3 text-sm font-semibold text-[#8B1E24] shadow-sm hover:bg-gray-50">
-                    Ouvrir un ticket
-                </a>
-                <p class="text-center text-xs text-red-200 mt-4">Ou appelez le +221 33 000 00 00 (Lun-Ven 9h-18h)</p>
-            </div>
+            <form method="POST" class="space-y-4">
+                {% csrf_token %}
+                <div>
+                    <label for="category" class="block text-sm font-medium leading-6 text-gray-900">Catégorie</label>
+                    <div class="mt-2">
+                        <select id="category" name="category" required class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-[#8B1E24] sm:text-sm sm:leading-6">
+                            {% for cat in categories %}
+                                <option value="{{ cat.id }}">{{ cat.name }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                </div>
+                <div>
+                    <label for="subject" class="block text-sm font-medium leading-6 text-gray-900">Sujet</label>
+                    <div class="mt-2">
+                        <input type="text" id="subject" name="subject" required class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-[#8B1E24] sm:text-sm sm:leading-6">
+                    </div>
+                </div>
+                <div>
+                    <label for="message" class="block text-sm font-medium leading-6 text-gray-900">Message</label>
+                    <div class="mt-2">
+                        <textarea id="message" name="message" required rows="3" class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-[#8B1E24] sm:text-sm sm:leading-6"></textarea>
+                    </div>
+                </div>
+                <button type="submit" class="w-full rounded-md bg-[#8B1E24] px-3 py-2.5 text-sm font-semibold text-white shadow-sm hover:bg-[#6F171C]">
+                    Envoyer
+                </button>
+                <p class="text-center text-xs text-gray-500">Ou appelez le +221 33 000 00 00 (Lun-Ven 9h-18h)</p>
+            </form>
         </div>
+    </div>
+
+    <!-- Mes tickets -->
+    <div class="bg-white border border-gray-200 rounded-xl overflow-hidden shadow-sm">
+        <div class="px-6 py-4 border-b border-gray-200">
+            <h3 class="text-lg font-bold text-gray-900">Mes tickets</h3>
+        </div>
+        <ul role="list" class="divide-y divide-gray-200">
+            {% for ticket in tickets %}
+            <li class="p-4 sm:px-6 hover:bg-gray-50 transition-colors flex items-center justify-between">
+                <div>
+                    <p class="text-sm font-medium text-gray-900">{{ ticket.subject }}</p>
+                    <p class="text-xs text-gray-500 mt-1">{{ ticket.category.name }} - {{ ticket.created_at|date:"d M Y" }}</p>
+                </div>
+                {% if ticket.status == 'CLOSED' %}
+                    {% include "components/dashboard/status_badge.html" with status="info" label="Fermé" %}
+                {% else %}
+                    {% include "components/dashboard/status_badge.html" with status="pending" label=ticket.get_status_display %}
+                {% endif %}
+            </li>
+            {% empty %}
+            <li class="p-8">
+                {% include "components/dashboard/empty_state.html" with title="Aucun ticket" description="Vos demandes de support apparaîtront ici." icon="message-square" %}
+            </li>
+            {% endfor %}
+        </ul>
     </div>
 </div>
 

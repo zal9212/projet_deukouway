@@ -1,0 +1,135 @@
+{% extends "layouts/public.html" %}
+
+{% block title %}FAQ Hôte — DEKOUWAY{% endblock %}
+{% block meta_description %}Toutes les réponses aux questions des propriétaires : vérification KYC, publication d'annonces, réservations et reversements sur DEKOUWAY.{% endblock %}
+
+{% block content %}
+<section class="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
+
+    <div class="text-center mb-12">
+        <span class="inline-flex items-center px-3 py-1 rounded-full bg-[#8B1E24]/10 text-[#8B1E24] text-[10px] font-bold uppercase tracking-wider mb-4">
+            Centre d'aide Hôte
+        </span>
+        <h1 class="text-3xl font-bold text-[#1F2937] mb-4">FAQ Hôte</h1>
+        <p class="text-sm text-[#6B7280]">
+            Les réponses aux questions les plus fréquentes des propriétaires partenaires DEKOUWAY.
+            Vous ne trouvez pas votre réponse ? <a href="{% url 'public:contact' %}" class="text-[#8B1E24] font-semibold hover:underline">Contactez-nous</a>.
+        </p>
+    </div>
+
+    <!-- Vérification du compte (KYC) -->
+    <div class="mb-10">
+        <h2 class="text-xs font-bold text-[#8B1E24] uppercase tracking-wider mb-4 flex items-center gap-2">
+            <i data-lucide="shield-check" class="w-4 h-4"></i> Vérification du compte
+        </h2>
+        <div class="space-y-3" x-data="{ active: null }">
+            <div class="bg-white border border-[#E5E7EB] rounded-xl">
+                <button @click="active !== 1 ? active = 1 : active = null" class="flex w-full items-center justify-between text-left p-4 focus:outline-none">
+                    <span class="text-sm font-semibold text-[#1F2937]">Pourquoi dois-je fournir une pièce d'identité ?</span>
+                    <i data-lucide="chevron-down" class="w-4 h-4 text-[#6B7280] transition-transform flex-shrink-0" :class="active === 1 ? 'rotate-180' : ''"></i>
+                </button>
+                <div class="px-4 pb-4 text-xs text-[#6B7280] leading-relaxed" x-show="active === 1" x-transition x-cloak>
+                    Pour garantir la sécurité de notre communauté, chaque propriétaire doit prouver son identité (pièce d'identité + selfie de vérification)
+                    avant de pouvoir publier un logement. C'est une étape unique, réalisée une seule fois.
+                </div>
+            </div>
+            <div class="bg-white border border-[#E5E7EB] rounded-xl">
+                <button @click="active !== 2 ? active = 2 : active = null" class="flex w-full items-center justify-between text-left p-4 focus:outline-none">
+                    <span class="text-sm font-semibold text-[#1F2937]">Combien de temps prend la vérification ?</span>
+                    <i data-lucide="chevron-down" class="w-4 h-4 text-[#6B7280] transition-transform flex-shrink-0" :class="active === 2 ? 'rotate-180' : ''"></i>
+                </button>
+                <div class="px-4 pb-4 text-xs text-[#6B7280] leading-relaxed" x-show="active === 2" x-transition x-cloak>
+                    Comptez généralement entre 24 et 48 heures ouvrées. Vous recevrez une notification dès que votre dossier est validé.
+                </div>
+            </div>
+            <div class="bg-white border border-[#E5E7EB] rounded-xl">
+                <button @click="active !== 3 ? active = 3 : active = null" class="flex w-full items-center justify-between text-left p-4 focus:outline-none">
+                    <span class="text-sm font-semibold text-[#1F2937]">Puis-je me connecter et explorer mon tableau de bord en attendant ?</span>
+                    <i data-lucide="chevron-down" class="w-4 h-4 text-[#6B7280] transition-transform flex-shrink-0" :class="active === 3 ? 'rotate-180' : ''"></i>
+                </button>
+                <div class="px-4 pb-4 text-xs text-[#6B7280] leading-relaxed" x-show="active === 3" x-transition x-cloak>
+                    Oui. Vous pouvez vous connecter et préparer vos annonces dès votre inscription. Seule la publication effective d'un logement
+                    reste bloquée jusqu'à la validation de votre dossier.
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Publication d'annonces -->
+    <div class="mb-10">
+        <h2 class="text-xs font-bold text-[#8B1E24] uppercase tracking-wider mb-4 flex items-center gap-2">
+            <i data-lucide="home" class="w-4 h-4"></i> Publication d'annonces
+        </h2>
+        <div class="space-y-3" x-data="{ active: null }">
+            <div class="bg-white border border-[#E5E7EB] rounded-xl">
+                <button @click="active !== 1 ? active = 1 : active = null" class="flex w-full items-center justify-between text-left p-4 focus:outline-none">
+                    <span class="text-sm font-semibold text-[#1F2937]">Comment publier mon premier logement ?</span>
+                    <i data-lucide="chevron-down" class="w-4 h-4 text-[#6B7280] transition-transform flex-shrink-0" :class="active === 1 ? 'rotate-180' : ''"></i>
+                </button>
+                <div class="px-4 pb-4 text-xs text-[#6B7280] leading-relaxed" x-show="active === 1" x-transition x-cloak>
+                    Une fois votre compte vérifié, rendez-vous dans « Mes Logements » puis « Ajouter un logement ». Renseignez la description,
+                    les équipements, les photos et le tarif. Chaque annonce est ensuite examinée par notre équipe avant publication publique.
+                </div>
+            </div>
+            <div class="bg-white border border-[#E5E7EB] rounded-xl">
+                <button @click="active !== 2 ? active = 2 : active = null" class="flex w-full items-center justify-between text-left p-4 focus:outline-none">
+                    <span class="text-sm font-semibold text-[#1F2937]">Combien de logements puis-je publier ?</span>
+                    <i data-lucide="chevron-down" class="w-4 h-4 text-[#6B7280] transition-transform flex-shrink-0" :class="active === 2 ? 'rotate-180' : ''"></i>
+                </button>
+                <div class="px-4 pb-4 text-xs text-[#6B7280] leading-relaxed" x-show="active === 2" x-transition x-cloak>
+                    Il n'y a pas de limite : vous pouvez gérer autant de logements que vous le souhaitez depuis votre tableau de bord.
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Réservations -->
+    <div class="mb-10">
+        <h2 class="text-xs font-bold text-[#8B1E24] uppercase tracking-wider mb-4 flex items-center gap-2">
+            <i data-lucide="calendar" class="w-4 h-4"></i> Réservations
+        </h2>
+        <div class="space-y-3" x-data="{ active: null }">
+            <div class="bg-white border border-[#E5E7EB] rounded-xl">
+                <button @click="active !== 1 ? active = 1 : active = null" class="flex w-full items-center justify-between text-left p-4 focus:outline-none">
+                    <span class="text-sm font-semibold text-[#1F2937]">Comment j'accepte ou refuse une demande de réservation ?</span>
+                    <i data-lucide="chevron-down" class="w-4 h-4 text-[#6B7280] transition-transform flex-shrink-0" :class="active === 1 ? 'rotate-180' : ''"></i>
+                </button>
+                <div class="px-4 pb-4 text-xs text-[#6B7280] leading-relaxed" x-show="active === 1" x-transition x-cloak>
+                    Chaque demande transmise par notre équipe apparaît dans « Mes Demandes ». Vous pouvez l'accepter ou la refuser
+                    directement depuis cette page, avec un motif si besoin.
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Paiements & reversements -->
+    <div>
+        <h2 class="text-xs font-bold text-[#8B1E24] uppercase tracking-wider mb-4 flex items-center gap-2">
+            <i data-lucide="credit-card" class="w-4 h-4"></i> Paiements & reversements
+        </h2>
+        <div class="space-y-3" x-data="{ active: null }">
+            <div class="bg-white border border-[#E5E7EB] rounded-xl">
+                <button @click="active !== 1 ? active = 1 : active = null" class="flex w-full items-center justify-between text-left p-4 focus:outline-none">
+                    <span class="text-sm font-semibold text-[#1F2937]">Quand suis-je payé après une réservation ?</span>
+                    <i data-lucide="chevron-down" class="w-4 h-4 text-[#6B7280] transition-transform flex-shrink-0" :class="active === 1 ? 'rotate-180' : ''"></i>
+                </button>
+                <div class="px-4 pb-4 text-xs text-[#6B7280] leading-relaxed" x-show="active === 1" x-transition x-cloak>
+                    Le montant net (après déduction de la commission DEKOUWAY) vous est reversé dès le début effectif du séjour du voyageur,
+                    via Wave, Orange Money ou virement bancaire.
+                </div>
+            </div>
+            <div class="bg-white border border-[#E5E7EB] rounded-xl">
+                <button @click="active !== 2 ? active = 2 : active = null" class="flex w-full items-center justify-between text-left p-4 focus:outline-none">
+                    <span class="text-sm font-semibold text-[#1F2937]">Quelle commission DEKOUWAY applique-t-elle ?</span>
+                    <i data-lucide="chevron-down" class="w-4 h-4 text-[#6B7280] transition-transform flex-shrink-0" :class="active === 2 ? 'rotate-180' : ''"></i>
+                </button>
+                <div class="px-4 pb-4 text-xs text-[#6B7280] leading-relaxed" x-show="active === 2" x-transition x-cloak>
+                    La commission est calculée sur le sous-total de la location (hors frais de service payés par le voyageur) et vous est
+                    indiquée clairement dans le détail de chaque réservation, avant tout versement.
+                </div>
+            </div>
+        </div>
+    </div>
+
+</section>
+{% endblock %}

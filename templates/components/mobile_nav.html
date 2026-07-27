@@ -1,4 +1,4 @@
-<nav class="md:hidden fixed bottom-0 inset-x-0 bg-white border-t border-[#E5E7EB] z-50 h-16 flex items-center justify-around px-2 shadow-lg">
+<nav x-data class="md:hidden fixed bottom-0 inset-x-0 bg-white border-t border-[#E5E7EB] z-50 h-16 flex items-center justify-around px-2 shadow-lg">
     <a href="{% url 'home' %}" class="flex flex-col items-center justify-center w-12 h-full text-xs font-semibold {% if request.resolver_match.url_name == 'home' %} text-[#8B1E24] {% else %} text-[#6B7280] {% endif %}">
         <i data-lucide="home" class="w-5 h-5 mb-1"></i>
         <span>Accueil</span>
@@ -7,16 +7,35 @@
         <i data-lucide="compass" class="w-5 h-5 mb-1"></i>
         <span>Explorer</span>
     </a>
-    <a href="{% url 'bookings_list' %}" class="flex flex-col items-center justify-center w-12 h-full text-xs font-semibold {% if request.resolver_match.url_name == 'bookings_list' %} text-[#8B1E24] {% else %} text-[#6B7280] {% endif %}">
-        <i data-lucide="calendar" class="w-5 h-5 mb-1"></i>
-        <span>Réservations</span>
-    </a>
-    <a href="{% url 'support' %}" class="flex flex-col items-center justify-center w-12 h-full text-xs font-semibold {% if request.resolver_match.url_name == 'support' %} text-[#8B1E24] {% else %} text-[#6B7280] {% endif %}">
-        <i data-lucide="message-square" class="w-5 h-5 mb-1"></i>
-        <span>Chat</span>
-    </a>
-    <a href="{% url 'profile' %}" class="flex flex-col items-center justify-center w-12 h-full text-xs font-semibold {% if request.resolver_match.url_name == 'profile' %} text-[#8B1E24] {% else %} text-[#6B7280] {% endif %}">
-        <i data-lucide="user" class="w-5 h-5 mb-1"></i>
-        <span>Profil</span>
-    </a>
+    {% if user.is_authenticated %}
+        <a href="{% url 'dashboard:home' %}" class="flex flex-col items-center justify-center w-12 h-full text-xs font-semibold {% if 'dashboard' in request.resolver_match.namespaces or 'dashboard' in request.resolver_match.url_name %} text-[#8B1E24] {% else %} text-[#6B7280] {% endif %}">
+            <i data-lucide="layout-dashboard" class="w-5 h-5 mb-1"></i>
+            <span>Dashboard</span>
+        </a>
+    {% else %}
+        <a href="{% url 'bookings_list' %}" class="flex flex-col items-center justify-center w-12 h-full text-xs font-semibold {% if request.resolver_match.url_name == 'bookings_list' %} text-[#8B1E24] {% else %} text-[#6B7280] {% endif %}">
+            <i data-lucide="calendar" class="w-5 h-5 mb-1"></i>
+            <span>Réservations</span>
+        </a>
+    {% endif %}
+    <button type="button" @click="$store.chat.open = !$store.chat.open" class="flex flex-col items-center justify-center w-12 h-full text-xs font-semibold text-[#6B7280]" :class="$store.chat.open ? 'text-[#8B1E24]' : ''">
+        <i data-lucide="sparkles" class="w-5 h-5 mb-1"></i>
+        <span>Assistant</span>
+    </button>
+    {% if user.is_authenticated and user.is_owner %}
+        <a href="{% url 'dashboard:owner_profile' %}" class="flex flex-col items-center justify-center w-12 h-full text-xs font-semibold {% if request.resolver_match.url_name == 'owner_profile' %} text-[#8B1E24] {% else %} text-[#6B7280] {% endif %}">
+            <i data-lucide="user" class="w-5 h-5 mb-1"></i>
+            <span>Profil</span>
+        </a>
+    {% elif user.is_authenticated and user.is_superadmin %}
+        <a href="{% url 'dashboard:admin_profile' %}" class="flex flex-col items-center justify-center w-12 h-full text-xs font-semibold {% if request.resolver_match.url_name == 'admin_profile' %} text-[#8B1E24] {% else %} text-[#6B7280] {% endif %}">
+            <i data-lucide="user" class="w-5 h-5 mb-1"></i>
+            <span>Profil</span>
+        </a>
+    {% else %}
+        <a href="{% url 'profile' %}" class="flex flex-col items-center justify-center w-12 h-full text-xs font-semibold {% if request.resolver_match.url_name == 'profile' %} text-[#8B1E24] {% else %} text-[#6B7280] {% endif %}">
+            <i data-lucide="user" class="w-5 h-5 mb-1"></i>
+            <span>Profil</span>
+        </a>
+    {% endif %}
 </nav>

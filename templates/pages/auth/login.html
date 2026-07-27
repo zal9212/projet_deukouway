@@ -5,14 +5,14 @@
 {% block content %}
     {% include "components/auth/auth_header.html" with title="Bon retour !" subtitle="Connectez-vous pour accéder à votre compte." %}
     
-    <form action="#" method="POST" class="mt-8">
-        <!-- Remplacer par {% csrf_token %} en prod -->
-        <input type="hidden" name="csrfmiddlewaretoken" value="placeholder">
+    <form method="POST" class="mt-8">
+        {% csrf_token %}
         
-        {% include "components/forms/input_text.html" with id="email" name="email" type="email" label="Adresse email" autocomplete="email" required=True %}
+        {% include "components/forms/input_text.html" with id="username" name="username" type="email" label="Adresse email" autocomplete="email" required=True %}
         
         <div x-data="{ show: false }">
-            {% include "components/forms/input_password.html" with id="password" name="password" label="Mot de passe" forgot_link="forgot_password.html" autocomplete="current-password" required=True %}
+            {% url 'accounts:password_reset' as pwd_reset_url %}
+            {% include "components/forms/input_password.html" with id="password" name="password" label="Mot de passe" forgot_link=pwd_reset_url autocomplete="current-password" required=True %}
         </div>
         
         <div class="mt-6 flex items-center justify-between">
@@ -31,5 +31,6 @@
     
     {% include "components/auth/social_login.html" %}
     
-    {% include "components/auth/auth_footer.html" with text="Nouveau sur DEKOUWAY ?" link_text="Créer un compte" link_url="register_choice.html" %}
+    {% url 'register_choice' as register_choice_url %}
+    {% include "components/auth/auth_footer.html" with text="Nouveau sur DEKOUWAY ?" link_text="Créer un compte" link_url=register_choice_url %}
 {% endblock %}

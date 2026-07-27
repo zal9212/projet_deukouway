@@ -1,32 +1,28 @@
-<div class="relative overflow-hidden rounded-xl bg-white px-4 pb-12 pt-5 shadow-sm ring-1 ring-gray-200 sm:px-6 sm:pt-6">
-    <dt>
-        <div class="absolute rounded-md bg-gray-50 p-3 ring-1 ring-gray-100">
-            <i data-lucide="{{ icon|default:'bar-chart-2' }}" class="h-6 w-6 text-gray-600" aria-hidden="true"></i>
+<!-- Carte Statistique Reusable (Enterprise SaaS Tier) -->
+<div class="overflow-hidden rounded-xl bg-white p-5 shadow-2xs border border-gray-200 hover:shadow-xs transition-all flex flex-col justify-between group">
+    <div class="flex items-center justify-between">
+        <span class="text-xs font-semibold uppercase tracking-wider text-gray-500 truncate">{{ title }}</span>
+        {% if icon %}
+        <div class="w-9 h-9 rounded-lg flex items-center justify-center shrink-0 transition-colors {{ icon_bg|default:'bg-gray-100 text-gray-600' }} group-hover:scale-105">
+            <i data-lucide="{{ icon }}" class="w-5 h-5"></i>
         </div>
-        <p class="ml-16 truncate text-sm font-medium text-gray-500">{{ title }}</p>
-    </dt>
-    <dd class="ml-16 flex items-baseline pb-6 sm:pb-7">
-        <p class="text-2xl font-bold text-gray-900">{{ value }}</p>
-        
-        {% if trend %}
-        <p class="ml-2 flex items-baseline text-sm font-semibold {% if trend_type == 'positive' %}text-green-600{% elif trend_type == 'negative' %}text-red-600{% else %}text-gray-500{% endif %}">
-            {% if trend_type == 'positive' %}
-                <i data-lucide="arrow-up-right" class="h-4 w-4 shrink-0 self-center text-green-500" aria-hidden="true"></i>
-            {% elif trend_type == 'negative' %}
-                <i data-lucide="arrow-down-right" class="h-4 w-4 shrink-0 self-center text-red-500" aria-hidden="true"></i>
-            {% endif %}
-            <span class="sr-only">{% if trend_type == 'positive' %}Augmentation de{% elif trend_type == 'negative' %}Diminution de{% endif %}</span>
-            {{ trend }}
-        </p>
         {% endif %}
+    </div>
 
-        <div class="absolute inset-x-0 bottom-0 bg-gray-50 px-4 py-4 sm:px-6">
-            <div class="text-sm">
-                <a href="{{ link_url|default:'#' }}" class="font-medium text-[#8B1E24] hover:text-[#6F171C]">
-                    {{ link_text|default:'Voir les détails' }}
-                    <span class="sr-only"> {{ title }} stats</span>
-                </a>
-            </div>
+    <div class="mt-4 flex items-baseline justify-between">
+        <div class="text-2xl sm:text-3xl font-extrabold tracking-tight text-gray-900">
+            {{ value|default:"0" }}
         </div>
-    </dd>
+
+        {% if badge %}
+        <span class="inline-flex items-center rounded-full px-2 py-0.5 text-xs font-semibold {{ badge_class|default:'bg-green-50 text-green-700' }}">
+            {% if badge_icon %}<i data-lucide="{{ badge_icon }}" class="w-3 h-3 mr-1"></i>{% endif %}
+            {{ badge }}
+        </span>
+        {% endif %}
+    </div>
+
+    {% if subtitle %}
+    <p class="mt-2 text-xs text-gray-500 truncate">{{ subtitle }}</p>
+    {% endif %}
 </div>

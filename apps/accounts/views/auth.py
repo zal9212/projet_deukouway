@@ -1,72 +1,166 @@
-from django.contrib.auth.views import LoginView as BaseLoginView, LogoutView as BaseLogoutView, PasswordResetView, PasswordResetConfirmView
-from django.views.generic import FormView, TemplateView
+import logging
+from django.contrib.auth.views import LoginView, LogoutView, PasswordResetView, PasswordResetConfirmView
+from django.contrib.auth.forms import AuthenticationForm
+from django.contrib.auth.tokens import default_token_generator
+from django import forms
+from django.views.generic import FormView, TemplateView, View
 from django.urls import reverse_lazy
+from django.shortcuts import redirect, render
 from django.contrib import messages
-from django.shortcuts import redirect
-from apps.accounts.forms import RegistrationForm
+from django.contrib.auth import login, authenticate, get_user_model
+from django.db import transaction
+from django.utils.http import urlsafe_base64_decode
+from django.utils.encoding import force_str
+from apps.core.mixins import ViewExceptionHandlingMixin
+from apps.accounts.forms import ClientRegistrationForm, OwnerRegistrationForm
 from apps.accounts.services.services import AccountService
+from apps.accounts.services.selectors import UserSelector
 from apps.accounts.services.exceptions import UserAlreadyExists
 
-class CustomLoginView(BaseLoginView):
+User = get_user_model()
+logger = logging.getLogger(__name__)
+
+
+class EmailAuthenticationForm(AuthenticationForm):
+    """Formulaire de connexion utilisant email + mot de passe."""
+    username = forms.EmailField(
+        label="Adresse e-mail",
+        widget=forms.EmailInput(attrs={
+            'autocomplete': 'email',
+            'placeholder': 'votre@email.com',
+            'required': 'required',
+        })
+    )
+
+class RegisterChoiceView(TemplateView):
+    template_name = 'pages/auth/register_choice.html'
+
+class CustomLoginView(ViewExceptionHandlingMixin, LoginView):
     template_name = 'pages/auth/login.html'
-    
+    authentication_form = EmailAuthenticationForm
+    redirect_authenticated_user = True
+
+    def form_valid(self, form):
+        messages.success(self.request, "Connexion réussie. Bienvenue sur DEKOUWAY !")
+        return super().form_valid(form)
+
+    def form_invalid(self, form):
+        attempted_email = form.data.get('username', '')
+        client_ip = self.request.META.get('REMOTE_ADDR', 'inconnu')
+        logger.warning(f"Échec de connexion pour '{attempted_email}' depuis {client_ip}")
+        messages.error(self.request, "Identifiants invalides. Veuillez réessayer.")
+        return super().form_invalid(form)
+
     def get_success_url(self):
-        if self.request.user.is_superuser or self.request.user.is_staff:
+        user = self.request.user
+        if getattr(user, 'is_superadmin', False) or user.is_staff or user.is_superuser:
             return reverse_lazy('dashboard:admin_home')
-        elif self.request.user.is_owner:
+        elif getattr(user, 'is_owner', False):
             return reverse_lazy('dashboard:owner_home')
         return reverse_lazy('dashboard:client_home')
 
-class CustomLogoutView(BaseLogoutView):
-    next_page = 'public:home'
+class CustomLogoutView(ViewExceptionHandlingMixin, LogoutView):
+    next_page = reverse_lazy('public:home')
 
-class ClientRegisterView(FormView):
+    def post(self, request, *args, **kwargs):
+        response = super().post(request, *args, **kwargs)
+        messages.info(request, "Vous avez été déconnecté avec succès.")
+        return response
+
+class ClientRegisterView(ViewExceptionHandlingMixin, FormView):
     template_name = 'pages/auth/register_client.html'
-    form_class = RegistrationForm
-    success_url = reverse_lazy('accounts:login')
+    form_class = ClientRegistrationForm
+    success_url = reverse_lazy('dashboard:client_home')
 
     def form_valid(self, form):
-        data = form.cleaned_data
+        email = form.cleaned_data['email']
+        password = form.cleaned_data['password1']
+        first_name = form.cleaned_data['first_name']
+        last_name = form.cleaned_data['last_name']
+
         try:
-            AccountService.register_client(
-                email=data['email'],
-                password=data['password'],
-                first_name=data['first_name'],
-                last_name=data['last_name']
+            user = AccountService.register_client(
+                email=email,
+                password=password,
+                first_name=first_name,
+                last_name=last_name
             )
-            messages.success(self.request, "Compte locataire créé avec succès. Vous pouvez vous connecter.")
-            return super().form_valid(form)
+            login(self.request, user)
+            messages.success(self.request, "Votre compte client a été créé avec succès !")
+            return redirect(self.get_success_url())
         except UserAlreadyExists as e:
             messages.error(self.request, str(e))
             return self.form_invalid(form)
 
-class OwnerRegisterView(FormView):
+class OwnerRegisterView(ViewExceptionHandlingMixin, FormView):
     template_name = 'pages/auth/register_owner.html'
-    form_class = RegistrationForm
+    form_class = OwnerRegistrationForm
     success_url = reverse_lazy('accounts:owner_pending')
 
     def form_valid(self, form):
-        data = form.cleaned_data
+        email = form.cleaned_data['email']
+        password = form.cleaned_data['password1']
+        first_name = form.cleaned_data['first_name']
+        last_name = form.cleaned_data['last_name']
+
         try:
-            AccountService.register_owner(
-                email=data['email'],
-                password=data['password'],
-                first_name=data['first_name'],
-                last_name=data['last_name']
-            )
-            messages.success(self.request, "Compte propriétaire créé. Il est en attente de validation.")
-            return super().form_valid(form)
+            with transaction.atomic():
+                user = AccountService.register_owner(
+                    email=email,
+                    password=password,
+                    first_name=first_name,
+                    last_name=last_name
+                )
+                AccountService.upload_identity_document(
+                    user=user,
+                    document_type=form.cleaned_data['document_type'],
+                    document_number=form.cleaned_data['document_number'],
+                    file=form.cleaned_data['identity_file'],
+                    selfie_file=form.cleaned_data['selfie_with_id_file'],
+                )
+            messages.info(self.request, "Votre inscription propriétaire est enregistrée. Un administrateur va valider votre dossier.")
+            return redirect(self.get_success_url())
         except UserAlreadyExists as e:
             messages.error(self.request, str(e))
             return self.form_invalid(form)
 
-class OwnerPendingView(TemplateView):
-    template_name = 'pages/auth/owner_pending.html'
+class VerifyEmailView(ViewExceptionHandlingMixin, View):
+    def get(self, request, *args, **kwargs):
+        uid = request.GET.get('uid', '')
+        token = request.GET.get('token', '')
+        user = None
+        try:
+            user_pk = force_str(urlsafe_base64_decode(uid))
+            user = UserSelector.get_user_by_id(user_pk)
+        except (TypeError, ValueError, OverflowError):
+            user = None
 
-class CustomPasswordResetView(PasswordResetView):
-    template_name = 'pages/auth/password_reset.html'
+        if user is not None and default_token_generator.check_token(user, token):
+            AccountService.verify_email(user)
+            messages.success(request, "Votre adresse email a été vérifiée avec succès !")
+            return redirect('accounts:login')
+
+        messages.error(request, "Lien de vérification invalide ou expiré.")
+        return redirect('public:home')
+
+class CustomPasswordResetView(ViewExceptionHandlingMixin, PasswordResetView):
+    template_name = 'pages/auth/forgot_password.html'
+    email_template_name = 'pages/auth/password_reset_email.html'
     success_url = reverse_lazy('accounts:password_reset_done')
 
-class CustomPasswordResetConfirmView(PasswordResetConfirmView):
+    def form_valid(self, form):
+        messages.info(self.request, "Si cette adresse email existe, un lien de réinitialisation vous a été envoyé.")
+        return super().form_valid(form)
+
+class CustomPasswordResetConfirmView(ViewExceptionHandlingMixin, PasswordResetConfirmView):
     template_name = 'pages/auth/password_reset_confirm.html'
     success_url = reverse_lazy('accounts:login')
+
+    def form_valid(self, form):
+        user = form.save()
+        AccountService.change_password(user, form.cleaned_data['new_password1'])
+        messages.success(self.request, "Votre mot de passe a été réinitialisé avec succès. Vous pouvez vous connecter.")
+        return redirect(self.success_url)
+
+class OwnerPendingView(ViewExceptionHandlingMixin, TemplateView):
+    template_name = 'pages/auth/owner_pending.html'

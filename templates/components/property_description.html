@@ -3,19 +3,8 @@
     
     <div class="text-gray-700 leading-relaxed text-base space-y-4 relative"
          :class="{ 'line-clamp-4': !expanded }">
-        <p>
-            Bienvenue dans ce superbe appartement lumineux avec vue panoramique sur l'océan, situé en plein cœur des Almadies. Idéalement placé à quelques pas des meilleurs restaurants et des plages, ce logement vous offre tout le confort nécessaire pour un séjour inoubliable à Dakar.
-        </p>
-        <p>
-            Le salon, décoré avec goût, s'ouvre sur une grande terrasse où vous pourrez profiter des magnifiques couchers de soleil. La cuisine est entièrement équipée (four, micro-ondes, machine à café Nespresso, réfrigérateur américain).
-        </p>
-        <p>
-            Les deux chambres disposent de leur propre salle de bain attenante, d'une literie de qualité hôtelière et de nombreux rangements. La résidence est sécurisée 24h/24 avec gardiennage, caméras de surveillance et possède une piscine réservée aux résidents.
-        </p>
-        <p>
-            Un ménage régulier est inclus dans le tarif, et notre équipe DEKOUWAY reste à votre disposition tout au long de votre séjour pour répondre à vos moindres besoins (transferts aéroport, recommandations, etc.).
-        </p>
-        
+        <p class="whitespace-pre-line">{{ property.description }}</p>
+
         <!-- Gradient de masquage quand collapsed -->
         <div x-show="!expanded" class="absolute bottom-0 left-0 w-full h-12 bg-gradient-to-t from-white to-transparent"></div>
     </div>

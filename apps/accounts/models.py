@@ -3,6 +3,7 @@ from django.contrib.auth.models import AbstractUser
 from django.utils.translation import gettext_lazy as _
 from django.core.validators import RegexValidator, FileExtensionValidator
 from apps.core.models import BaseModel
+from apps.core.storage import private_storage
 from .managers import UserManager
 
 
@@ -17,6 +18,14 @@ class User(AbstractUser, BaseModel):
     is_client = models.BooleanField(_('Est un client'), default=True)
     is_owner = models.BooleanField(_('Est un propriétaire'), default=False)
     is_superadmin = models.BooleanField(_('Est SuperAdmin'), default=False)
+
+    # Vérification KYC propriétaire : distincte de `is_active` (qui gère la
+    # capacité de connexion / le blocage par un admin). Un propriétaire peut
+    # se connecter dès son inscription mais ne peut publier de logement tant
+    # qu'un SuperAdmin n'a pas validé sa pièce d'identité.
+    is_verified = models.BooleanField(_('Propriétaire vérifié (KYC)'), default=False)
+
+    email_verified = models.BooleanField(_('Email vérifié'), default=False)
 
     USERNAME_FIELD = 'email'
     REQUIRED_FIELDS = []
@@ -93,9 +102,18 @@ class IdentityDocument(BaseModel):
     document_type = models.CharField(_('Type de document'), max_length=50) # ex: CNI, PASSPORT
     document_number = models.CharField(_('Numéro de document'), max_length=100)
     file = models.FileField(
-        _('Fichier'),
+        _('Fichier (pièce d\'identité)'),
         upload_to='identity_documents/',
+        storage=private_storage,
         validators=[FileExtensionValidator(allowed_extensions=['pdf', 'jpg', 'jpeg', 'png'])]
+    )
+    selfie_file = models.ImageField(
+        _('Selfie avec la pièce d\'identité'),
+        upload_to='identity_documents/selfies/',
+        storage=private_storage,
+        null=True, blank=True,
+        validators=[FileExtensionValidator(allowed_extensions=['jpg', 'jpeg', 'png'])],
+        help_text=_("Photo du titulaire tenant sa pièce d'identité, pour vérification anti-fraude.")
     )
     is_verified = models.BooleanField(_('Est vérifié'), default=False)
     verified_at = models.DateTimeField(_('Date de vérification'), null=True, blank=True)

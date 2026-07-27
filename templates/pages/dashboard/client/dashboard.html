@@ -6,7 +6,7 @@
 <div class="md:flex md:items-center md:justify-between mb-8 mt-2">
     <div class="min-w-0 flex-1">
         <h2 class="text-2xl font-bold leading-7 text-gray-900 sm:truncate sm:text-3xl sm:tracking-tight">
-            Bonjour, Saliou 👋
+            Bonjour, {{ request.user.profile.first_name|default:request.user.email }} 👋
         </h2>
         <p class="mt-1 text-sm text-gray-500">
             Bienvenue sur votre espace locataire.
@@ -14,7 +14,7 @@
     </div>
     
     <div class="mt-4 flex md:ml-4 md:mt-0">
-        <a href="/" class="inline-flex items-center rounded-md bg-[#8B1E24] px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-[#6F171C] transition-colors focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#8B1E24]">
+        <a href="{% url 'public:home' %}" class="inline-flex items-center rounded-md bg-[#8B1E24] px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-[#6F171C] transition-colors focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#8B1E24]">
             <i data-lucide="search" class="h-4 w-4 mr-1.5"></i>
             Trouver un logement
         </a>
@@ -27,78 +27,110 @@
 
     <!-- Section 1 : KPIs -->
     <section>
-        {% extends "components/dashboard/kpi_grid.html" %}
-        {% block kpi_cards %}
-            {% include "components/dashboard/stats_card.html" with title="Réservations actives" value="1" icon="calendar-check" link_text="Voir mes réservations" link_url="reservations.html" %}
-            {% include "components/dashboard/stats_card.html" with title="Logements en favoris" value="5" icon="heart" link_text="Gérer mes favoris" link_url="favorites.html" %}
-            {% include "components/dashboard/stats_card.html" with title="Dépenses ce mois" value="150 000 F" icon="credit-card" link_text="Historique des paiements" link_url="payments.html" %}
-            {% include "components/dashboard/stats_card.html" with title="Documents" value="2" icon="file-text" link_text="Voir mes factures" link_url="documents.html" %}
-        {% endblock %}
+        <dl class="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-4">
+            {% include "components/dashboard/stats_card.html" with title="Réservations actives" value=stats.total_reservations|default:"0" icon="calendar-check" link_text="Voir mes réservations" link_url="dashboard:client_reservations" %}
+            {% include "components/dashboard/stats_card.html" with title="Demandes en attente" value=stats.pending_requests|default:"0" icon="clock" link_text="Gérer mes demandes" link_url="dashboard:client_reservations" %}
+            {% include "components/dashboard/stats_card.html" with title="Dépenses cumulées" value=stats.total_spent|default:"0"|add:" F" icon="credit-card" link_text="Historique des paiements" link_url="dashboard:client_payments" %}
+            {% include "components/dashboard/stats_card.html" with title="Documents d'identité" value="1" icon="file-text" link_text="Voir mes documents" link_url="dashboard:client_documents" %}
+        </dl>
     </section>
 
     <div class="grid grid-cols-1 gap-8 lg:grid-cols-3">
         <!-- Section 2 : Colonne Principale (Dernières Réservations) -->
         <div class="lg:col-span-2 space-y-8">
-            <section class="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
-                <div class="border-b border-gray-200 px-6 py-5 flex items-center justify-between">
-                    <h3 class="text-base font-semibold leading-6 text-gray-900">Prochain séjour</h3>
-                    <a href="reservations.html" class="text-sm font-medium text-[#8B1E24] hover:text-[#6F171C]">Tout voir</a>
-                </div>
-                <div class="p-6">
-                    <div class="flex items-start gap-4">
-                        <img src="https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?auto=format&fit=crop&q=80&w=300" alt="Villa" class="h-24 w-32 object-cover rounded-lg">
-                        <div class="flex-1">
-                            <div class="flex items-center justify-between">
-                                <h4 class="text-lg font-bold text-gray-900">Villa Teranga Saly</h4>
-                                {% include "components/dashboard/status_badge.html" with status="approved" label="Confirmée" %}
-                            </div>
-                            <p class="text-sm text-gray-500 mt-1"><i data-lucide="map-pin" class="inline h-3 w-3 mr-1"></i> Saly Portudal, Sénégal</p>
-                            <div class="mt-3 flex items-center gap-4 text-sm text-gray-700">
-                                <div><i data-lucide="calendar" class="inline h-4 w-4 mr-1 text-gray-400"></i> 12 - 15 Août 2024</div>
-                                <div><i data-lucide="users" class="inline h-4 w-4 mr-1 text-gray-400"></i> 4 voyageurs</div>
-                            </div>
-                            <div class="mt-4">
-                                <a href="reservation_detail.html" class="text-sm font-medium text-[#8B1E24] hover:underline">Voir les détails</a>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </section>
             
-            <!-- Favoris récents -->
-            <section>
-                {% include "components/dashboard/section_title.html" with title="Ajoutés récemment aux favoris" %}
-                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                    <!-- Favori 1 -->
-                    <div class="group relative flex items-center gap-x-4 rounded-xl border border-gray-200 bg-white p-4 shadow-sm hover:shadow-md transition-shadow">
-                        <img src="https://images.unsplash.com/photo-1512917774080-9991f1c4c750?auto=format&fit=crop&w=150" alt="" class="h-16 w-16 rounded-lg object-cover">
-                        <div class="flex-1">
-                            <h4 class="text-sm font-semibold text-gray-900"><a href="favorites.html"><span class="absolute inset-0"></span>Appartement Dakar Plateau</a></h4>
-                            <p class="text-xs text-gray-500 mt-1">Dakar, Centre-ville</p>
-                            <p class="text-xs font-bold text-gray-900 mt-1">45 000 F / nuit</p>
+            <!-- Prochain séjour / Réservation en cours -->
+            {% with next_res=recent_reservations.0 %}
+            {% if next_res %}
+            <section class="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
+                <div class="p-6 border-b border-gray-100 flex items-center justify-between">
+                    <div>
+                        <h3 class="text-base font-semibold leading-6 text-gray-900">Prochain séjour</h3>
+                        <p class="text-xs text-gray-500 mt-0.5">Votre dernière réservation</p>
+                    </div>
+                    <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-emerald-100 text-emerald-800">
+                        {{ next_res.get_status_display }}
+                    </span>
+                </div>
+                
+                <div class="p-6 md:flex md:items-center md:justify-between gap-6">
+                    <div class="flex items-center space-x-4 mb-4 md:mb-0">
+                        <div class="w-16 h-16 rounded-lg bg-gray-200 flex-shrink-0 overflow-hidden">
+                            {% if next_res.property.images.all %}
+                            <img src="{{ next_res.property.images.all.0.image.url }}" alt="{{ next_res.property.title }}" class="w-full h-full object-cover">
+                            {% else %}
+                            <div class="w-full h-full flex items-center justify-center bg-gray-100 text-gray-400">
+                                <i data-lucide="image" class="w-6 h-6"></i>
+                            </div>
+                            {% endif %}
+                        </div>
+                        <div>
+                            <h4 class="text-sm font-bold text-gray-900">{{ next_res.property.title }}</h4>
+                            <p class="text-xs text-gray-500 mt-1 flex items-center">
+                                <i data-lucide="map-pin" class="w-3.5 h-3.5 mr-1 text-gray-400"></i>
+                                {{ next_res.property.city }}, {{ next_res.property.district }}
+                            </p>
+                            <p class="text-xs font-medium text-[#8B1E24] mt-1">
+                                {{ next_res.check_in|date:"d M" }} — {{ next_res.check_out|date:"d M Y" }} ({{ next_res.guests }} voyageur(s))
+                            </p>
                         </div>
                     </div>
-                    <!-- Favori 2 -->
-                    <div class="group relative flex items-center gap-x-4 rounded-xl border border-gray-200 bg-white p-4 shadow-sm hover:shadow-md transition-shadow">
-                        <img src="https://images.unsplash.com/photo-1493809842364-78817add7ffb?auto=format&fit=crop&w=150" alt="" class="h-16 w-16 rounded-lg object-cover">
-                        <div class="flex-1">
-                            <h4 class="text-sm font-semibold text-gray-900"><a href="favorites.html"><span class="absolute inset-0"></span>Studio Almadies</a></h4>
-                            <p class="text-xs text-gray-500 mt-1">Dakar, Almadies</p>
-                            <p class="text-xs font-bold text-gray-900 mt-1">30 000 F / nuit</p>
-                        </div>
+
+                    <div class="flex items-center space-x-3 border-t md:border-t-0 pt-4 md:pt-0 border-gray-100 justify-end">
+                        <a href="{% url 'dashboard:client_reservation_detail' next_res.id %}" class="px-3.5 py-2 border border-gray-300 rounded-lg text-xs font-semibold text-gray-700 hover:bg-gray-50 transition-colors">
+                            Détails
+                        </a>
+                        <a href="{% url 'dashboard:client_support' %}" class="px-3.5 py-2 bg-[#8B1E24] text-white rounded-lg text-xs font-semibold hover:bg-[#6F171C] transition-colors flex items-center">
+                            <i data-lucide="message-square" class="w-3.5 h-3.5 mr-1.5"></i>
+                            Support client
+                        </a>
                     </div>
                 </div>
             </section>
+            {% else %}
+            <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-8 text-center">
+                <i data-lucide="calendar" class="w-12 h-12 text-gray-400 mx-auto mb-4"></i>
+                <h3 class="text-sm font-semibold text-gray-900">Aucun voyage prévu</h3>
+                <p class="text-sm text-gray-500 mt-1">Vous n'avez aucun séjour réservé pour le moment.</p>
+                <div class="mt-6">
+                    <a href="{% url 'public:home' %}" class="inline-flex items-center rounded-md bg-[#8B1E24] px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-[#6F171C]">
+                        <i data-lucide="search" class="h-4 w-4 mr-1.5"></i> Rechercher un logement
+                    </a>
+                </div>
+            </div>
+            {% endif %}
+            {% endwith %}
+
+            <!-- Liste des réservations récentes -->
+            <section class="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
+                <div class="flex items-center justify-between mb-6">
+                    <h3 class="text-base font-semibold leading-6 text-gray-900">Réservations récentes</h3>
+                    <a href="{% url 'dashboard:client_reservations' %}" class="text-sm font-medium text-[#8B1E24] hover:text-[#6F171C] flex items-center">
+                        Tout voir <i data-lucide="arrow-right" class="w-4 h-4 ml-1"></i>
+                    </a>
+                </div>
+
+                <div class="space-y-4">
+                    {% for res in recent_reservations %}
+                        {% include "components/dashboard/reservation_card.html" with property_title=res.property.title location=res.property.city dates=res.check_in|date:"d M"|add:" - "|add:res.check_out|date:"d M Y" price=res.total_price|add:" F" status=res.get_status_display status_color="gray" image_url=res.property.images.all.0.image.url %}
+                    {% empty %}
+                        <p class="text-sm text-gray-500 py-4 text-center">Aucune réservation récente.</p>
+                    {% endfor %}
+                </div>
+            </section>
+
         </div>
 
-        <!-- Section 3 : Colonne Droite (Actions rapides & Activité) -->
+        <!-- Section 3 : Colonne Latérale (Actions Rapides & Activité) -->
         <div class="space-y-8">
+            
             <!-- Actions Rapides -->
-            <section>
-                <h3 class="text-sm font-semibold leading-6 text-gray-900 mb-4">Actions Rapides</h3>
-                <div class="grid grid-cols-1 gap-4">
-                    {% include "components/dashboard/quick_action.html" with title="Mettre à jour mon profil" description="Ajouter une photo ou vérifier votre téléphone" icon="user-check" link_url="profile.html" %}
-                    {% include "components/dashboard/quick_action.html" with title="Télécharger facture" description="Dernier paiement : 105 000 F" icon="download" link_url="payment_detail.html" %}
+            <section class="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
+                <h3 class="text-base font-semibold leading-6 text-gray-900 mb-4">Actions rapides</h3>
+                <div class="space-y-3">
+                    {% include "components/dashboard/quick_action.html" with title="Vérifier ma pièce d'identité" description="Indispensable pour la première réservation" icon="shield-check" link_url="dashboard:client_documents" %}
+                    {% include "components/dashboard/quick_action.html" with title="Mettre à jour mon profil" description="Ajouter une photo ou vérifier votre téléphone" icon="user-check" link_url="dashboard:client_profile" %}
+                    {% include "components/dashboard/quick_action.html" with title="Télécharger facture" description="Historique complet des paiements" icon="download" link_url="dashboard:client_payments" %}
                 </div>
             </section>
 
@@ -106,13 +138,15 @@
             <section class="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
                 <div class="flex items-center justify-between mb-6">
                     <h3 class="text-base font-semibold leading-6 text-gray-900">Activité récente</h3>
-                    <a href="history.html" class="text-sm font-medium text-[#8B1E24]">Historique</a>
+                    <a href="{% url 'dashboard:client_history' %}" class="text-sm font-medium text-[#8B1E24]">Historique</a>
                 </div>
                 
                 <div class="flow-root">
-                    {% include "components/dashboard/activity_card.html" with icon="calendar" user="Vous" action="avez réservé Villa Teranga Saly" date="il y a 2 jours" description="En attente de validation par le propriétaire." icon_type="info" is_last=False %}
-                    {% include "components/dashboard/activity_card.html" with icon="heart" user="Vous" action="avez ajouté Studio Almadies aux favoris" date="il y a 3 jours" icon_type="success" is_last=False %}
-                    {% include "components/dashboard/activity_card.html" with icon="shield-check" user="Vous" action="avez vérifié votre adresse email" date="il y a 5 jours" icon_type="success" is_last=True %}
+                    {% for activity in activities %}
+                        {% include "components/dashboard/activity_card.html" with icon="info" user="Vous" action=activity.description date=activity.created_at|date:"d M Y" icon_type="info" is_last=forloop.last %}
+                    {% empty %}
+                        <p class="text-sm text-gray-500 py-4 text-center">Aucune activité récente.</p>
+                    {% endfor %}
                 </div>
             </section>
         </div>

@@ -1,28 +1,44 @@
-# Use official Python runtime as a parent image
-FROM python:3.12-slim
+# Stage 1: Build & Dependencies
+FROM python:3.12-slim as builder
 
-# Set environment variables
-ENV PYTHONDONTWRITEBYTECODE=1
-ENV PYTHONUNBUFFERED=1
-
-# Set working directory
 WORKDIR /app
 
-# Install system dependencies
+ENV PYTHONDONTWRITEBYTECODE 1
+ENV PYTHONUNBUFFERED 1
+
 RUN apt-get update && apt-get install -y --no-install-recommends \
     build-essential \
     libpq-dev \
     && rm -rf /var/lib/apt/lists/*
 
-# Install Python dependencies
-COPY requirements.txt /app/
-RUN pip install --no-cache-dir -r requirements.txt
+COPY requirements.txt .
+RUN pip install --user --no-cache-dir -r requirements.txt
 
-# Copy project files
-COPY . /app/
+# Stage 2: Production Runtime (Non-root Hardened)
+FROM python:3.12-slim
 
-# Expose port 8000
+WORKDIR /app
+
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    libpq5 \
+    curl \
+    && rm -rf /var/lib/apt/lists/*
+
+# Hardening Security: Création d'un utilisateur non-privilégié appuser
+RUN groupadd -g 10001 appgroup && \
+    useradd -u 10000 -g appgroup -s /bin/sh -m appuser
+
+COPY --from=builder /root/.local /home/appuser/.local
+ENV PATH=/home/appuser/.local/bin:$PATH
+
+COPY --chown=appuser:appgroup . .
+
+# Collectstatic
+RUN python manage.py collectstatic --noinput || true
+
+# Dropping privileges to non-root user
+USER appuser
+
 EXPOSE 8000
 
-# Start Gunicorn server
-CMD ["gunicorn", "--bind", "0.0.0.0:8000", "dekouway.wsgi:application"]
+CMD ["gunicorn", "--config", "gunicorn.conf.py", "dekouway.wsgi:application"]
