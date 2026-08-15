@@ -28,7 +28,11 @@ jobs:
           - 6379:6379
 
     env:
-      DEBUG: 'False'
+      # DEBUG=True ici (comme le job e2e-tests et comme en local) : avec False,
+      # SECURE_SSL_REDIRECT bascule à True par défaut et renvoie du 301 sur
+      # chaque requête HTTP interne du client de test, cassant des dizaines
+      # de tests (context à None, .data absent sur une redirection, etc.).
+      DEBUG: 'True'
       SECRET_KEY: ci-lint-and-test-throwaway-key
       ALLOWED_HOSTS: 127.0.0.1,localhost
       DATABASE_URL: postgres://dekouway_user:securepassword123@localhost:5432/dekouway_test_db
