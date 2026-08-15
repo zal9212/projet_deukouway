@@ -5,10 +5,9 @@ services:
     plan: free
     region: frankfurt
     dockerfilePath: ./Dockerfile
-    startCommand: >-
-      python manage.py migrate --noinput &&
-      python manage.py collectstatic --noinput &&
-      gunicorn --config gunicorn.conf.py dekouway.wsgi:application
+    # Pas de startCommand : non supporté avec runtime "docker" (Render l'a
+    # rejeté au blueprint). La séquence migrate + gunicorn vit dans le CMD de
+    # l'image (entrypoint.sh), collectstatic reste au build dans le Dockerfile.
     healthCheckPath: /health/
     envVars:
       - key: DEBUG

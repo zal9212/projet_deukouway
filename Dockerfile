@@ -36,9 +36,12 @@ COPY --chown=appuser:appgroup . .
 # Collectstatic
 RUN python manage.py collectstatic --noinput || true
 
+RUN chmod +x entrypoint.sh
+
 # Dropping privileges to non-root user
 USER appuser
 
 EXPOSE 8000
 
-CMD ["gunicorn", "--config", "gunicorn.conf.py", "dekouway.wsgi:application"]
+# Migrations au démarrage (nécessitent la base, injoignable au build) puis gunicorn.
+CMD ["./entrypoint.sh"]
