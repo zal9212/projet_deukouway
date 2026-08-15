@@ -27,6 +27,13 @@ jobs:
         ports:
           - 6379:6379
 
+    env:
+      DEBUG: 'False'
+      SECRET_KEY: ci-lint-and-test-throwaway-key
+      ALLOWED_HOSTS: 127.0.0.1,localhost
+      DATABASE_URL: postgres://dekouway_user:securepassword123@localhost:5432/dekouway_test_db
+      GROQ_API_KEY: mock-key
+
     steps:
       - uses: actions/checkout@v4
 
@@ -54,23 +61,10 @@ jobs:
           python -m pip_audit -r requirements.txt
 
       - name: Run Migrations Check
-        env:
-          POSTGRES_DB: dekouway_test_db
-          POSTGRES_USER: dekouway_user
-          POSTGRES_PASSWORD: securepassword123
-          POSTGRES_HOST: localhost
-          POSTGRES_PORT: 5432
         run: |
           python manage.py makemigrations --check --dry-run
 
       - name: Run Test Suite Under Coverage
-        env:
-          POSTGRES_DB: dekouway_test_db
-          POSTGRES_USER: dekouway_user
-          POSTGRES_PASSWORD: securepassword123
-          POSTGRES_HOST: localhost
-          POSTGRES_PORT: 5432
-          GROQ_API_KEY: mock-key
         run: |
           python -m coverage run manage.py test apps.accounts.tests apps.properties.tests apps.reservations.tests apps.payments.tests apps.notifications.tests apps.documents.tests apps.support.tests apps.dashboard.tests apps.ai.tests apps.core.tests
           python -m coverage report --fail-under=80
