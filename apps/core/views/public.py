@@ -38,8 +38,14 @@ class SearchView(ViewExceptionHandlingMixin, ListView):
 
     def get_queryset(self):
         query = self.request.GET.get('search') or self.request.GET.get('q')
-        city = self.request.GET.get('city')
-        district = self.request.GET.get('neighborhood') or self.request.GET.get('district')
+        # "location" = champ combiné Ville/Quartier de la barre de recherche ; on garde
+        # city/neighborhood en repli pour les liens existants qui les utilisent encore.
+        location = (
+            self.request.GET.get('location')
+            or self.request.GET.get('city')
+            or self.request.GET.get('neighborhood')
+            or self.request.GET.get('district')
+        )
         min_price = self.request.GET.get('price_min') or self.request.GET.get('min_price')
         max_price = self.request.GET.get('price_max') or self.request.GET.get('max_price')
         property_type = self.request.GET.get('type')
@@ -69,8 +75,7 @@ class SearchView(ViewExceptionHandlingMixin, ListView):
 
         return PropertySelector.search_properties(
             query=query,
-            city=city,
-            district=district,
+            location=location,
             min_price=_to_float(min_price),
             max_price=_to_float(max_price),
             property_type=property_type,

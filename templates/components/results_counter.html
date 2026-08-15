@@ -15,15 +15,16 @@
         {% else %}
             Logements disponibles
         {% endif %}
-        {% if request.GET.city %}
+        {% if request.GET.location %}
+            à {{ request.GET.location|title }}
+        {% elif request.GET.city %}
             à {{ request.GET.city|title }}
         {% endif %}
     </h1>
-    {% if request.GET.neighborhood or request.GET.type %}
+    {% if request.GET.type %}
         <p class="text-sm text-slate-500 mt-1">
-            Filtres actifs : 
-            {% if request.GET.neighborhood %} {{ request.GET.neighborhood|title }} {% endif %}
-            {% if request.GET.type %} • {{ request.GET.type|title }} {% endif %}
+            Filtres actifs :
+            {{ request.GET.type|title }}
         </p>
     {% endif %}
 </div>

@@ -80,6 +80,7 @@ class PropertySelector:
     @staticmethod
     def search_properties(
         query: str | None = None,
+        location: str | None = None,
         city: str | None = None,
         district: str | None = None,
         min_price: float | None = None,
@@ -93,6 +94,10 @@ class PropertySelector:
         qs = PropertySelector.get_published_properties()
         if query:
             qs = qs.filter(Q(title__icontains=query) | Q(description__icontains=query) | Q(city__icontains=query) | Q(district__icontains=query))
+        # Champ "Ville / Quartier" combiné (barre de recherche) : on ne sait pas si
+        # l'utilisateur a tapé une ville ou un quartier, donc on matche les deux.
+        if location:
+            qs = qs.filter(Q(city__icontains=location) | Q(district__icontains=location))
         if city:
             qs = qs.filter(city__iexact=city)
         if district:

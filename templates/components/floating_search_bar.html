@@ -1,22 +1,13 @@
 <div class="sticky top-20 z-30 w-full flex justify-center items-center gap-4 px-4 py-3 bg-white/80 backdrop-blur-md border-b border-gray-200/50 shadow-sm transition-all duration-300">
     <form action="{% url 'properties_list' %}" method="get" class="flex items-center bg-white border border-gray-300 rounded-full shadow-md hover:shadow-lg transition-shadow duration-300 divide-x divide-gray-200">
         
-        <!-- Ville -->
+        <!-- Ville / Quartier (combiné) -->
         <div class="px-4 py-2 hover:bg-gray-100 rounded-l-full cursor-pointer transition-colors">
-            <label for="floating_search_city" class="block text-[10px] font-bold text-gray-900 tracking-wider uppercase">Ville</label>
-            <input type="text" name="city" id="floating_search_city" 
-                   value="{{ request.GET.city|default:'' }}" 
-                   placeholder="Où allez-vous ?" 
-                   class="w-full bg-transparent border-none p-0 text-sm focus:ring-0 placeholder-gray-500 text-gray-900 focus:outline-none truncate w-24 sm:w-32">
-        </div>
-
-        <!-- Quartier -->
-        <div class="px-4 py-2 hover:bg-gray-100 cursor-pointer transition-colors hidden sm:block">
-            <label for="floating_search_neighborhood" class="block text-[10px] font-bold text-gray-900 tracking-wider uppercase">Quartier</label>
-            <input type="text" name="neighborhood" id="floating_search_neighborhood" 
-                   value="{{ request.GET.neighborhood|default:'' }}" 
-                   placeholder="Ajouter un quartier" 
-                   class="w-full bg-transparent border-none p-0 text-sm focus:ring-0 placeholder-gray-500 text-gray-900 focus:outline-none truncate w-32">
+            <label for="floating_search_location" class="block text-[10px] font-bold text-gray-900 tracking-wider uppercase">Ville / Quartier</label>
+            <input type="text" name="location" id="floating_search_location"
+                   value="{{ request.GET.location|default:'' }}"
+                   placeholder="Où allez-vous ?"
+                   class="w-full bg-transparent border-none p-0 text-sm focus:ring-0 placeholder-gray-500 text-gray-900 focus:outline-none truncate w-32 sm:w-44">
         </div>
 
         <!-- Recherche / Bouton -->
