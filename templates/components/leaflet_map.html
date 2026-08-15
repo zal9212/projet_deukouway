@@ -40,9 +40,14 @@
                     // Ajout du contrôle de zoom en bas à droite
                     L.control.zoom({ position: 'bottomright' }).addTo(this.map);
 
-                    // Ajout des tuiles
-                    L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png', {
-                        attribution: '&copy; OpenStreetMap, &copy; CARTO',
+                    // Fond satellite (imagerie aérienne, façon Google Maps) + calque de labels
+                    // par-dessus pour garder les noms de rues/quartiers lisibles.
+                    L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', {
+                        attribution: 'Tiles &copy; Esri &mdash; Source: Esri, Maxar, Earthstar Geographics, and the GIS User Community',
+                        maxZoom: 19
+                    }).addTo(this.map);
+                    L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/Reference/World_Boundaries_and_Places/MapServer/tile/{z}/{y}/{x}', {
+                        attribution: 'Labels &copy; Esri',
                         maxZoom: 19
                     }).addTo(this.map);
 
