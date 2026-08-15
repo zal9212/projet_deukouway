@@ -1,0 +1,22 @@
+{% extends "layouts/public.html" %}
+
+{% block title %}Accès refusé - DEKOUWAY{% endblock %}
+
+{% block content %}
+<main class="min-h-[80vh] flex items-center justify-center px-6 py-24 sm:py-32 lg:px-8">
+    <div class="text-center">
+        <div class="mx-auto flex h-20 w-20 items-center justify-center rounded-full bg-red-100 mb-8">
+            <i data-lucide="shield-off" class="h-10 w-10 text-red-600"></i>
+        </div>
+        <p class="text-base font-semibold text-[#8B1E24]">403</p>
+        <h1 class="mt-4 text-3xl font-bold tracking-tight text-gray-900 sm:text-5xl">Accès refusé</h1>
+        <p class="mt-6 text-base leading-7 text-gray-600 max-w-md mx-auto">Vous n'avez pas les permissions nécessaires pour accéder à cette page. Si vous êtes propriétaire, votre compte est peut-être en attente de validation.</p>
+        <div class="mt-10 flex items-center justify-center gap-x-6">
+            <a href="/" class="rounded-md bg-[#8B1E24] px-3.5 py-2.5 text-sm font-semibold text-white shadow-sm hover:bg-[#6F171C] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#8B1E24] transition-colors">
+                Retour à l'accueil
+            </a>
+            <a href="javascript:history.back()" class="text-sm font-semibold text-gray-900 hover:text-gray-600 transition-colors">Page précédente <span aria-hidden="true">&rarr;</span></a>
+        </div>
+    </div>
+</main>
+{% endblock %}

@@ -41,7 +41,7 @@
             <div class="text-left sm:text-right">
                 <h2 class="text-base font-bold uppercase tracking-wider text-[#8B1E24]">Facture acquittée</h2>
                 <p class="text-[10px] text-[#6B7280] mt-0.5">Date : {{ payment.created_at|date:"d M Y H:i" }}</p>
-                <p class="text-xs text-[#1F2937] font-bold mt-1">Transaction : {{ payment.transaction_id }}</p>
+                <p class="text-xs text-[#1F2937] font-bold mt-1">Transaction : {{ payment.gateway_transaction_id }}</p>
             </div>
         </div>
 
@@ -70,7 +70,7 @@
                 </div>
                 <div>
                     <span class="text-[10px] block">Type</span>
-                    <span class="font-bold text-[#1F2937]">{{ booking.property.get_property_type_display }}</span>
+                    <span class="font-bold text-[#1F2937]">{{ booking.property.property_type.name }}</span>
                 </div>
                 <div>
                     <span class="text-[10px] block">Arrivée</span>
@@ -88,16 +88,22 @@
             <h4 class="font-bold text-sm text-[#1F2937] border-b border-[#E5E7EB] pb-2 mb-3">Règlement</h4>
             
             <div class="flex justify-between">
-                <span>{{ booking.property.price_per_night }} F x {{ days }} nuits</span>
+                <span>{{ booking.property.price }} F x {{ days }} nuits</span>
                 <span class="font-semibold text-[#1F2937]">{{ booking.total_price }} FCFA</span>
             </div>
+            {% if payment.commission.service_fee %}
+            <div class="flex justify-between">
+                <span>Frais de service</span>
+                <span class="font-semibold text-[#1F2937]">{{ payment.commission.service_fee }} FCFA</span>
+            </div>
+            {% endif %}
             <div class="flex justify-between">
                 <span>Mode de paiement</span>
-                <span class="font-semibold text-[#1F2937]">{{ payment.get_payment_method_display }}</span>
+                <span class="font-semibold text-[#1F2937]">{{ payment.get_method_display }}</span>
             </div>
             <div class="flex justify-between border-t border-[#E5E7EB] pt-3 font-extrabold text-base text-[#1F2937]">
                 <span>Montant Réglé</span>
-                <span class="text-[#8B1E24]">{{ booking.total_price }} FCFA</span>
+                <span class="text-[#8B1E24]">{{ payment.amount }} FCFA</span>
             </div>
         </div>
 

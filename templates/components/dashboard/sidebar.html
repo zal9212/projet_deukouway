@@ -1,0 +1,404 @@
+<!-- Sidebar Desktop (Fixe) -->
+<div class="hidden lg:fixed lg:inset-y-0 lg:z-50 lg:flex lg:flex-col transition-all duration-300 ease-in-out border-r border-gray-200 bg-white"
+     :class="sidebarCollapsed ? 'lg:w-16' : 'lg:w-64'">
+    <div class="flex grow flex-col gap-y-5 overflow-y-auto pb-4 transition-all duration-300"
+         :class="sidebarCollapsed ? 'px-3' : 'px-6'">
+        
+        <!-- Logo -->
+        <div class="flex h-16 shrink-0 items-center mt-2 border-b border-gray-100 pb-2 justify-between">
+            <a href="{% url 'public:home' %}" class="flex items-center space-x-3 min-w-0 overflow-hidden">
+                {% if platform_settings.logo %}
+                    <img src="{{ platform_settings.logo.url }}" alt="{{ platform_settings.site_name }}" class="w-10 h-10 rounded-xl object-cover shrink-0">
+                {% else %}
+                    <div class="w-10 h-10 bg-[#8B1E24] rounded-xl flex items-center justify-center shrink-0">
+                        <i data-lucide="shield-check" class="text-white w-6 h-6"></i>
+                    </div>
+                {% endif %}
+                <span x-show="!sidebarCollapsed" x-transition class="text-xl font-bold tracking-tight text-gray-900 truncate">{{ platform_settings.site_name|default:"DEKOUWAY" }}</span>
+            </a>
+            <!-- Bouton pour réduire la sidebar -->
+            <button @click="sidebarCollapsed = !sidebarCollapsed; localStorage.setItem('sidebarCollapsed', sidebarCollapsed)" 
+                    class="hidden lg:flex items-center justify-center p-1.5 rounded-lg text-gray-400 hover:text-gray-900 hover:bg-gray-100 transition-colors shrink-0">
+                <i data-lucide="chevron-left" x-show="!sidebarCollapsed" class="w-5 h-5"></i>
+                <i data-lucide="chevron-right" x-show="sidebarCollapsed" class="w-5 h-5"></i>
+            </button>
+        </div>
+
+        <nav class="flex flex-1 flex-col mt-2">
+            <ul role="list" class="flex flex-1 flex-col gap-y-6">
+                
+                {% if request.user.is_staff or request.user.is_superuser or request.user.is_superadmin %}
+                <!-- ================= SUPER ADMIN SIDEBAR ================= -->
+                <li>
+                    <ul role="list" class="-mx-2 space-y-1">
+                        <li>
+                            <a href="{% url 'dashboard:admin_home' %}" 
+                               :title="sidebarCollapsed ? 'Tableau de bord' : ''"
+                               class="{% if request.resolver_match.url_name == 'admin_home' %}bg-gray-50 text-[#8B1E24]{% else %}text-gray-700 hover:text-[#8B1E24] hover:bg-gray-50{% endif %} group flex gap-x-3 rounded-md p-2 text-sm leading-6 font-semibold transition-colors"
+                               :class="sidebarCollapsed ? 'justify-center' : ''">
+                                <i data-lucide="layout-dashboard" class="h-5 w-5 shrink-0 {% if request.resolver_match.url_name == 'admin_home' %}text-[#8B1E24]{% else %}text-gray-400 group-hover:text-[#8B1E24]{% endif %}"></i>
+                                <span x-show="!sidebarCollapsed" x-transition>Tableau de bord</span>
+                            </a>
+                        </li>
+                    </ul>
+                </li>
+                <li>
+                    <div class="text-xs font-semibold leading-6 text-gray-500 uppercase tracking-wider mb-1" x-show="!sidebarCollapsed" x-transition>Gestion</div>
+                    <hr class="border-gray-100 my-2" x-show="sidebarCollapsed" x-transition>
+                    <ul role="list" class="-mx-2 space-y-1">
+                        <li>
+                            <a href="{% url 'dashboard:admin_clients' %}" 
+                               :title="sidebarCollapsed ? 'Membres' : ''"
+                               class="{% if request.resolver_match.url_name == 'admin_clients' %}bg-gray-50 text-[#8B1E24]{% else %}text-gray-700 hover:text-[#8B1E24] hover:bg-gray-50{% endif %} group flex gap-x-3 rounded-md p-2 text-sm leading-6 font-medium transition-colors"
+                               :class="sidebarCollapsed ? 'justify-center' : ''">
+                                <i data-lucide="users" class="h-5 w-5 shrink-0 {% if request.resolver_match.url_name == 'admin_clients' %}text-[#8B1E24]{% else %}text-gray-400 group-hover:text-[#8B1E24]{% endif %}"></i>
+                                <span x-show="!sidebarCollapsed" x-transition>Membres</span>
+                            </a>
+                        </li>
+                        <li>
+                            <a href="{% url 'dashboard:admin_owners' %}" 
+                               :title="sidebarCollapsed ? 'Partenaires' : ''"
+                               class="{% if request.resolver_match.url_name == 'admin_owners' %}bg-gray-50 text-[#8B1E24]{% else %}text-gray-700 hover:text-[#8B1E24] hover:bg-gray-50{% endif %} group flex gap-x-3 rounded-md p-2 text-sm leading-6 font-medium transition-colors"
+                               :class="sidebarCollapsed ? 'justify-center' : ''">
+                                <i data-lucide="building" class="h-5 w-5 shrink-0 {% if request.resolver_match.url_name == 'admin_owners' %}text-[#8B1E24]{% else %}text-gray-400 group-hover:text-[#8B1E24]{% endif %}"></i>
+                                <span x-show="!sidebarCollapsed" x-transition>Partenaires</span>
+                            </a>
+                        </li>
+                        <li>
+                            <a href="{% url 'dashboard:admin_validate_owners' %}" 
+                               :title="sidebarCollapsed ? 'Validation Hôtes' : ''"
+                               class="{% if request.resolver_match.url_name == 'admin_validate_owners' %}bg-gray-50 text-[#8B1E24]{% else %}text-gray-700 hover:text-[#8B1E24] hover:bg-gray-50{% endif %} group flex gap-x-3 rounded-md p-2 text-sm leading-6 font-medium transition-colors relative"
+                               :class="sidebarCollapsed ? 'justify-center' : ''">
+                                <i data-lucide="user-check" class="h-5 w-5 shrink-0 {% if request.resolver_match.url_name == 'admin_validate_owners' %}text-[#8B1E24]{% else %}text-gray-400 group-hover:text-[#8B1E24]{% endif %}"></i>
+                                <span x-show="!sidebarCollapsed" x-transition>Validation Hôtes</span>
+                                {% if stats.pending_owners > 0 %}
+                                <span x-show="!sidebarCollapsed" class="ml-auto w-6 min-w-max whitespace-nowrap rounded-full bg-red-100 px-2 py-0.5 text-center text-[10px] font-bold leading-4 text-red-700">{{ stats.pending_owners }}</span>
+                                <span x-show="sidebarCollapsed" class="absolute top-1 right-2 w-2 h-2 rounded-full bg-red-600"></span>
+                                {% endif %}
+                            </a>
+                        </li>
+                        <li>
+                            <a href="{% url 'dashboard:admin_validate_properties' %}" 
+                               :title="sidebarCollapsed ? 'Validation Annonces' : ''"
+                               class="{% if request.resolver_match.url_name == 'admin_validate_properties' %}bg-gray-50 text-[#8B1E24]{% else %}text-gray-700 hover:text-[#8B1E24] hover:bg-gray-50{% endif %} group flex gap-x-3 rounded-md p-2 text-sm leading-6 font-medium transition-colors relative"
+                               :class="sidebarCollapsed ? 'justify-center' : ''">
+                                <i data-lucide="search-check" class="h-5 w-5 shrink-0 {% if request.resolver_match.url_name == 'admin_validate_properties' %}text-[#8B1E24]{% else %}text-gray-400 group-hover:text-[#8B1E24]{% endif %}"></i>
+                                <span x-show="!sidebarCollapsed" x-transition>Validation Annonces</span>
+                                {% if stats.pending_properties > 0 %}
+                                <span x-show="!sidebarCollapsed" class="ml-auto w-6 min-w-max whitespace-nowrap rounded-full bg-yellow-100 px-2 py-0.5 text-center text-[10px] font-bold leading-4 text-yellow-800">{{ stats.pending_properties }}</span>
+                                <span x-show="sidebarCollapsed" class="absolute top-1 right-2 w-2 h-2 rounded-full bg-yellow-500"></span>
+                                {% endif %}
+                            </a>
+                        </li>
+                        <li>
+                            <a href="{% url 'dashboard:admin_validate_reservations' %}"
+                               :title="sidebarCollapsed ? 'Validation Réservations' : ''"
+                               class="{% if request.resolver_match.url_name == 'admin_validate_reservations' %}bg-gray-50 text-[#8B1E24]{% else %}text-gray-700 hover:text-[#8B1E24] hover:bg-gray-50{% endif %} group flex gap-x-3 rounded-md p-2 text-sm leading-6 font-medium transition-colors relative"
+                               :class="sidebarCollapsed ? 'justify-center' : ''">
+                                <i data-lucide="calendar-check" class="h-5 w-5 shrink-0 {% if request.resolver_match.url_name == 'admin_validate_reservations' %}text-[#8B1E24]{% else %}text-gray-400 group-hover:text-[#8B1E24]{% endif %}"></i>
+                                <span x-show="!sidebarCollapsed" x-transition>Validation Réservations</span>
+                            </a>
+                        </li>
+                    </ul>
+                </li>
+                <li>
+                    <div class="text-xs font-semibold leading-6 text-gray-500 uppercase tracking-wider mb-1" x-show="!sidebarCollapsed" x-transition>Opérations</div>
+                    <hr class="border-gray-100 my-2" x-show="sidebarCollapsed" x-transition>
+                    <ul role="list" class="-mx-2 space-y-1">
+                        <li>
+                            <a href="{% url 'dashboard:admin_reservations' %}" 
+                               :title="sidebarCollapsed ? 'Réservations' : ''"
+                               class="{% if request.resolver_match.url_name == 'admin_reservations' %}bg-gray-50 text-[#8B1E24]{% else %}text-gray-700 hover:text-[#8B1E24] hover:bg-gray-50{% endif %} group flex gap-x-3 rounded-md p-2 text-sm leading-6 font-medium transition-colors"
+                               :class="sidebarCollapsed ? 'justify-center' : ''">
+                                <i data-lucide="calendar" class="h-5 w-5 shrink-0 {% if request.resolver_match.url_name == 'admin_reservations' %}text-[#8B1E24]{% else %}text-gray-400 group-hover:text-[#8B1E24]{% endif %}"></i>
+                                <span x-show="!sidebarCollapsed" x-transition>Réservations</span>
+                            </a>
+                        </li>
+                        <li>
+                            <a href="{% url 'dashboard:admin_payments' %}" 
+                               :title="sidebarCollapsed ? 'Transactions' : ''"
+                               class="{% if request.resolver_match.url_name == 'admin_payments' %}bg-gray-50 text-[#8B1E24]{% else %}text-gray-700 hover:text-[#8B1E24] hover:bg-gray-50{% endif %} group flex gap-x-3 rounded-md p-2 text-sm leading-6 font-medium transition-colors"
+                               :class="sidebarCollapsed ? 'justify-center' : ''">
+                                <i data-lucide="credit-card" class="h-5 w-5 shrink-0 {% if request.resolver_match.url_name == 'admin_payments' %}text-[#8B1E24]{% else %}text-gray-400 group-hover:text-[#8B1E24]{% endif %}"></i>
+                                <span x-show="!sidebarCollapsed" x-transition>Transactions</span>
+                            </a>
+                        </li>
+                        <li>
+                            <a href="{% url 'dashboard:admin_payouts' %}" 
+                               :title="sidebarCollapsed ? 'Reversements' : ''"
+                               class="{% if request.resolver_match.url_name == 'admin_payouts' %}bg-gray-50 text-[#8B1E24]{% else %}text-gray-700 hover:text-[#8B1E24] hover:bg-gray-50{% endif %} group flex gap-x-3 rounded-md p-2 text-sm leading-6 font-medium transition-colors"
+                               :class="sidebarCollapsed ? 'justify-center' : ''">
+                                <i data-lucide="banknote" class="h-5 w-5 shrink-0 {% if request.resolver_match.url_name == 'admin_payouts' %}text-[#8B1E24]{% else %}text-gray-400 group-hover:text-[#8B1E24]{% endif %}"></i>
+                                <span x-show="!sidebarCollapsed" x-transition>Reversements</span>
+                            </a>
+                        </li>
+                    </ul>
+                </li>
+                <li>
+                    <div class="text-xs font-semibold leading-6 text-gray-500 uppercase tracking-wider mb-1" x-show="!sidebarCollapsed" x-transition>Support & Système</div>
+                    <hr class="border-gray-100 my-2" x-show="sidebarCollapsed" x-transition>
+                    <ul role="list" class="-mx-2 space-y-1">
+                        <li>
+                            <a href="{% url 'dashboard:admin_support' %}" 
+                               :title="sidebarCollapsed ? 'Tickets Support' : ''"
+                               class="{% if request.resolver_match.url_name == 'admin_support' %}bg-gray-50 text-[#8B1E24]{% else %}text-gray-700 hover:text-[#8B1E24] hover:bg-gray-50{% endif %} group flex gap-x-3 rounded-md p-2 text-sm leading-6 font-medium transition-colors"
+                               :class="sidebarCollapsed ? 'justify-center' : ''">
+                                <i data-lucide="life-buoy" class="h-5 w-5 shrink-0 {% if request.resolver_match.url_name == 'admin_support' %}text-[#8B1E24]{% else %}text-gray-400 group-hover:text-[#8B1E24]{% endif %}"></i>
+                                <span x-show="!sidebarCollapsed" x-transition>Tickets Support</span>
+                            </a>
+                        </li>
+                        <li>
+                            <a href="{% url 'dashboard:admin_disputes' %}" 
+                               :title="sidebarCollapsed ? 'Litiges' : ''"
+                               class="{% if request.resolver_match.url_name == 'admin_disputes' %}bg-gray-50 text-[#8B1E24]{% else %}text-gray-700 hover:text-[#8B1E24] hover:bg-gray-50{% endif %} group flex gap-x-3 rounded-md p-2 text-sm leading-6 font-medium transition-colors"
+                               :class="sidebarCollapsed ? 'justify-center' : ''">
+                                <i data-lucide="scale" class="h-5 w-5 shrink-0 {% if request.resolver_match.url_name == 'admin_disputes' %}text-[#8B1E24]{% else %}text-gray-400 group-hover:text-[#8B1E24]{% endif %}"></i>
+                                <span x-show="!sidebarCollapsed" x-transition>Litiges</span>
+                            </a>
+                        </li>
+                        <li>
+                            <a href="{% url 'dashboard:admin_analytics' %}" 
+                               :title="sidebarCollapsed ? 'Analytics' : ''"
+                               class="{% if request.resolver_match.url_name == 'admin_analytics' %}bg-gray-50 text-[#8B1E24]{% else %}text-gray-700 hover:text-[#8B1E24] hover:bg-gray-50{% endif %} group flex gap-x-3 rounded-md p-2 text-sm leading-6 font-medium transition-colors"
+                               :class="sidebarCollapsed ? 'justify-center' : ''">
+                                <i data-lucide="bar-chart-2" class="h-5 w-5 shrink-0 {% if request.resolver_match.url_name == 'admin_analytics' %}text-[#8B1E24]{% else %}text-gray-400 group-hover:text-[#8B1E24]{% endif %}"></i>
+                                <span x-show="!sidebarCollapsed" x-transition>Analytics</span>
+                            </a>
+                        </li>
+                        <li>
+                            <a href="{% url 'dashboard:admin_config' %}"
+                               :title="sidebarCollapsed ? 'Configuration' : ''"
+                               class="{% if request.resolver_match.url_name == 'admin_config' %}bg-gray-50 text-[#8B1E24]{% else %}text-gray-700 hover:text-[#8B1E24] hover:bg-gray-50{% endif %} group flex gap-x-3 rounded-md p-2 text-sm leading-6 font-medium transition-colors"
+                               :class="sidebarCollapsed ? 'justify-center' : ''">
+                                <i data-lucide="sliders-horizontal" class="h-5 w-5 shrink-0 {% if request.resolver_match.url_name == 'admin_config' %}text-[#8B1E24]{% else %}text-gray-400 group-hover:text-[#8B1E24]{% endif %}"></i>
+                                <span x-show="!sidebarCollapsed" x-transition>Configuration</span>
+                            </a>
+                        </li>
+                        <li>
+                            <a href="{% url 'dashboard:admin_settings' %}"
+                               :title="sidebarCollapsed ? 'Préférences' : ''"
+                               class="{% if request.resolver_match.url_name == 'admin_settings' %}bg-gray-50 text-[#8B1E24]{% else %}text-gray-700 hover:text-[#8B1E24] hover:bg-gray-50{% endif %} group flex gap-x-3 rounded-md p-2 text-sm leading-6 font-medium transition-colors"
+                               :class="sidebarCollapsed ? 'justify-center' : ''">
+                                <i data-lucide="settings" class="h-5 w-5 shrink-0 {% if request.resolver_match.url_name == 'admin_settings' %}text-[#8B1E24]{% else %}text-gray-400 group-hover:text-[#8B1E24]{% endif %}"></i>
+                                <span x-show="!sidebarCollapsed" x-transition>Préférences</span>
+                            </a>
+                        </li>
+                    </ul>
+                </li>
+
+                {% elif request.user.is_owner %}
+                <!-- ================= OWNER SIDEBAR ================= -->
+                <li>
+                    <ul role="list" class="-mx-2 space-y-1">
+                        <li>
+                            <a href="{% url 'dashboard:owner_home' %}" 
+                               :title="sidebarCollapsed ? 'Tableau de bord' : ''"
+                               class="{% if request.resolver_match.url_name == 'owner_home' %}bg-gray-50 text-[#8B1E24]{% else %}text-gray-700 hover:text-[#8B1E24] hover:bg-gray-50{% endif %} group flex gap-x-3 rounded-md p-2 text-sm leading-6 font-semibold transition-colors"
+                               :class="sidebarCollapsed ? 'justify-center' : ''">
+                                <i data-lucide="layout-dashboard" class="h-5 w-5 shrink-0 {% if request.resolver_match.url_name == 'owner_home' %}text-[#8B1E24]{% else %}text-gray-400 group-hover:text-[#8B1E24]{% endif %}"></i>
+                                <span x-show="!sidebarCollapsed" x-transition>Tableau de bord</span>
+                            </a>
+                        </li>
+                    </ul>
+                </li>
+                <li>
+                    <div class="text-xs font-semibold leading-6 text-gray-500 uppercase tracking-wider mb-1" x-show="!sidebarCollapsed" x-transition>Activité</div>
+                    <hr class="border-gray-100 my-2" x-show="sidebarCollapsed" x-transition>
+                    <ul role="list" class="-mx-2 space-y-1">
+                        <li>
+                            <a href="{% url 'dashboard:owner_properties' %}" 
+                               :title="sidebarCollapsed ? 'Mes Annonces' : ''"
+                               class="{% if request.resolver_match.url_name == 'owner_properties' %}bg-gray-50 text-[#8B1E24]{% else %}text-gray-700 hover:text-[#8B1E24] hover:bg-gray-50{% endif %} group flex gap-x-3 rounded-md p-2 text-sm leading-6 font-medium transition-colors"
+                               :class="sidebarCollapsed ? 'justify-center' : ''">
+                                <i data-lucide="home" class="h-5 w-5 shrink-0 {% if request.resolver_match.url_name == 'owner_properties' %}text-[#8B1E24]{% else %}text-gray-400 group-hover:text-[#8B1E24]{% endif %}"></i>
+                                <span x-show="!sidebarCollapsed" x-transition>Mes Annonces</span>
+                            </a>
+                        </li>
+                        <li>
+                            <a href="{% url 'dashboard:owner_requests' %}" 
+                               :title="sidebarCollapsed ? 'Demandes' : ''"
+                               class="{% if request.resolver_match.url_name == 'owner_requests' %}bg-gray-50 text-[#8B1E24]{% else %}text-gray-700 hover:text-[#8B1E24] hover:bg-gray-50{% endif %} group flex gap-x-3 rounded-md p-2 text-sm leading-6 font-medium transition-colors"
+                               :class="sidebarCollapsed ? 'justify-center' : ''">
+                                <i data-lucide="inbox" class="h-5 w-5 shrink-0 {% if request.resolver_match.url_name == 'owner_requests' %}text-[#8B1E24]{% else %}text-gray-400 group-hover:text-[#8B1E24]{% endif %}"></i>
+                                <span x-show="!sidebarCollapsed" x-transition>Demandes</span>
+                            </a>
+                        </li>
+                        <li>
+                            <a href="{% url 'dashboard:owner_calendar' %}" 
+                               :title="sidebarCollapsed ? 'Planning' : ''"
+                               class="{% if request.resolver_match.url_name == 'owner_calendar' %}bg-gray-50 text-[#8B1E24]{% else %}text-gray-700 hover:text-[#8B1E24] hover:bg-gray-50{% endif %} group flex gap-x-3 rounded-md p-2 text-sm leading-6 font-medium transition-colors"
+                               :class="sidebarCollapsed ? 'justify-center' : ''">
+                                <i data-lucide="calendar" class="h-5 w-5 shrink-0 {% if request.resolver_match.url_name == 'owner_calendar' %}text-[#8B1E24]{% else %}text-gray-400 group-hover:text-[#8B1E24]{% endif %}"></i>
+                                <span x-show="!sidebarCollapsed" x-transition>Planning</span>
+                            </a>
+                        </li>
+                    </ul>
+                </li>
+                <li>
+                    <div class="text-xs font-semibold leading-6 text-gray-500 uppercase tracking-wider mb-1" x-show="!sidebarCollapsed" x-transition>Finance</div>
+                    <hr class="border-gray-100 my-2" x-show="sidebarCollapsed" x-transition>
+                    <ul role="list" class="-mx-2 space-y-1">
+                        <li>
+                            <a href="{% url 'dashboard:owner_payouts' %}" 
+                               :title="sidebarCollapsed ? 'Revenus' : ''"
+                               class="{% if request.resolver_match.url_name == 'owner_payouts' %}bg-gray-50 text-[#8B1E24]{% else %}text-gray-700 hover:text-[#8B1E24] hover:bg-gray-50{% endif %} group flex gap-x-3 rounded-md p-2 text-sm leading-6 font-medium transition-colors"
+                               :class="sidebarCollapsed ? 'justify-center' : ''">
+                                <i data-lucide="banknote" class="h-5 w-5 shrink-0 {% if request.resolver_match.url_name == 'owner_payouts' %}text-[#8B1E24]{% else %}text-gray-400 group-hover:text-[#8B1E24]{% endif %}"></i>
+                                <span x-show="!sidebarCollapsed" x-transition>Revenus</span>
+                            </a>
+                        </li>
+                        <li>
+                            <a href="{% url 'dashboard:owner_stats' %}" 
+                               :title="sidebarCollapsed ? 'Statistiques' : ''"
+                               class="{% if request.resolver_match.url_name == 'owner_stats' %}bg-gray-50 text-[#8B1E24]{% else %}text-gray-700 hover:text-[#8B1E24] hover:bg-gray-50{% endif %} group flex gap-x-3 rounded-md p-2 text-sm leading-6 font-medium transition-colors"
+                               :class="sidebarCollapsed ? 'justify-center' : ''">
+                                <i data-lucide="pie-chart" class="h-5 w-5 shrink-0 {% if request.resolver_match.url_name == 'owner_stats' %}text-[#8B1E24]{% else %}text-gray-400 group-hover:text-[#8B1E24]{% endif %}"></i>
+                                <span x-show="!sidebarCollapsed" x-transition>Statistiques</span>
+                            </a>
+                        </li>
+                    </ul>
+                </li>
+                <li>
+                    <div class="text-xs font-semibold leading-6 text-gray-500 uppercase tracking-wider mb-1" x-show="!sidebarCollapsed" x-transition>Mon Compte</div>
+                    <hr class="border-gray-100 my-2" x-show="sidebarCollapsed" x-transition>
+                    <ul role="list" class="-mx-2 space-y-1">
+                        <li>
+                            <a href="{% url 'dashboard:owner_documents' %}" 
+                               :title="sidebarCollapsed ? 'Documents' : ''"
+                               class="{% if request.resolver_match.url_name == 'owner_documents' %}bg-gray-50 text-[#8B1E24]{% else %}text-gray-700 hover:text-[#8B1E24] hover:bg-gray-50{% endif %} group flex gap-x-3 rounded-md p-2 text-sm leading-6 font-medium transition-colors"
+                               :class="sidebarCollapsed ? 'justify-center' : ''">
+                                <i data-lucide="file-text" class="h-5 w-5 shrink-0 {% if request.resolver_match.url_name == 'owner_documents' %}text-[#8B1E24]{% else %}text-gray-400 group-hover:text-[#8B1E24]{% endif %}"></i>
+                                <span x-show="!sidebarCollapsed" x-transition>Documents</span>
+                            </a>
+                        </li>
+                        <li>
+                            <a href="{% url 'dashboard:owner_support' %}" 
+                               :title="sidebarCollapsed ? 'Assistance' : ''"
+                               class="{% if request.resolver_match.url_name == 'owner_support' %}bg-gray-50 text-[#8B1E24]{% else %}text-gray-700 hover:text-[#8B1E24] hover:bg-gray-50{% endif %} group flex gap-x-3 rounded-md p-2 text-sm leading-6 font-medium transition-colors"
+                               :class="sidebarCollapsed ? 'justify-center' : ''">
+                                <i data-lucide="life-buoy" class="h-5 w-5 shrink-0 {% if request.resolver_match.url_name == 'owner_support' %}text-[#8B1E24]{% else %}text-gray-400 group-hover:text-[#8B1E24]{% endif %}"></i>
+                                <span x-show="!sidebarCollapsed" x-transition>Assistance</span>
+                            </a>
+                        </li>
+                        <li>
+                            <a href="{% url 'dashboard:owner_settings' %}" 
+                               :title="sidebarCollapsed ? 'Paramètres' : ''"
+                               class="{% if request.resolver_match.url_name == 'owner_settings' %}bg-gray-50 text-[#8B1E24]{% else %}text-gray-700 hover:text-[#8B1E24] hover:bg-gray-50{% endif %} group flex gap-x-3 rounded-md p-2 text-sm leading-6 font-medium transition-colors"
+                               :class="sidebarCollapsed ? 'justify-center' : ''">
+                                <i data-lucide="settings" class="h-5 w-5 shrink-0 {% if request.resolver_match.url_name == 'owner_settings' %}text-[#8B1E24]{% else %}text-gray-400 group-hover:text-[#8B1E24]{% endif %}"></i>
+                                <span x-show="!sidebarCollapsed" x-transition>Paramètres</span>
+                            </a>
+                        </li>
+                    </ul>
+                </li>
+
+                {% else %}
+                <!-- ================= CLIENT SIDEBAR ================= -->
+                <li>
+                    <ul role="list" class="-mx-2 space-y-1">
+                        <li>
+                            <a href="{% url 'dashboard:client_home' %}" 
+                               :title="sidebarCollapsed ? 'Tableau de bord' : ''"
+                               class="{% if request.resolver_match.url_name == 'client_home' %}bg-gray-50 text-[#8B1E24]{% else %}text-gray-700 hover:text-[#8B1E24] hover:bg-gray-50{% endif %} group flex gap-x-3 rounded-md p-2 text-sm leading-6 font-semibold transition-colors"
+                               :class="sidebarCollapsed ? 'justify-center' : ''">
+                                <i data-lucide="layout-dashboard" class="h-5 w-5 shrink-0 {% if request.resolver_match.url_name == 'client_home' %}text-[#8B1E24]{% else %}text-gray-400 group-hover:text-[#8B1E24]{% endif %}"></i>
+                                <span x-show="!sidebarCollapsed" x-transition>Tableau de bord</span>
+                            </a>
+                        </li>
+                        <li>
+                            <a href="{% url 'public:properties_list' %}" 
+                               :title="sidebarCollapsed ? 'Rechercher un logement' : ''"
+                               class="text-gray-700 hover:text-[#8B1E24] hover:bg-gray-50 group flex gap-x-3 rounded-md p-2 text-sm leading-6 font-medium transition-colors"
+                               :class="sidebarCollapsed ? 'justify-center' : ''">
+                                <i data-lucide="search" class="h-5 w-5 shrink-0 text-gray-400 group-hover:text-[#8B1E24]"></i>
+                                <span x-show="!sidebarCollapsed" x-transition>Rechercher un logement</span>
+                            </a>
+                        </li>
+                    </ul>
+                </li>
+                <li>
+                    <div class="text-xs font-semibold leading-6 text-gray-500 uppercase tracking-wider mb-1" x-show="!sidebarCollapsed" x-transition>Mes Réservations</div>
+                    <hr class="border-gray-100 my-2" x-show="sidebarCollapsed" x-transition>
+                    <ul role="list" class="-mx-2 space-y-1">
+                        <li>
+                            <a href="{% url 'dashboard:client_reservations' %}" 
+                               :title="sidebarCollapsed ? 'Mes Réservations' : ''"
+                               class="{% if request.resolver_match.url_name == 'client_reservations' %}bg-gray-50 text-[#8B1E24]{% else %}text-gray-700 hover:text-[#8B1E24] hover:bg-gray-50{% endif %} group flex gap-x-3 rounded-md p-2 text-sm leading-6 font-medium transition-colors relative"
+                               :class="sidebarCollapsed ? 'justify-center' : ''">
+                                <i data-lucide="suitcase" class="h-5 w-5 shrink-0 {% if request.resolver_match.url_name == 'client_reservations' %}text-[#8B1E24]{% else %}text-gray-400 group-hover:text-[#8B1E24]{% endif %}"></i>
+                                <span x-show="!sidebarCollapsed" x-transition>Mes Réservations</span>
+                                {% if stats.total_reservations > 0 %}
+                                <span x-show="!sidebarCollapsed" class="ml-auto w-6 min-w-max whitespace-nowrap rounded-full bg-gray-100 px-2 py-0.5 text-center text-[10px] font-bold leading-4 text-gray-700">{{ stats.total_reservations }}</span>
+                                <span x-show="sidebarCollapsed" class="absolute top-1 right-2 w-2 h-2 rounded-full bg-gray-400"></span>
+                                {% endif %}
+                            </a>
+                        </li>
+                        <li>
+                            <a href="{% url 'dashboard:client_favorites' %}" 
+                               :title="sidebarCollapsed ? 'Favoris' : ''"
+                               class="{% if request.resolver_match.url_name == 'client_favorites' %}bg-gray-50 text-[#8B1E24]{% else %}text-gray-700 hover:text-[#8B1E24] hover:bg-gray-50{% endif %} group flex gap-x-3 rounded-md p-2 text-sm leading-6 font-medium transition-colors"
+                               :class="sidebarCollapsed ? 'justify-center' : ''">
+                                <i data-lucide="heart" class="h-5 w-5 shrink-0 {% if request.resolver_match.url_name == 'client_favorites' %}text-[#8B1E24]{% else %}text-gray-400 group-hover:text-[#8B1E24]{% endif %}"></i>
+                                <span x-show="!sidebarCollapsed" x-transition>Favoris</span>
+                            </a>
+                        </li>
+                        <li>
+                            <a href="{% url 'dashboard:client_history' %}" 
+                               :title="sidebarCollapsed ? 'Historique' : ''"
+                               class="{% if request.resolver_match.url_name == 'client_history' %}bg-gray-50 text-[#8B1E24]{% else %}text-gray-700 hover:text-[#8B1E24] hover:bg-gray-50{% endif %} group flex gap-x-3 rounded-md p-2 text-sm leading-6 font-medium transition-colors"
+                               :class="sidebarCollapsed ? 'justify-center' : ''">
+                                <i data-lucide="clock" class="h-5 w-5 shrink-0 {% if request.resolver_match.url_name == 'client_history' %}text-[#8B1E24]{% else %}text-gray-400 group-hover:text-[#8B1E24]{% endif %}"></i>
+                                <span x-show="!sidebarCollapsed" x-transition>Historique</span>
+                            </a>
+                        </li>
+                    </ul>
+                </li>
+                <li>
+                    <div class="text-xs font-semibold leading-6 text-gray-500 uppercase tracking-wider mb-1" x-show="!sidebarCollapsed" x-transition>Mon Compte</div>
+                    <hr class="border-gray-100 my-2" x-show="sidebarCollapsed" x-transition>
+                    <ul role="list" class="-mx-2 space-y-1">
+                        <li>
+                            <a href="{% url 'dashboard:client_payments' %}" 
+                               :title="sidebarCollapsed ? 'Paiements' : ''"
+                               class="{% if request.resolver_match.url_name == 'client_payments' %}bg-gray-50 text-[#8B1E24]{% else %}text-gray-700 hover:text-[#8B1E24] hover:bg-gray-50{% endif %} group flex gap-x-3 rounded-md p-2 text-sm leading-6 font-medium transition-colors"
+                               :class="sidebarCollapsed ? 'justify-center' : ''">
+                                <i data-lucide="credit-card" class="h-5 w-5 shrink-0 {% if request.resolver_match.url_name == 'client_payments' %}text-[#8B1E24]{% else %}text-gray-400 group-hover:text-[#8B1E24]{% endif %}"></i>
+                                <span x-show="!sidebarCollapsed" x-transition>Paiements</span>
+                            </a>
+                        </li>
+                        <li>
+                            <a href="{% url 'dashboard:client_invoices' %}" 
+                               :title="sidebarCollapsed ? 'Factures' : ''"
+                               class="{% if request.resolver_match.url_name == 'client_invoices' %}bg-gray-50 text-[#8B1E24]{% else %}text-gray-700 hover:text-[#8B1E24] hover:bg-gray-50{% endif %} group flex gap-x-3 rounded-md p-2 text-sm leading-6 font-medium transition-colors"
+                               :class="sidebarCollapsed ? 'justify-center' : ''">
+                                <i data-lucide="file-text" class="h-5 w-5 shrink-0 {% if request.resolver_match.url_name == 'client_invoices' %}text-[#8B1E24]{% else %}text-gray-400 group-hover:text-[#8B1E24]{% endif %}"></i>
+                                <span x-show="!sidebarCollapsed" x-transition>Factures</span>
+                            </a>
+                        </li>
+                        <li>
+                            <a href="{% url 'dashboard:client_support' %}" 
+                               :title="sidebarCollapsed ? 'Assistance' : ''"
+                               class="{% if request.resolver_match.url_name == 'client_support' %}bg-gray-50 text-[#8B1E24]{% else %}text-gray-700 hover:text-[#8B1E24] hover:bg-gray-50{% endif %} group flex gap-x-3 rounded-md p-2 text-sm leading-6 font-medium transition-colors"
+                               :class="sidebarCollapsed ? 'justify-center' : ''">
+                                <i data-lucide="life-buoy" class="h-5 w-5 shrink-0 {% if request.resolver_match.url_name == 'client_support' %}text-[#8B1E24]{% else %}text-gray-400 group-hover:text-[#8B1E24]{% endif %}"></i>
+                                <span x-show="!sidebarCollapsed" x-transition>Assistance</span>
+                            </a>
+                        </li>
+                        <li>
+                            <a href="{% url 'dashboard:client_settings' %}" 
+                               :title="sidebarCollapsed ? 'Paramètres' : ''"
+                               class="{% if request.resolver_match.url_name == 'client_settings' %}bg-gray-50 text-[#8B1E24]{% else %}text-gray-700 hover:text-[#8B1E24] hover:bg-gray-50{% endif %} group flex gap-x-3 rounded-md p-2 text-sm leading-6 font-medium transition-colors"
+                               :class="sidebarCollapsed ? 'justify-center' : ''">
+                                <i data-lucide="settings" class="h-5 w-5 shrink-0 {% if request.resolver_match.url_name == 'client_settings' %}text-[#8B1E24]{% else %}text-gray-400 group-hover:text-[#8B1E24]{% endif %}"></i>
+                                <span x-show="!sidebarCollapsed" x-transition>Paramètres</span>
+                            </a>
+                        </li>
+                    </ul>
+                </li>
+                {% endif %}
+
+            </ul>
+        </nav>
+        
+    </div>
+</div>

@@ -1,0 +1,30 @@
+<div class="py-6 border-b border-gray-200">
+    <h3 class="text-xl font-bold text-gray-900 mb-6">À savoir</h3>
+
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <!-- Règlement intérieur -->
+        <div>
+            <h4 class="font-bold text-gray-900 mb-3">Règlement intérieur</h4>
+            {% if rules %}
+            <ul class="space-y-3 text-sm text-gray-700">
+                {% for rule in rules %}
+                <li class="flex items-center">
+                    <i data-lucide="check" class="w-4 h-4 mr-2 text-gray-500"></i>
+                    {{ rule.rule }}
+                </li>
+                {% endfor %}
+            </ul>
+            {% else %}
+            <p class="text-sm text-gray-500">Aucune règle spécifique renseignée par l'hôte.</p>
+            {% endif %}
+        </div>
+
+        <!-- Conditions d'annulation -->
+        <div>
+            <h4 class="font-bold text-gray-900 mb-3">Conditions d'annulation</h4>
+            <p class="text-sm text-gray-700 mb-2">
+                Annulation gratuite jusqu'à 48h après la confirmation de la réservation par DEKOUWAY, pour autant que l'arrivée ait lieu dans au moins 14 jours.
+            </p>
+        </div>
+    </div>
+</div>

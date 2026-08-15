@@ -1,0 +1,9 @@
+target-version = "py312"
+line-length = 120
+exclude = ["*/migrations/*"]
+
+[lint]
+# F (Pyflakes) attrape des bugs réels (imports/variables inutilisés, noms non définis,
+# f-strings sans placeholder...) avec très peu de faux positifs. E9 = erreurs de syntaxe.
+# Volontairement pas de règles de style pur (E/W/I...) : ce n'est pas l'objet de ce gate CI.
+select = ["F", "E9"]

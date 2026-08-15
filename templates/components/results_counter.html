@@ -1,0 +1,29 @@
+<div class="py-4">
+    <h1 class="text-xl sm:text-2xl font-bold text-slate-900">
+        {% if page_obj %}
+            {% if page_obj.paginator.count > 0 %}
+                {{ page_obj.paginator.count }} logement{{ page_obj.paginator.count|pluralize:"s" }}
+            {% else %}
+                0 logement disponible
+            {% endif %}
+        {% elif properties is not None %}
+            {% if properties|length > 0 %}
+                {{ properties|length }} logement{{ properties|length|pluralize:"s" }}
+            {% else %}
+                0 logement disponible
+            {% endif %}
+        {% else %}
+            Logements disponibles
+        {% endif %}
+        {% if request.GET.city %}
+            à {{ request.GET.city|title }}
+        {% endif %}
+    </h1>
+    {% if request.GET.neighborhood or request.GET.type %}
+        <p class="text-sm text-slate-500 mt-1">
+            Filtres actifs : 
+            {% if request.GET.neighborhood %} {{ request.GET.neighborhood|title }} {% endif %}
+            {% if request.GET.type %} • {{ request.GET.type|title }} {% endif %}
+        </p>
+    {% endif %}
+</div>

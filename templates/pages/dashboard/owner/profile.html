@@ -1,0 +1,101 @@
+{% extends "layouts/dashboard.html" %}
+
+{% block title %}Profil - DEKOUWAY{% endblock %}
+
+{% block page_header %}
+<div class="md:flex md:items-center md:justify-between mb-8 mt-2">
+    <div class="min-w-0 flex-1">
+        <h2 class="text-2xl font-bold leading-7 text-gray-900 sm:truncate sm:text-3xl sm:tracking-tight">
+            Profil Partenaire
+        </h2>
+    </div>
+</div>
+{% endblock %}
+
+{% block content %}
+<div class="space-y-10 divide-y divide-gray-900/10 max-w-4xl">
+    
+    <!-- Informations Personnelles -->
+    <div class="grid grid-cols-1 gap-x-8 gap-y-8 md:grid-cols-3">
+        <div class="px-4 sm:px-0">
+            <h2 class="text-base font-semibold leading-7 text-gray-900">Identité</h2>
+            <p class="mt-1 text-sm leading-6 text-gray-600">Vos informations personnelles.</p>
+        </div>
+
+        <form method="POST" class="bg-white shadow-xs border border-slate-200 sm:rounded-xl md:col-span-2">
+            {% csrf_token %}
+            <div class="px-4 py-6 sm:p-8">
+                <div class="grid max-w-2xl grid-cols-1 gap-x-6 gap-y-8 sm:grid-cols-6">
+                    <div class="col-span-full">
+                        <label class="block text-sm font-medium leading-6 text-gray-900">Photo</label>
+                        <div class="mt-2 flex items-center gap-x-3">
+                            <img src="https://ui-avatars.com/api/?name={{ request.user.first_name|default:request.user.email }}&background=8B1E24&color=ffffff" class="h-12 w-12 rounded-full" alt="">
+                            <button type="button" class="rounded-md bg-white px-2.5 py-1.5 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50">Changer</button>
+                        </div>
+                    </div>
+
+                    <div class="sm:col-span-3">
+                        <label for="first-name" class="block text-sm font-medium leading-6 text-gray-900">Prénom</label>
+                        <div class="mt-2">
+                            <input type="text" name="first-name" id="first-name" value="{{ profile.first_name }}" class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-[#8B1E24] sm:text-sm sm:leading-6">
+                        </div>
+                    </div>
+
+                    <div class="sm:col-span-3">
+                        <label for="last-name" class="block text-sm font-medium leading-6 text-gray-900">Nom</label>
+                        <div class="mt-2">
+                            <input type="text" name="last-name" id="last-name" value="{{ profile.last_name }}" class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-[#8B1E24] sm:text-sm sm:leading-6">
+                        </div>
+                    </div>
+
+                    <div class="sm:col-span-4">
+                        <label for="email" class="block text-sm font-medium leading-6 text-gray-900">Adresse email professionnelle</label>
+                        <div class="mt-2">
+                            <input id="email" name="email" type="email" value="{{ request.user.email }}" class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-[#8B1E24] sm:text-sm sm:leading-6">
+                        </div>
+                    </div>
+
+                    <div class="sm:col-span-4">
+                        <label for="phone" class="block text-sm font-medium leading-6 text-gray-900">Numéro Wave / Orange Money (versements)</label>
+                        <div class="mt-2">
+                            <input id="phone" name="phone" type="tel" value="{{ profile.phone|default:'' }}" placeholder="+221 77 000 00 00" class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-[#8B1E24] sm:text-sm sm:leading-6">
+                        </div>
+                        <p class="mt-1 text-xs text-gray-500">Ce numéro sera utilisé par DEKOUWAY pour vous reverser vos revenus.</p>
+                    </div>
+                </div>
+            </div>
+            <div class="flex items-center justify-end gap-x-6 border-t border-gray-900/10 px-4 py-4 sm:px-8">
+                <button type="submit" class="rounded-md bg-[#8B1E24] px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-[#6F171C]">Enregistrer</button>
+            </div>
+        </form>
+    </div>
+
+    <!-- Vérification / Pièce d'identité -->
+    <div class="grid grid-cols-1 gap-x-8 gap-y-8 md:grid-cols-3 pt-10">
+        <div class="px-4 sm:px-0">
+            <h2 class="text-base font-semibold leading-7 text-gray-900">Vérification Partenaire</h2>
+            <p class="mt-1 text-sm leading-6 text-gray-600">Documents prouvant votre identité.</p>
+        </div>
+
+        <div class="bg-white shadow-sm ring-1 ring-gray-900/5 sm:rounded-xl md:col-span-2 p-6">
+            {% if request.user.is_verified %}
+            <div class="flex items-center gap-4 border border-green-200 bg-green-50 rounded-lg p-4">
+                <i data-lucide="shield-check" class="h-8 w-8 text-green-600"></i>
+                <div>
+                    <h3 class="text-sm font-bold text-green-900">Identité vérifiée par DEKOUWAY</h3>
+                    <p class="text-xs text-green-700 mt-1">Vous êtes autorisé à gérer des logements.</p>
+                </div>
+            </div>
+            {% else %}
+            <div class="flex items-center gap-4 border border-yellow-200 bg-yellow-50 rounded-lg p-4">
+                <i data-lucide="clock" class="h-8 w-8 text-yellow-600"></i>
+                <div>
+                    <h3 class="text-sm font-bold text-yellow-900">Vérification en attente</h3>
+                    <p class="text-xs text-yellow-700 mt-1">Votre dossier est en cours d'examen par DEKOUWAY.</p>
+                </div>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}

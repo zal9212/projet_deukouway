@@ -1,0 +1,32 @@
+<!-- Topbar (Hauteur fixe : 64px) -->
+<header class="w-full bg-white border-b border-gray-200 z-30 shrink-0 h-16 flex items-center gap-x-4 px-4 shadow-2xs sm:gap-x-6 sm:px-6 lg:px-8">
+    
+    <!-- Bouton menu Mobile -->
+    <button type="button" 
+            class="-m-2.5 p-2.5 text-gray-700 lg:hidden hover:text-gray-900 transition-colors" 
+            @click="sidebarOpen = true">
+        <span class="sr-only">Ouvrir le menu</span>
+        <i data-lucide="menu" class="h-6 w-6"></i>
+    </button>
+
+    <!-- Séparateur Mobile -->
+    <div class="h-6 w-px bg-gray-200 lg:hidden" aria-hidden="true"></div>
+
+    <div class="flex flex-1 gap-x-4 self-stretch items-center lg:gap-x-6">
+
+        <div class="flex-1"></div>
+
+        <div class="flex items-center gap-x-4 lg:gap-x-6">
+            
+            <!-- Notifications Dropdown -->
+            {% include "components/dashboard/notification_dropdown.html" %}
+
+            <!-- Séparateur -->
+            <div class="hidden lg:block lg:h-6 lg:w-px lg:bg-gray-200" aria-hidden="true"></div>
+
+            <!-- Profile Dropdown -->
+            {% include "components/dashboard/profile_dropdown.html" %}
+            
+        </div>
+    </div>
+</header>

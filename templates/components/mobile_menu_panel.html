@@ -1,0 +1,102 @@
+<!-- Rideau (overlay) -->
+<div x-show="menuOpen" x-cloak @click="menuOpen = false"
+     x-transition:enter="transition ease-out duration-200" x-transition:enter-start="opacity-0" x-transition:enter-end="opacity-100"
+     x-transition:leave="transition ease-in duration-150" x-transition:leave-start="opacity-100" x-transition:leave-end="opacity-0"
+     class="md:hidden fixed inset-0 bg-black/40 z-50"></div>
+
+<!-- Panneau menu (mobile) -->
+<div x-show="menuOpen" x-cloak
+     x-transition:enter="transition ease-out duration-200" x-transition:enter-start="transform translate-y-full" x-transition:enter-end="transform translate-y-0"
+     x-transition:leave="transition ease-in duration-150" x-transition:leave-start="transform translate-y-0" x-transition:leave-end="transform translate-y-full"
+     class="md:hidden fixed bottom-0 inset-x-0 z-50 bg-white rounded-t-2xl shadow-xl border-t border-[#E5E7EB] max-h-[70vh] overflow-y-auto">
+    <div class="flex items-center justify-between px-5 pt-4 pb-2">
+        <span class="text-sm font-bold text-[#1F2937]">Menu</span>
+        <button type="button" @click="menuOpen = false" class="p-1.5 text-[#6B7280] hover:text-[#1F2937]">
+            <i data-lucide="x" class="w-5 h-5"></i>
+        </button>
+    </div>
+    <ul class="py-2 pb-6">
+        <li>
+            <a href="{% url 'public:about' %}" class="flex items-center gap-3 px-5 py-3 text-sm font-semibold text-[#1F2937] hover:bg-[#FAFAFA]">
+                <i data-lucide="info" class="w-5 h-5 text-[#6B7280]"></i>
+                À propos
+            </a>
+        </li>
+        <li>
+            <a href="{% url 'public:contact' %}" class="flex items-center gap-3 px-5 py-3 text-sm font-semibold text-[#1F2937] hover:bg-[#FAFAFA]">
+                <i data-lucide="mail" class="w-5 h-5 text-[#6B7280]"></i>
+                Contact
+            </a>
+        </li>
+        {% if user.is_authenticated %}
+            <li class="border-t border-[#E5E7EB] mt-2 pt-2">
+                <a href="{% url 'dashboard:home' %}" class="flex items-center gap-3 px-5 py-3 text-sm font-semibold text-[#8B1E24] hover:bg-[#FAFAFA]">
+                    <i data-lucide="layout-dashboard" class="w-5 h-5 text-[#8B1E24]"></i>
+                    Tableau de bord
+                </a>
+            </li>
+            {% if user.is_owner %}
+                <li>
+                    <a href="{% url 'dashboard:owner_profile' %}" class="flex items-center gap-3 px-5 py-3 text-sm font-semibold text-[#1F2937] hover:bg-[#FAFAFA]">
+                        <i data-lucide="user" class="w-5 h-5 text-[#6B7280]"></i>
+                        Mon Profil
+                    </a>
+                </li>
+                <li>
+                    <a href="{% url 'dashboard:owner_requests' %}" class="flex items-center gap-3 px-5 py-3 text-sm font-semibold text-[#1F2937] hover:bg-[#FAFAFA]">
+                        <i data-lucide="calendar" class="w-5 h-5 text-[#6B7280]"></i>
+                        Réservations
+                    </a>
+                </li>
+            {% elif user.is_superadmin or user.is_staff %}
+                <li>
+                    <a href="{% url 'dashboard:admin_profile' %}" class="flex items-center gap-3 px-5 py-3 text-sm font-semibold text-[#1F2937] hover:bg-[#FAFAFA]">
+                        <i data-lucide="user" class="w-5 h-5 text-[#6B7280]"></i>
+                        Mon Profil
+                    </a>
+                </li>
+                <li>
+                    <a href="{% url 'dashboard:admin_reservations' %}" class="flex items-center gap-3 px-5 py-3 text-sm font-semibold text-[#1F2937] hover:bg-[#FAFAFA]">
+                        <i data-lucide="calendar" class="w-5 h-5 text-[#6B7280]"></i>
+                        Réservations
+                    </a>
+                </li>
+            {% else %}
+                <li>
+                    <a href="{% url 'profile' %}" class="flex items-center gap-3 px-5 py-3 text-sm font-semibold text-[#1F2937] hover:bg-[#FAFAFA]">
+                        <i data-lucide="user" class="w-5 h-5 text-[#6B7280]"></i>
+                        Mon Profil
+                    </a>
+                </li>
+                <li>
+                    <a href="{% url 'bookings_list' %}" class="flex items-center gap-3 px-5 py-3 text-sm font-semibold text-[#1F2937] hover:bg-[#FAFAFA]">
+                        <i data-lucide="calendar" class="w-5 h-5 text-[#6B7280]"></i>
+                        Mes Réservations
+                    </a>
+                </li>
+                <li>
+                    <a href="{% url 'dashboard:client_favorites' %}" class="flex items-center gap-3 px-5 py-3 text-sm font-semibold text-[#1F2937] hover:bg-[#FAFAFA]">
+                        <i data-lucide="heart" class="w-5 h-5 text-[#6B7280]"></i>
+                        Mes Favoris
+                    </a>
+                </li>
+            {% endif %}
+            <li class="border-t border-[#E5E7EB] mt-2 pt-2">
+                <form action="{% url 'logout' %}" method="post">
+                    {% csrf_token %}
+                    <button type="submit" class="w-full flex items-center gap-3 px-5 py-3 text-sm font-semibold text-[#DC2626] hover:bg-[#FAFAFA]">
+                        <i data-lucide="log-out" class="w-5 h-5"></i>
+                        Déconnexion
+                    </button>
+                </form>
+            </li>
+        {% else %}
+            <li class="border-t border-[#E5E7EB] mt-2 pt-2">
+                <a href="{% url 'login' %}" class="flex items-center gap-3 px-5 py-3 text-sm font-semibold text-[#8B1E24] hover:bg-[#FAFAFA]">
+                    <i data-lucide="log-in" class="w-5 h-5 text-[#8B1E24]"></i>
+                    S'identifier
+                </a>
+            </li>
+        {% endif %}
+    </ul>
+</div>

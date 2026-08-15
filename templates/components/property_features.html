@@ -1,0 +1,29 @@
+<div class="py-6 border-b border-gray-200">
+    <h2 class="text-xl font-bold text-gray-900 mb-4">{{ property.property_type.category.name }} : {{ property.property_type.name }}</h2>
+
+    <div class="flex flex-wrap gap-4 sm:gap-6">
+        <!-- Capacité -->
+        <div class="flex items-center text-gray-700">
+            <i data-lucide="users" class="w-5 h-5 mr-2 text-gray-400"></i>
+            <span>{{ property.max_guests }} personne{{ property.max_guests|pluralize }}</span>
+        </div>
+
+        <!-- Chambres -->
+        <div class="flex items-center text-gray-700">
+            <i data-lucide="door-open" class="w-5 h-5 mr-2 text-gray-400"></i>
+            <span>{{ property.bedrooms }} chambre{{ property.bedrooms|pluralize }}</span>
+        </div>
+
+        <!-- Salles de bain -->
+        <div class="flex items-center text-gray-700">
+            <i data-lucide="bath" class="w-5 h-5 mr-2 text-gray-400"></i>
+            <span>{{ property.bathrooms }} salle{{ property.bathrooms|pluralize }} de bain</span>
+        </div>
+
+        <!-- Surface -->
+        <div class="flex items-center text-gray-700">
+            <i data-lucide="maximize" class="w-5 h-5 mr-2 text-gray-400"></i>
+            <span>{{ property.surface }} m²</span>
+        </div>
+    </div>
+</div>

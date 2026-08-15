@@ -1,30 +1,109 @@
 {% extends "layouts/public.html" %}
+{% load static %}
 
-{% block title %}{{ property.title }} - DEKOUWAY{% endblock %}
+{% block title %}Détail du logement - DEKOUWAY{% endblock %}
+
+{% block mobile_bottom_padding %}{% endblock %}
+{% block mobile_nav %}{% endblock %}
 
 {% block content %}
-<!-- Inclusion of mobile and desktop sub-layouts to ensure file is under 300 lines limit -->
-{% include "pages/public/partials/property_detail_mobile.html" %}
-{% include "pages/public/partials/property_detail_desktop.html" %}
+<main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-0 md:pt-6 pb-24 lg:pb-12">
 
-<!-- Maps integration script -->
+    <!-- Section 1 : Fil d'Ariane (desktop uniquement : le mobile utilise la flèche retour sur la galerie) -->
+    <nav class="hidden lg:flex items-center text-sm text-gray-500 font-medium mb-6">
+        <a href="{% url 'public:home' %}" class="hover:text-gray-900 transition-colors">Accueil</a>
+        <i data-lucide="chevron-right" class="w-4 h-4 mx-2"></i>
+        <a href="{% url 'public:search' %}" class="hover:text-gray-900 transition-colors">Recherche</a>
+        <i data-lucide="chevron-right" class="w-4 h-4 mx-2"></i>
+        <span class="text-gray-900 line-clamp-1">{{ property.title }}</span>
+    </nav>
+
+    <!-- Section 2 : Galerie -->
+    {% include "components/property_gallery.html" %}
+
+    <!-- Section principale avec layout en 2 colonnes (Desktop) -->
+    <div class="flex flex-col lg:flex-row gap-12 mt-4 lg:mt-8">
+
+        <!-- Colonne de gauche (70%) : Contenu principal -->
+        <div class="w-full lg:w-[65%]">
+
+            <!-- ===== MOBILE : titre/note/adresse + onglets ===== -->
+            <div class="lg:hidden" x-data="{ activeTab: 'about' }">
+                <div class="flex items-center justify-between">
+                    <span class="inline-flex items-center px-2.5 py-1 rounded-md bg-[#8B1E24]/10 text-[#8B1E24] text-xs font-bold">
+                        {{ property.property_type.name }}
+                    </span>
+                    {% if avg_rating %}
+                    <div class="flex items-center text-sm font-semibold text-gray-900">
+                        <i data-lucide="star" class="w-4 h-4 text-yellow-500 fill-current mr-1"></i>
+                        {{ avg_rating }} <span class="text-gray-500 font-normal ml-1">({{ review_count }} avis)</span>
+                    </div>
+                    {% endif %}
+                </div>
+
+                <h1 class="text-xl font-bold text-gray-900 mt-3">{{ property.title }}</h1>
+                <p class="text-sm text-gray-500 mt-1">{{ property.district }}, {{ property.city }}, Sénégal</p>
+
+                <div class="flex border-b border-gray-200 mt-5">
+                    <button type="button" @click="activeTab = 'about'"
+                            :class="activeTab === 'about' ? 'border-[#8B1E24] text-[#8B1E24]' : 'border-transparent text-gray-500'"
+                            class="flex-1 py-3 text-sm font-semibold border-b-2 text-center transition-colors">À propos</button>
+                    <button type="button" @click="$dispatch('open-gallery')"
+                            class="flex-1 py-3 text-sm font-semibold border-b-2 border-transparent text-gray-500 text-center transition-colors">Galerie</button>
+                    <button type="button" @click="activeTab = 'reviews'"
+                            :class="activeTab === 'reviews' ? 'border-[#8B1E24] text-[#8B1E24]' : 'border-transparent text-gray-500'"
+                            class="flex-1 py-3 text-sm font-semibold border-b-2 text-center transition-colors">Avis</button>
+                </div>
+
+                <div x-show="activeTab === 'about'">
+                    {% include "components/property_features.html" %}
+                    {% include "components/property_description.html" %}
+                    {% include "components/property_owner_card.html" %}
+                    {% include "components/property_amenities.html" %}
+                    {% include "components/property_location.html" with map_id="detail-map-mobile" %}
+                    {% include "components/property_rules.html" %}
+                    {% include "components/property_faq.html" %}
+                </div>
+                <div x-show="activeTab === 'reviews'" x-cloak>
+                    {% include "components/property_reviews.html" with hide_anchor=True %}
+                </div>
+            </div>
+
+            <!-- ===== DESKTOP : contenu en défilement continu ===== -->
+            <div class="hidden lg:block">
+                {% include "components/property_header.html" %}
+                {% include "components/property_features.html" %}
+                {% include "components/property_owner_card.html" %}
+                {% include "components/property_description.html" %}
+                {% include "components/property_amenities.html" %}
+                {% include "components/property_location.html" %}
+                {% include "components/property_reviews.html" %}
+                {% include "components/property_rules.html" %}
+                {% include "components/property_faq.html" %}
+            </div>
+
+        </div>
+
+        <!-- Colonne de droite (30%) : Carte de réservation sticky (desktop) / barre fixe (mobile) -->
+        <div class="w-full lg:w-[35%] relative">
+            <!-- Section 9 : Réservation -->
+            {% include "components/reservation_summary.html" %}
+        </div>
+
+    </div>
+
+    <!-- Section 11 : Logements similaires (Pleine largeur) -->
+    {% include "components/similar_properties.html" %}
+
+</main>
+{% endblock %}
+
+{% block extra_js %}
+<!-- Initialisation des icônes Lucide pour cette page -->
 <script>
-    document.addEventListener("DOMContentLoaded", function() {
-        var lat = {{ property.latitude|stringformat:".6f" }};
-        var lng = {{ property.longitude|stringformat:".6f" }};
-        
-        // Initialise desktop map if visible
-        if (document.getElementById('desktop-detail-map')) {
-            var desktopMap = L.map('desktop-detail-map').setView([lat, lng], 14);
-            L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png').addTo(desktopMap);
-            L.marker([lat, lng]).addTo(desktopMap);
-        }
-
-        // Initialise mobile map if active
-        if (document.getElementById('mobile-detail-map')) {
-            var mobileMap = L.map('mobile-detail-map').setView([lat, lng], 14);
-            L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png').addTo(mobileMap);
-            L.marker([lat, lng]).addTo(mobileMap);
+    document.addEventListener('DOMContentLoaded', () => {
+        if (typeof lucide !== 'undefined') {
+            lucide.createIcons();
         }
     });
 </script>

@@ -1,0 +1,89 @@
+{% extends "layouts/dashboard.html" %}
+
+{% block title %}Paramètres - DEKOUWAY{% endblock %}
+
+{% block page_header %}
+<div class="md:flex md:items-center md:justify-between mb-8 mt-2">
+    <div class="min-w-0 flex-1">
+        <h2 class="text-2xl font-bold leading-7 text-gray-900 sm:truncate sm:text-3xl sm:tracking-tight">
+            Paramètres du compte
+        </h2>
+    </div>
+</div>
+{% endblock %}
+
+{% block content %}
+<div class="space-y-10 divide-y divide-gray-900/10 max-w-4xl">
+
+    <!-- Méthodes de versement -->
+    <div class="grid grid-cols-1 gap-x-8 gap-y-8 md:grid-cols-3">
+        <div class="px-4 sm:px-0">
+            <h2 class="text-base font-semibold leading-7 text-gray-900">Méthodes de versement</h2>
+            <p class="mt-1 text-sm leading-6 text-gray-600">Où DEKOUWAY doit-il envoyer vos revenus ?</p>
+        </div>
+
+        <div class="bg-white shadow-sm ring-1 ring-gray-900/5 sm:rounded-xl md:col-span-2 p-6">
+            <div class="space-y-4">
+                {% if profile.phone %}
+                <div class="flex items-center justify-between border border-gray-200 rounded-lg p-4 bg-gray-50">
+                    <div class="flex items-center">
+                        <div class="w-10 h-10 rounded-lg bg-[#10C3F9] text-white flex items-center justify-center font-bold text-sm">W</div>
+                        <div class="ml-4">
+                            <p class="text-sm font-semibold text-gray-900">Wave / Orange Money</p>
+                            <p class="text-xs text-gray-500">Numéro : {{ profile.phone|slice:":4" }} *** ** {{ profile.phone|slice:"-2:" }}</p>
+                        </div>
+                    </div>
+                    <span class="inline-flex items-center rounded-md bg-green-50 px-2 py-1 text-xs font-medium text-green-700 ring-1 ring-inset ring-green-600/20">Par défaut</span>
+                </div>
+                {% else %}
+                <div class="border border-amber-200 bg-amber-50 rounded-lg p-4 text-sm text-amber-800">
+                    Aucun numéro de versement renseigné. Ajoutez-en un depuis votre profil pour recevoir vos revenus.
+                </div>
+                {% endif %}
+
+                <a href="{% url 'dashboard:owner_profile' %}" class="w-full mt-2 rounded-md bg-white px-3 py-2 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50 flex items-center justify-center">
+                    <i data-lucide="edit-3" class="w-4 h-4 mr-2 text-gray-400"></i> {% if profile.phone %}Modifier{% else %}Renseigner{% endif %} mon numéro Wave / Orange Money
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Paramètres de Notifications -->
+    <div class="grid grid-cols-1 gap-x-8 gap-y-8 md:grid-cols-3 pt-10">
+        <div class="px-4 sm:px-0">
+            <h2 class="text-base font-semibold leading-7 text-gray-900">Notifications</h2>
+            <p class="mt-1 text-sm leading-6 text-gray-600">Choisissez comment DEKOUWAY vous contacte.</p>
+        </div>
+
+        <form method="POST" class="bg-white shadow-sm ring-1 ring-gray-900/5 sm:rounded-xl md:col-span-2">
+            {% csrf_token %}
+            <div class="px-4 py-6 sm:p-8 space-y-6">
+
+                <div class="relative flex gap-x-3">
+                    <div class="flex h-6 items-center">
+                        <input id="email_enabled" name="email_enabled" type="checkbox" {% if preferences.email_enabled %}checked{% endif %} class="h-4 w-4 rounded border-gray-300 text-[#8B1E24] focus:ring-[#8B1E24]">
+                    </div>
+                    <div class="text-sm leading-6">
+                        <label for="email_enabled" class="font-medium text-gray-900">Recevoir les notifications par Email</label>
+                        <p class="text-gray-500">Nouvelles demandes de réservation, versements effectués, mises à jour importantes.</p>
+                    </div>
+                </div>
+
+                <div class="relative flex gap-x-3 pt-6 border-t border-gray-200">
+                    <div class="flex h-6 items-center">
+                        <input id="sms_enabled" name="sms_enabled" type="checkbox" {% if preferences.sms_enabled %}checked{% endif %} class="h-4 w-4 rounded border-gray-300 text-[#8B1E24] focus:ring-[#8B1E24]">
+                    </div>
+                    <div class="text-sm leading-6">
+                        <label for="sms_enabled" class="font-medium text-gray-900">Recevoir les alertes critiques par SMS</label>
+                        <p class="text-gray-500">Réservé aux alertes urgentes (ex : litige, suspension de compte).</p>
+                    </div>
+                </div>
+
+            </div>
+            <div class="flex items-center justify-end gap-x-6 border-t border-gray-900/10 px-4 py-4 sm:px-8">
+                <button type="submit" class="rounded-md bg-[#8B1E24] px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-[#6F171C]">Enregistrer</button>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}

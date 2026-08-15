@@ -1,0 +1,105 @@
+{% extends "layouts/dashboard.html" %}
+
+{% load property_tags %}
+{% block title %}Détail de la Réservation - DEKOUWAY{% endblock %}
+
+{% block content %}
+    {% url 'dashboard:client_reservations' as reservations_url %}
+    <div class="mb-6">
+        {% include "components/dashboard/breadcrumb.html" with level1="Mes Réservations" level1_url=reservations_url level2="Détail" %}
+    </div>
+
+    <div class="md:flex md:items-center md:justify-between mb-8 mt-2">
+        <div class="min-w-0 flex-1 flex items-center gap-4">
+            <h2 class="text-2xl font-bold leading-7 text-gray-900 sm:truncate sm:text-3xl sm:tracking-tight">
+                Réservation #{{ reservation.confirmation_code }}
+            </h2>
+            {% if reservation.status == 'CONFIRMED' or reservation.status == 'PAID' %}
+                {% include "components/dashboard/status_badge.html" with status="success" label=reservation.get_status_display %}
+            {% elif reservation.status == 'CANCELLED' %}
+                {% include "components/dashboard/status_badge.html" with status="error" label=reservation.get_status_display %}
+            {% elif reservation.status == 'COMPLETED' %}
+                {% include "components/dashboard/status_badge.html" with status="info" label=reservation.get_status_display %}
+            {% else %}
+                {% include "components/dashboard/status_badge.html" with status="pending" label=reservation.get_status_display %}
+            {% endif %}
+        </div>
+    </div>
+
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+        <!-- Informations Réservation -->
+        <div class="lg:col-span-2 space-y-8">
+            <div class="bg-white border border-gray-200 rounded-xl overflow-hidden shadow-sm">
+                <div class="h-48 w-full bg-gray-200">
+                    {% if reservation.property.images.all %}
+                        <img src="{{ reservation.property.images.first.image.url }}" alt="{{ reservation.property.title }}" class="w-full h-full object-cover">
+                    {% endif %}
+                </div>
+                <div class="p-6">
+                    <h3 class="text-xl font-bold text-gray-900">{{ reservation.property.title }}</h3>
+                    <p class="text-gray-500 text-sm mt-1 flex items-center"><i data-lucide="map-pin" class="w-4 h-4 mr-1"></i> {{ reservation.property.district }}, {{ reservation.property.city }}</p>
+
+                    <div class="mt-6 grid grid-cols-2 gap-6 border-t border-b border-gray-100 py-6">
+                        <div>
+                            <p class="text-sm text-gray-500">Arrivée</p>
+                            <p class="font-semibold text-gray-900">{{ reservation.check_in|date:"l d F Y" }}</p>
+                        </div>
+                        <div>
+                            <p class="text-sm text-gray-500">Départ</p>
+                            <p class="font-semibold text-gray-900">{{ reservation.check_out|date:"l d F Y" }}</p>
+                        </div>
+                        <div>
+                            <p class="text-sm text-gray-500">Personnes</p>
+                            <p class="font-semibold text-gray-900">{{ reservation.guests }}</p>
+                        </div>
+                        <div>
+                            <p class="text-sm text-gray-500">Code de confirmation</p>
+                            <p class="font-semibold text-gray-900">{{ reservation.confirmation_code }}</p>
+                        </div>
+                    </div>
+
+                    <div class="mt-6">
+                        <h4 class="font-semibold text-gray-900 mb-2">Hôte</h4>
+                        <div class="flex items-center gap-4">
+                            <div class="w-12 h-12 rounded-full bg-[#8B1E24] text-white flex items-center justify-center font-bold">
+                                {{ reservation.property.owner.email|slice:":1"|upper }}
+                            </div>
+                            <div>
+                                <p class="font-semibold text-gray-900">{{ reservation.property.owner.get_full_name|default:reservation.property.owner.email }}</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Détails de paiement -->
+        <div class="space-y-6">
+            <div class="bg-white border border-gray-200 rounded-xl p-6 shadow-sm">
+                <h3 class="font-bold text-gray-900 mb-4">Détail du prix</h3>
+                <div class="space-y-3 text-sm">
+                    <div class="flex justify-between text-gray-600">
+                        <span>{{ reservation.property.price }} F {{ reservation.property.pricing_period|price_unit }}</span>
+                    </div>
+                    <div class="border-t border-gray-200 pt-3 flex justify-between font-bold text-lg text-gray-900">
+                        <span>Total (FCFA)</span>
+                        <span>{{ reservation.total_price }} F</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="bg-white border border-gray-200 rounded-xl p-6 shadow-sm">
+                <h3 class="font-bold text-gray-900 mb-4">Paiement</h3>
+                {% with payment=reservation.payments.last %}
+                {% if payment %}
+                    <a href="{% url 'payment_receipt' reservation.id %}" class="text-[#8B1E24] hover:text-[#6F171C] font-medium text-sm flex items-center">
+                        <i data-lucide="file-text" class="w-4 h-4 mr-1"></i> Voir le reçu
+                    </a>
+                {% else %}
+                    {% include "components/dashboard/empty_state.html" with title="Aucun document" description="Le reçu sera disponible une fois le paiement validé." icon="file-text" %}
+                {% endif %}
+                {% endwith %}
+            </div>
+        </div>
+    </div>
+{% endblock %}

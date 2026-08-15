@@ -1,0 +1,67 @@
+{% if page_obj %}
+<div class="flex items-center justify-between">
+    <div class="hidden sm:flex sm:flex-1 sm:items-center sm:justify-between">
+        <div>
+            <p class="text-xs text-slate-500 font-medium">
+                Affichage de <span class="font-semibold text-slate-900">{{ page_obj.start_index }}</span> à <span class="font-semibold text-slate-900">{{ page_obj.end_index }}</span> sur <span class="font-semibold text-slate-900">{{ page_obj.paginator.count }}</span> résultats
+            </p>
+        </div>
+        {% if is_paginated %}
+        <div>
+            <nav class="isolate inline-flex gap-1" aria-label="Pagination">
+                {% if page_obj.has_previous %}
+                    <a href="?page={{ page_obj.previous_page_number }}{% if request.GET.search %}&search={{ request.GET.search }}{% endif %}{% if request.GET.status %}&status={{ request.GET.status }}{% endif %}" 
+                       class="inline-flex items-center justify-center rounded-md h-8 w-8 text-slate-600 border border-slate-200 bg-white hover:bg-slate-100 hover:text-slate-900 transition-colors shadow-xs">
+                        <span class="sr-only">Précédent</span>
+                        <i data-lucide="chevron-left" class="h-4 w-4"></i>
+                    </a>
+                {% else %}
+                    <span class="inline-flex items-center justify-center rounded-md h-8 w-8 text-slate-300 border border-slate-100 bg-slate-50 cursor-not-allowed">
+                        <i data-lucide="chevron-left" class="h-4 w-4"></i>
+                    </span>
+                {% endif %}
+                
+                {% for page_num in page_obj.paginator.page_range %}
+                    {% if page_num == page_obj.number %}
+                        <span aria-current="page" class="inline-flex items-center justify-center rounded-md h-8 w-8 text-xs font-semibold bg-slate-900 text-slate-50 shadow-xs">{{ page_num }}</span>
+                    {% else %}
+                        <a href="?page={{ page_num }}{% if request.GET.search %}&search={{ request.GET.search }}{% endif %}{% if request.GET.status %}&status={{ request.GET.status }}{% endif %}" 
+                           class="inline-flex items-center justify-center rounded-md h-8 w-8 text-xs font-medium text-slate-700 border border-slate-200 bg-white hover:bg-slate-100 hover:text-slate-900 transition-colors shadow-xs">{{ page_num }}</a>
+                    {% endif %}
+                {% endfor %}
+                
+                {% if page_obj.has_next %}
+                    <a href="?page={{ page_obj.next_page_number }}{% if request.GET.search %}&search={{ request.GET.search }}{% endif %}{% if request.GET.status %}&status={{ request.GET.status }}{% endif %}" 
+                       class="inline-flex items-center justify-center rounded-md h-8 w-8 text-slate-600 border border-slate-200 bg-white hover:bg-slate-100 hover:text-slate-900 transition-colors shadow-xs">
+                        <span class="sr-only">Suivant</span>
+                        <i data-lucide="chevron-right" class="h-4 w-4"></i>
+                    </a>
+                {% else %}
+                    <span class="inline-flex items-center justify-center rounded-md h-8 w-8 text-slate-300 border border-slate-100 bg-slate-50 cursor-not-allowed">
+                        <i data-lucide="chevron-right" class="h-4 w-4"></i>
+                    </span>
+                {% endif %}
+            </nav>
+        </div>
+        {% endif %}
+    </div>
+    
+    <!-- Mobile Pagination -->
+    {% if is_paginated %}
+    <div class="flex flex-1 justify-between sm:hidden">
+        {% if page_obj.has_previous %}
+            <a href="?page={{ page_obj.previous_page_number }}" class="inline-flex items-center justify-center rounded-md border border-slate-200 bg-white px-3 py-1.5 text-xs font-medium text-slate-700 hover:bg-slate-100 shadow-xs">Précédent</a>
+        {% endif %}
+        {% if page_obj.has_next %}
+            <a href="?page={{ page_obj.next_page_number }}" class="inline-flex items-center justify-center rounded-md border border-slate-200 bg-white px-3 py-1.5 text-xs font-medium text-slate-700 hover:bg-slate-100 shadow-xs ml-auto">Suivant</a>
+        {% endif %}
+    </div>
+    {% endif %}
+</div>
+{% else %}
+{% if object_list %}
+<div class="text-xs text-slate-500 font-medium text-center py-2">
+    Affichage de <span class="font-semibold text-slate-900">1</span> à <span class="font-semibold text-slate-900">{{ object_list.count }}</span> sur <span class="font-semibold text-slate-900">{{ object_list.count }}</span> résultats
+</div>
+{% endif %}
+{% endif %}

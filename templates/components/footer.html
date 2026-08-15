@@ -1,7 +1,7 @@
 <footer class="bg-white border-t border-[#E5E7EB] py-12">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 grid grid-cols-1 md:grid-cols-4 gap-8">
         <div class="space-y-4">
-            <h3 class="text-[#1F2937] text-base font-bold">DEKOUWAY</h3>
+            <h3 class="text-[#1F2937] text-base font-bold">{{ platform_settings.site_name|default:"DEKOUWAY" }}</h3>
             <p class="text-sm text-[#6B7280]">Trouvez. Réservez. Vivez. La première plateforme immobilière simplifiée et modernisée au Sénégal.</p>
         </div>
         <div>
@@ -9,23 +9,26 @@
             <ul class="space-y-2 text-sm text-[#6B7280]">
                 <li><a href="{% url 'home' %}" class="hover:text-[#8B1E24] transition-colors">Accueil</a></li>
                 <li><a href="{% url 'properties_list' %}" class="hover:text-[#8B1E24] transition-colors">Explorer les biens</a></li>
-                <li><a href="{% url 'support' %}" class="hover:text-[#8B1E24] transition-colors">Assistance</a></li>
+                <li><a href="{% url 'public:about' %}" class="hover:text-[#8B1E24] transition-colors">À propos</a></li>
+                <li><a href="{% url 'public:faq' %}" class="hover:text-[#8B1E24] transition-colors">Assistance</a></li>
             </ul>
         </div>
         <div>
             <h4 class="text-[#1F2937] text-xs font-bold uppercase tracking-wider mb-4">Informations</h4>
             <ul class="space-y-2 text-sm text-[#6B7280]">
-                <li><a href="#" class="hover:text-[#8B1E24] transition-colors">Conditions Générales</a></li>
-                <li><a href="#" class="hover:text-[#8B1E24] transition-colors">Politique de Confidentialité</a></li>
+                <li><a href="{% url 'public:terms' %}" class="hover:text-[#8B1E24] transition-colors">Conditions Générales</a></li>
+                <li><a href="{% url 'public:privacy' %}" class="hover:text-[#8B1E24] transition-colors">Politique de Confidentialité</a></li>
+                <li><a href="{% url 'public:legal' %}" class="hover:text-[#8B1E24] transition-colors">Mentions Légales</a></li>
             </ul>
         </div>
         <div>
             <h4 class="text-[#1F2937] text-xs font-bold uppercase tracking-wider mb-4">Contact</h4>
             <p class="text-sm text-[#6B7280]">Dakar, Sénégal</p>
             <p class="text-sm text-[#6B7280] mt-1">Email: contact@dekouway.sn</p>
+            <a href="{% url 'public:contact' %}" class="inline-block mt-2 text-sm text-[#8B1E24] font-semibold hover:underline">Nous contacter →</a>
         </div>
     </div>
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 border-t border-[#E5E7EB] mt-8 pt-8 text-center text-xs text-[#9CA3AF]">
-        &copy; 2026 DEKOUWAY. Tous droits réservés.
+        &copy; 2026 {{ platform_settings.site_name|default:"DEKOUWAY" }}. Tous droits réservés.
     </div>
 </footer>

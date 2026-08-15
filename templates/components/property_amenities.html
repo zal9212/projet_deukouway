@@ -1,0 +1,46 @@
+<div class="py-6 border-b border-gray-200">
+    <h3 class="text-xl font-bold text-gray-900 mb-6">Ce que propose ce logement</h3>
+
+    {% if amenities %}
+    <div class="grid grid-cols-2 gap-y-4 gap-x-8">
+        {% for amenity in amenities %}
+        <div class="flex items-center text-gray-700">
+            {% if 'wifi' in amenity.name|lower %}
+                <i data-lucide="wifi" class="w-6 h-6 mr-4 text-gray-900"></i>
+            {% elif 'parking' in amenity.name|lower %}
+                <i data-lucide="car" class="w-6 h-6 mr-4 text-gray-900"></i>
+            {% elif 'piscine' in amenity.name|lower %}
+                <i data-lucide="waves" class="w-6 h-6 mr-4 text-gray-900"></i>
+            {% elif 'cuisine' in amenity.name|lower %}
+                <i data-lucide="chef-hat" class="w-6 h-6 mr-4 text-gray-900"></i>
+            {% elif 'clim' in amenity.name|lower %}
+                <i data-lucide="wind" class="w-6 h-6 mr-4 text-gray-900"></i>
+            {% elif 'télévision' in amenity.name|lower or 'tv' in amenity.name|lower %}
+                <i data-lucide="tv" class="w-6 h-6 mr-4 text-gray-900"></i>
+            {% elif 'jardin' in amenity.name|lower or 'terrasse' in amenity.name|lower or 'balcon' in amenity.name|lower %}
+                <i data-lucide="sun" class="w-6 h-6 mr-4 text-gray-900"></i>
+            {% elif 'linge' in amenity.name|lower or 'buanderie' in amenity.name|lower %}
+                <i data-lucide="washing-machine" class="w-6 h-6 mr-4 text-gray-900"></i>
+            {% elif 'sécurité' in amenity.name|lower %}
+                <i data-lucide="shield-check" class="w-6 h-6 mr-4 text-gray-900"></i>
+            {% elif 'vue mer' in amenity.name|lower %}
+                <i data-lucide="waves" class="w-6 h-6 mr-4 text-gray-900"></i>
+            {% elif 'groupe électrogène' in amenity.name|lower %}
+                <i data-lucide="zap" class="w-6 h-6 mr-4 text-gray-900"></i>
+            {% elif 'salle de bain privée' in amenity.name|lower or 'entrée' in amenity.name|lower %}
+                <i data-lucide="door-closed" class="w-6 h-6 mr-4 text-gray-900"></i>
+            {% elif 'petit-déjeuner' in amenity.name|lower %}
+                <i data-lucide="coffee" class="w-6 h-6 mr-4 text-gray-900"></i>
+            {% elif 'salon' in amenity.name|lower %}
+                <i data-lucide="sofa" class="w-6 h-6 mr-4 text-gray-900"></i>
+            {% else %}
+                <i data-lucide="check" class="w-6 h-6 mr-4 text-gray-900"></i>
+            {% endif %}
+            <span>{{ amenity.name }}</span>
+        </div>
+        {% endfor %}
+    </div>
+    {% else %}
+    <p class="text-sm text-gray-500">Aucun équipement renseigné pour ce logement.</p>
+    {% endif %}
+</div>

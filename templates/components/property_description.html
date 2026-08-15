@@ -1,0 +1,17 @@
+<div class="py-6 border-b border-gray-200" x-data="{ expanded: false }">
+    <h3 class="text-xl font-bold text-gray-900 mb-4">À propos de ce logement</h3>
+    
+    <div class="text-gray-700 leading-relaxed text-base space-y-4 relative"
+         :class="{ 'line-clamp-4': !expanded }">
+        <p class="whitespace-pre-line">{{ property.description }}</p>
+
+        <!-- Gradient de masquage quand collapsed -->
+        <div x-show="!expanded" class="absolute bottom-0 left-0 w-full h-12 bg-gradient-to-t from-white to-transparent"></div>
+    </div>
+    
+    <button @click="expanded = !expanded" 
+            class="mt-2 flex items-center font-bold text-gray-900 underline hover:text-gray-600 focus:outline-none transition-colors">
+        <span x-text="expanded ? 'Voir moins' : 'En savoir plus'"></span>
+        <i data-lucide="chevron-right" class="w-4 h-4 ml-1 transition-transform duration-200" :class="{ 'rotate-90': expanded }"></i>
+    </button>
+</div>

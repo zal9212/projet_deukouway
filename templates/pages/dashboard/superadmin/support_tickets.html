@@ -1,0 +1,136 @@
+{% extends "layouts/dashboard.html" %}
+
+{% block title %}Tickets Support - DEKOUWAY ERP{% endblock %}
+
+{% block page_header %}
+<div class="md:flex md:items-center md:justify-between mb-8 mt-2">
+    <div class="min-w-0 flex-1">
+        <h2 class="text-2xl font-bold leading-7 text-gray-900 sm:truncate sm:text-3xl sm:tracking-tight">
+            Support Client & Propriétaire
+        </h2>
+        <p class="mt-1 text-sm text-gray-500">Messagerie interne centralisée. Vous répondez aux questions de vos utilisateurs.</p>
+    </div>
+</div>
+{% endblock %}
+
+{% block content %}
+<div class="h-[calc(100vh-14rem)] flex overflow-hidden bg-white border border-gray-200 rounded-xl shadow-sm">
+
+    <!-- Liste des tickets (Sidebar) -->
+    <div class="flex flex-col w-1/3 min-w-[300px] border-r border-gray-200 bg-white">
+
+        <ul role="list" class="flex-1 overflow-y-auto divide-y divide-gray-100">
+            {% for ticket in tickets %}
+            <li>
+                <a href="?ticket={{ ticket.id }}" class="block relative px-6 py-5 hover:bg-gray-50 {% if active_ticket.id == ticket.id %}bg-blue-50/50{% endif %}">
+                    <div class="flex justify-between space-x-3">
+                        <div class="min-w-0 flex-1">
+                            <div class="flex items-center gap-2">
+                                <span class="inline-flex items-center rounded-md bg-gray-100 px-1.5 py-0.5 text-[10px] font-medium text-gray-600">
+                                    {{ ticket.user.email }}
+                                </span>
+                                {% if ticket.status == 'ESCALATED' %}
+                                <span class="inline-flex items-center rounded-md bg-red-50 px-1.5 py-0.5 text-[10px] font-medium text-red-700">Escaladé</span>
+                                {% elif ticket.status == 'CLOSED' %}
+                                <span class="inline-flex items-center rounded-md bg-gray-100 px-1.5 py-0.5 text-[10px] font-medium text-gray-500">Fermé</span>
+                                {% endif %}
+                            </div>
+                            <p class="truncate text-sm font-semibold text-gray-900 mt-1">Sujet : {{ ticket.subject }}</p>
+                        </div>
+                        <time class="flex-shrink-0 whitespace-nowrap text-xs text-gray-500">{{ ticket.created_at|date:"H:i" }}</time>
+                    </div>
+                </a>
+            </li>
+            {% empty %}
+            <li class="p-6 text-center text-gray-500 text-sm">
+                Aucun ticket support en cours.
+            </li>
+            {% endfor %}
+        </ul>
+    </div>
+
+    <!-- Zone de discussion ERP -->
+    {% if active_ticket %}
+    <div class="flex-1 flex flex-col bg-gray-50/50">
+        <div class="flex items-center justify-between px-6 py-4 border-b border-gray-200 bg-white">
+            <div class="flex items-center">
+                <div class="h-10 w-10 rounded-full bg-gray-200 flex items-center justify-center font-bold text-gray-600 text-sm">
+                    {{ active_ticket.user.email|slice:":2"|upper }}
+                </div>
+                <div class="ml-4">
+                    <h2 class="text-sm font-bold text-gray-900">{{ active_ticket.user.email }}</h2>
+                    <p class="text-xs text-gray-500">Ticket #T-{{ active_ticket.id }} • {{ active_ticket.subject }}</p>
+                </div>
+            </div>
+            <div class="flex items-center gap-2">
+                <span class="inline-flex items-center rounded-md bg-yellow-50 px-2 py-1 text-xs font-medium text-yellow-800 ring-1 ring-inset ring-yellow-600/20">
+                    {{ active_ticket.get_status_display|default:active_ticket.status }}
+                </span>
+                {% if active_ticket.status != 'CLOSED' %}
+                <form method="post" class="inline">
+                    {% csrf_token %}
+                    <input type="hidden" name="ticket_id" value="{{ active_ticket.id }}">
+                    <input type="hidden" name="action" value="escalate">
+                    <button type="submit" class="text-xs font-medium text-red-700 hover:text-red-900 px-2 py-1 rounded-md ring-1 ring-inset ring-red-200 hover:bg-red-50">
+                        Escalader
+                    </button>
+                </form>
+                <form method="post" class="inline">
+                    {% csrf_token %}
+                    <input type="hidden" name="ticket_id" value="{{ active_ticket.id }}">
+                    <input type="hidden" name="action" value="close">
+                    <button type="submit" class="text-xs font-medium text-gray-700 hover:text-gray-900 px-2 py-1 rounded-md ring-1 ring-inset ring-gray-300 hover:bg-gray-100">
+                        Fermer
+                    </button>
+                </form>
+                {% endif %}
+            </div>
+        </div>
+
+        <div class="flex-1 overflow-y-auto px-6 py-6 space-y-6">
+            <div class="flex justify-start">
+                <div class="flex items-end">
+                    <div class="max-w-lg bg-white border border-gray-200 rounded-2xl rounded-bl-none px-5 py-3 shadow-sm">
+                        <p class="text-sm text-gray-800">{{ active_ticket.description }}</p>
+                        <span class="text-[10px] text-gray-400 mt-2 block">{{ active_ticket.created_at|date:"d M Y H:i" }}</span>
+                    </div>
+                </div>
+            </div>
+
+            {% for message in active_ticket.messages.all %}
+            {% if not message.is_internal or request.user.is_superuser or request.user.is_staff %}
+            <div class="flex {% if message.sender_id == active_ticket.user_id %}justify-start{% else %}justify-end{% endif %}">
+                <div class="flex items-end">
+                    <div class="max-w-lg {% if message.sender_id == active_ticket.user_id %}bg-white border border-gray-200 rounded-bl-none{% else %}bg-[#8B1E24] text-white rounded-br-none{% endif %} rounded-2xl px-5 py-3 shadow-sm">
+                        <p class="text-sm {% if message.sender_id == active_ticket.user_id %}text-gray-800{% else %}text-white{% endif %}">{{ message.content }}</p>
+                        <span class="text-[10px] {% if message.sender_id == active_ticket.user_id %}text-gray-400{% else %}text-white/70{% endif %} mt-2 block">{{ message.sender.email }} • {{ message.created_at|date:"d M Y H:i" }}</span>
+                    </div>
+                </div>
+            </div>
+            {% endif %}
+            {% endfor %}
+        </div>
+
+        {% if active_ticket.status != 'CLOSED' %}
+        <form method="post" class="border-t border-gray-200 bg-white px-6 py-4 flex items-center gap-3">
+            {% csrf_token %}
+            <input type="hidden" name="ticket_id" value="{{ active_ticket.id }}">
+            <input type="hidden" name="action" value="reply">
+            <input type="text" name="content" required placeholder="Écrire une réponse..." class="block w-full rounded-md border-0 py-2 px-3 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-[#8B1E24] sm:text-sm sm:leading-6">
+            <button type="submit" class="inline-flex items-center rounded-md bg-[#8B1E24] px-4 py-2 text-sm font-semibold text-white shadow-sm hover:bg-[#7a1a1f]">
+                Envoyer
+            </button>
+        </form>
+        {% else %}
+        <div class="border-t border-gray-200 bg-white px-6 py-4 text-center text-sm text-gray-500">
+            Ce ticket est fermé.
+        </div>
+        {% endif %}
+    </div>
+    {% else %}
+    <div class="flex-1 flex items-center justify-center bg-gray-50">
+        {% include "components/empty_state.html" with title="Aucun ticket support" description="Le centre d'assistance ne contient aucun ticket à traiter actuellement." icon="message-square" %}
+    </div>
+    {% endif %}
+</div>
+{% endblock %}

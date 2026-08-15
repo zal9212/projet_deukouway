@@ -1,0 +1,35 @@
+<div class="mb-4" x-data="{ 
+    country_code: '+221', 
+    phone_number: '{{ value|default:"" }}',
+    get full_phone() {
+        let code = this.country_code.trim();
+        let num = this.phone_number.trim();
+        if (!code) return num;
+        if (num.startsWith('+')) return num;
+        if (!code.startsWith('+') && code.length > 0) code = '+' + code;
+        return code + ' ' + num;
+    }
+}">
+    <label for="{{ id|default:'phone' }}" class="block text-sm font-medium text-slate-700 mb-1">
+        {{ label|default:"Numéro de téléphone" }}
+    </label>
+
+    <div class="flex rounded-lg shadow-xs">
+        <input type="text" 
+               x-model="country_code" 
+               placeholder="+221"
+               aria-label="Indicatif du pays"
+               class="w-24 shrink-0 rounded-l-lg border border-r-0 border-slate-300 bg-slate-50 px-3 py-2.5 text-center text-sm font-semibold text-slate-900 focus:ring-2 focus:ring-[#8B1E24] focus:border-[#8B1E24] outline-none">
+        
+        <input type="tel" 
+               id="{{ id|default:'phone_input' }}"
+               x-model="phone_number"
+               {% if placeholder %}placeholder="{{ placeholder }}"{% else %}placeholder="77 123 45 67"{% endif %}
+               {% if autocomplete %}autocomplete="{{ autocomplete }}"{% else %}autocomplete="tel"{% endif %}
+               {% if required %}required{% endif %}
+               class="block w-full rounded-r-lg border border-slate-300 py-2.5 pl-3.5 pr-3 text-slate-900 placeholder:text-slate-400 focus:ring-2 focus:ring-inset focus:ring-[#8B1E24] sm:text-sm sm:leading-6 transition-shadow">
+    </div>
+
+    <!-- Hidden input envoyant la valeur complète assemblée -->
+    <input type="hidden" name="{{ name|default:'phone' }}" :value="full_phone">
+</div>

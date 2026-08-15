@@ -1,0 +1,79 @@
+{% extends "layouts/dashboard.html" %}
+
+{% block title %}Demandes - DEKOUWAY{% endblock %}
+
+{% block page_header %}
+<div class="md:flex md:items-center md:justify-between mb-8 mt-2">
+    <div class="min-w-0 flex-1">
+        <h2 class="text-2xl font-bold leading-7 text-gray-900 sm:truncate sm:text-3xl sm:tracking-tight">
+            Demandes DEKOUWAY
+        </h2>
+        <p class="mt-1 text-sm text-gray-500">Gérez les demandes de réservation pré-validées par le SuperAdmin.</p>
+    </div>
+</div>
+{% endblock %}
+
+{% block content %}
+<div class="px-4 sm:px-6 lg:px-8 bg-white border border-gray-200 rounded-xl py-6 shadow-sm">
+
+    <!-- Table des Demandes -->
+    <div class="mt-4 flow-root">
+        <div class="-mx-4 -my-2 overflow-x-auto sm:-mx-6 lg:-mx-8">
+            <div class="inline-block min-w-full py-2 align-middle sm:px-6 lg:px-8">
+                <table class="min-w-full divide-y divide-gray-300">
+                    <thead class="bg-gray-50">
+                        <tr>
+                            <th scope="col" class="py-3.5 pl-4 pr-3 text-left text-sm font-semibold text-gray-900 sm:pl-0">Logement</th>
+                            <th scope="col" class="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">Dates</th>
+                            <th scope="col" class="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">Statut</th>
+                            <th scope="col" class="relative py-3.5 pl-3 pr-4 sm:pr-0">
+                                <span class="sr-only">Actions</span>
+                            </th>
+                        </tr>
+                    </thead>
+                    <tbody class="divide-y divide-gray-200 bg-white">
+                        {% for req in requests %}
+                        <tr>
+                            <td class="whitespace-nowrap py-5 pl-4 pr-3 text-sm sm:pl-0">
+                                <div class="font-medium text-gray-900">{{ req.property.title }}</div>
+                                <div class="mt-1 text-gray-500">{{ req.client.email }}</div>
+                            </td>
+                            <td class="whitespace-nowrap px-3 py-5 text-sm text-gray-500">
+                                <div class="text-gray-900">{{ req.check_in|date:"d M Y" }} - {{ req.check_out|date:"d M Y" }}</div>
+                                <div class="mt-1 text-gray-500">{{ req.guests }} personne{{ req.guests|pluralize }}</div>
+                            </td>
+                            <td class="whitespace-nowrap px-3 py-5 text-sm text-gray-500">
+                                {% if req.status == 'SENT_TO_OWNER' %}
+                                    {% include "components/dashboard/status_badge.html" with status="pending" label="À valider" %}
+                                {% elif req.status == 'PAYMENT_PENDING' or req.status == 'PAID' or req.status == 'CONFIRMED' %}
+                                    {% include "components/dashboard/status_badge.html" with status="success" label="Acceptée" %}
+                                {% elif req.status == 'OWNER_DECLINED' or req.status == 'REJECTED' %}
+                                    {% include "components/dashboard/status_badge.html" with status="error" label="Refusée" %}
+                                {% else %}
+                                    {% include "components/dashboard/status_badge.html" with status="info" label=req.get_status_display %}
+                                {% endif %}
+                            </td>
+                            <td class="relative whitespace-nowrap py-5 pl-3 pr-4 text-right text-sm font-medium sm:pr-0">
+                                <a href="{% url 'dashboard:owner_request_detail' req.id %}">
+                                    {% include "components/dashboard/action_button.html" with action="view" text="Ouvrir" %}
+                                </a>
+                            </td>
+                        </tr>
+                        {% empty %}
+                        <tr>
+                            <td colspan="4" class="py-8 text-center text-gray-500">
+                                Aucune demande pour le moment.
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <div class="mt-6 border-t border-gray-200 pt-4">
+        {% include "components/dashboard/pagination.html" %}
+    </div>
+</div>
+{% endblock %}

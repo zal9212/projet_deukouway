@@ -1,0 +1,69 @@
+{% extends "layouts/public.html" %}
+
+{% block title %}Mentions Légales — DEKOUWAY{% endblock %}
+{% block meta_description %}Mentions légales de la plateforme DEKOUWAY : éditeur, hébergement, propriété intellectuelle.{% endblock %}
+
+{% block content %}
+<section class="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
+    <div class="mb-10">
+        <span class="inline-flex items-center px-3 py-1 rounded-full bg-[#8B1E24]/10 text-[#8B1E24] text-[10px] font-bold uppercase tracking-wider mb-4">
+            Informations légales
+        </span>
+        <h1 class="text-3xl font-bold text-[#1F2937] mb-2">Mentions Légales</h1>
+        <p class="text-xs text-[#6B7280]">Dernière mise à jour : janvier 2026</p>
+    </div>
+
+    <div class="space-y-8 text-sm text-[#374151] leading-relaxed">
+
+        <div class="bg-white border border-[#E5E7EB] rounded-2xl p-6 shadow-sm">
+            <h2 class="text-base font-bold text-[#1F2937] mb-3">1. Éditeur de la plateforme</h2>
+            <p>
+                La plateforme DEKOUWAY est éditée par la société DEKOUWAY SN, dont le siège social est situé à Dakar, Sénégal.
+                Pour toute question relative à l'édition du site, vous pouvez nous contacter à
+                <a href="mailto:contact@dekouway.sn" class="text-[#8B1E24] font-semibold hover:underline">contact@dekouway.sn</a>.
+            </p>
+        </div>
+
+        <div class="bg-white border border-[#E5E7EB] rounded-2xl p-6 shadow-sm">
+            <h2 class="text-base font-bold text-[#1F2937] mb-3">2. Directeur de la publication</h2>
+            <p>
+                Le directeur de la publication de la plateforme DEKOUWAY est le représentant légal de la société DEKOUWAY SN.
+            </p>
+        </div>
+
+        <div class="bg-white border border-[#E5E7EB] rounded-2xl p-6 shadow-sm">
+            <h2 class="text-base font-bold text-[#1F2937] mb-3">3. Hébergement</h2>
+            <p>
+                La plateforme est hébergée par un prestataire d'hébergement web professionnel.
+                Les coordonnées complètes de l'hébergeur sont disponibles sur simple demande auprès de notre équipe.
+            </p>
+        </div>
+
+        <div class="bg-white border border-[#E5E7EB] rounded-2xl p-6 shadow-sm">
+            <h2 class="text-base font-bold text-[#1F2937] mb-3">4. Propriété intellectuelle</h2>
+            <p>
+                L'ensemble des éléments composant la plateforme DEKOUWAY (textes, logos, graphismes, icônes, structure)
+                est protégé par le droit de la propriété intellectuelle. Toute reproduction, représentation, modification
+                ou exploitation, totale ou partielle, sans autorisation écrite préalable est strictement interdite.
+            </p>
+        </div>
+
+        <div class="bg-white border border-[#E5E7EB] rounded-2xl p-6 shadow-sm">
+            <h2 class="text-base font-bold text-[#1F2937] mb-3">5. Rôle d'intermédiaire</h2>
+            <p>
+                DEKOUWAY agit en tant qu'intermédiaire technique mettant en relation des propriétaires de logements
+                et des voyageurs. DEKOUWAY n'est ni propriétaire, ni gestionnaire des logements publiés sur la plateforme.
+                Chaque propriétaire est seul responsable de l'exactitude des informations qu'il publie.
+            </p>
+        </div>
+
+        <div class="bg-white border border-[#E5E7EB] rounded-2xl p-6 shadow-sm">
+            <h2 class="text-base font-bold text-[#1F2937] mb-3">6. Contact</h2>
+            <p>
+                Pour toute question relative aux présentes mentions légales, vous pouvez utiliser notre
+                <a href="{% url 'public:contact' %}" class="text-[#8B1E24] font-semibold hover:underline">formulaire de contact</a>.
+            </p>
+        </div>
+    </div>
+</section>
+{% endblock %}

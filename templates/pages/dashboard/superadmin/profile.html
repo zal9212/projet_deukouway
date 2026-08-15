@@ -1,0 +1,63 @@
+{% extends "layouts/dashboard.html" %}
+
+{% block title %}Profil Admin - DEKOUWAY ERP{% endblock %}
+
+{% block page_header %}
+<div class="md:flex md:items-center md:justify-between mb-8 mt-2">
+    <div class="min-w-0 flex-1">
+        <h2 class="text-2xl font-bold leading-7 text-gray-900 sm:truncate sm:text-3xl sm:tracking-tight">
+            Profil Administrateur
+        </h2>
+    </div>
+</div>
+{% endblock %}
+
+{% block content %}
+<div class="space-y-10 divide-y divide-gray-900/10 max-w-4xl">
+
+    <div class="grid grid-cols-1 gap-x-8 gap-y-8 md:grid-cols-3">
+        <div class="px-4 sm:px-0">
+            <h2 class="text-base font-semibold leading-7 text-gray-900">Identité SuperAdmin</h2>
+            <p class="mt-1 text-sm leading-6 text-gray-600">Informations publiques pour l'équipe interne.</p>
+        </div>
+
+        <form method="POST" class="bg-white shadow-xs border border-slate-200 sm:rounded-xl md:col-span-2">
+            {% csrf_token %}
+            <div class="px-4 py-6 sm:p-8">
+                <div class="grid max-w-2xl grid-cols-1 gap-x-6 gap-y-8 sm:grid-cols-6">
+                    <div class="col-span-full">
+                        <label class="block text-sm font-medium leading-6 text-gray-900">Avatar</label>
+                        <div class="mt-2 flex items-center gap-x-3">
+                            <img src="https://ui-avatars.com/api/?name={{ profile.first_name|urlencode }}+{{ profile.last_name|urlencode }}&background=8B1E24&color=ffffff" class="h-12 w-12 rounded-full" alt="">
+                        </div>
+                    </div>
+
+                    <div class="sm:col-span-3">
+                        <label class="block text-sm font-medium leading-6 text-gray-900">Prénom</label>
+                        <div class="mt-2">
+                            <input type="text" name="first_name" value="{{ profile.first_name }}" class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-[#8B1E24] sm:text-sm sm:leading-6">
+                        </div>
+                    </div>
+
+                    <div class="sm:col-span-3">
+                        <label class="block text-sm font-medium leading-6 text-gray-900">Nom</label>
+                        <div class="mt-2">
+                            <input type="text" name="last_name" value="{{ profile.last_name }}" class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-[#8B1E24] sm:text-sm sm:leading-6">
+                        </div>
+                    </div>
+
+                    <div class="sm:col-span-4">
+                        <label class="block text-sm font-medium leading-6 text-gray-900">Email Administratif</label>
+                        <div class="mt-2">
+                            <input type="email" name="email" value="{{ request.user.email }}" class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-[#8B1E24] sm:text-sm sm:leading-6">
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="flex items-center justify-end gap-x-6 border-t border-gray-900/10 px-4 py-4 sm:px-8">
+                <button type="submit" class="rounded-md bg-[#8B1E24] px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-[#6F171C]">Enregistrer</button>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,117 @@
+{% extends "layouts/dashboard.html" %}
+
+{% block title %}Mes Paiements - DEKOUWAY{% endblock %}
+
+{% block page_header %}
+<div class="md:flex md:items-center md:justify-between mb-8 mt-2">
+    <div class="min-w-0 flex-1">
+        <h2 class="text-2xl font-bold leading-7 text-gray-900 sm:truncate sm:text-3xl sm:tracking-tight">
+            Paiements & Factures
+        </h2>
+    </div>
+    <div class="mt-4 flex md:ml-4 md:mt-0">
+        <a href="{% url 'dashboard:client_payments_export' %}" class="inline-flex items-center rounded-md bg-white px-3 py-2 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50">
+            <i data-lucide="download" class="h-4 w-4 mr-2 text-gray-400"></i> Exporter
+        </a>
+    </div>
+</div>
+{% endblock %}
+
+{% block content %}
+<div class="space-y-8">
+
+    {% if invoices %}
+    <!-- Table des factures -->
+    <div class="px-4 sm:px-6 lg:px-8 bg-white border border-gray-200 rounded-xl py-6 shadow-sm">
+        <div class="mt-4 flow-root">
+            <div class="-mx-4 -my-2 overflow-x-auto sm:-mx-6 lg:-mx-8">
+                <div class="inline-block min-w-full py-2 align-middle sm:px-6 lg:px-8">
+                    <table class="min-w-full divide-y divide-gray-300">
+                        <thead class="bg-gray-50">
+                            <tr>
+                                <th scope="col" class="py-3.5 pl-4 pr-3 text-left text-sm font-semibold text-gray-900 sm:pl-0">N° Facture</th>
+                                <th scope="col" class="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">Logement</th>
+                                <th scope="col" class="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">Date</th>
+                                <th scope="col" class="relative py-3.5 pl-3 pr-4 sm:pr-0"><span class="sr-only">Actions</span></th>
+                            </tr>
+                        </thead>
+                        <tbody class="divide-y divide-gray-200 bg-white">
+                            {% for invoice in invoices %}
+                            <tr>
+                                <td class="whitespace-nowrap py-4 pl-4 pr-3 text-sm font-medium text-gray-900 sm:pl-0">{{ invoice.invoice_number }}</td>
+                                <td class="whitespace-nowrap px-3 py-4 text-sm text-gray-500">{{ invoice.reservation.property.title }}</td>
+                                <td class="whitespace-nowrap px-3 py-4 text-sm text-gray-500">{{ invoice.created_at|date:"d M Y" }}</td>
+                                <td class="relative whitespace-nowrap py-4 pl-3 pr-4 text-right text-sm font-medium sm:pr-0">
+                                    <a href="{{ invoice.file.url }}" target="_blank" class="text-[#8B1E24] hover:text-[#6F171C] font-semibold">Télécharger</a>
+                                </td>
+                            </tr>
+                            {% empty %}
+                            <tr><td colspan="4" class="py-8 text-center text-gray-500">Aucune facture pour le moment.</td></tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+        <div class="mt-6 border-t border-gray-200 pt-4">
+            {% include "components/dashboard/pagination.html" %}
+        </div>
+    </div>
+    {% else %}
+    <!-- Table des paiements -->
+    <div class="px-4 sm:px-6 lg:px-8 bg-white border border-gray-200 rounded-xl py-6 shadow-sm">
+        <div class="mt-4 flow-root">
+            <div class="-mx-4 -my-2 overflow-x-auto sm:-mx-6 lg:-mx-8">
+                <div class="inline-block min-w-full py-2 align-middle sm:px-6 lg:px-8">
+                    <table class="min-w-full divide-y divide-gray-300">
+                        <thead class="bg-gray-50">
+                            <tr>
+                                <th scope="col" class="py-3.5 pl-4 pr-3 text-left text-sm font-semibold text-gray-900 sm:pl-0">Logement</th>
+                                <th scope="col" class="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">Date</th>
+                                <th scope="col" class="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">Méthode</th>
+                                <th scope="col" class="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">Montant</th>
+                                <th scope="col" class="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">Statut</th>
+                                <th scope="col" class="relative py-3.5 pl-3 pr-4 sm:pr-0"><span class="sr-only">Actions</span></th>
+                            </tr>
+                        </thead>
+                        <tbody class="divide-y divide-gray-200 bg-white">
+                            {% for payment in payments %}
+                            <tr>
+                                <td class="whitespace-nowrap py-4 pl-4 pr-3 text-sm font-medium text-gray-900 sm:pl-0">
+                                    {{ payment.reservation.property.title }}
+                                </td>
+                                <td class="whitespace-nowrap px-3 py-4 text-sm text-gray-500">{{ payment.created_at|date:"d M Y" }}</td>
+                                <td class="whitespace-nowrap px-3 py-4 text-sm text-gray-500">{{ payment.get_method_display }}</td>
+                                <td class="whitespace-nowrap px-3 py-4 text-sm font-medium text-gray-900">{{ payment.amount }} F</td>
+                                <td class="whitespace-nowrap px-3 py-4 text-sm text-gray-500">
+                                    {% if payment.status == 'SUCCESS' %}
+                                        {% include "components/dashboard/status_badge.html" with status="success" label="Payé" %}
+                                    {% elif payment.status == 'FAILED' %}
+                                        {% include "components/dashboard/status_badge.html" with status="error" label="Échoué" %}
+                                    {% elif payment.status == 'REFUNDED' %}
+                                        {% include "components/dashboard/status_badge.html" with status="info" label="Remboursé" %}
+                                    {% else %}
+                                        {% include "components/dashboard/status_badge.html" with status="pending" label="En attente" %}
+                                    {% endif %}
+                                </td>
+                                <td class="relative whitespace-nowrap py-4 pl-3 pr-4 text-right text-sm font-medium sm:pr-0">
+                                    {% if payment.status == 'SUCCESS' %}
+                                        <a href="{% url 'payment_receipt' payment.reservation.id %}" class="text-[#8B1E24] hover:text-[#6F171C] font-semibold">Reçu</a>
+                                    {% endif %}
+                                </td>
+                            </tr>
+                            {% empty %}
+                            <tr><td colspan="6" class="py-8 text-center text-gray-500">Aucun paiement pour le moment.</td></tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+        <div class="mt-6 border-t border-gray-200 pt-4">
+            {% include "components/dashboard/pagination.html" %}
+        </div>
+    </div>
+    {% endif %}
+</div>
+{% endblock %}

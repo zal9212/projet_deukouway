@@ -1,0 +1,22 @@
+<div class="absolute inset-0 bg-gray-100 flex items-center justify-center rounded-2xl overflow-hidden z-0">
+    <!-- Map grid pattern background (pulse effect) -->
+    <div class="absolute inset-0 bg-[url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNDAiIGhlaWdodD0iNDAiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+PGcgc3Ryb2tlPSIjZTllY2VmIiBzdHJva2Utd2lkdGg9IjEiIGZpbGw9Im5vbmUiPjxwYXRoIGQ9Ik0wIDQwaDQwTTAgMjBoNDBNMjAgMHY0ME00MCAwdjQwIi8+PC9nPjwvc3ZnPg==')] opacity-50 animate-pulse"></div>
+    
+    <!-- Skeleton markers -->
+    <div class="relative w-full h-full animate-pulse">
+        <!-- Marker 1 -->
+        <div class="absolute top-1/4 left-1/4 w-12 h-6 bg-white rounded-full shadow-sm border border-gray-200"></div>
+        <!-- Marker 2 -->
+        <div class="absolute top-1/2 left-1/2 w-16 h-6 bg-white rounded-full shadow-sm border border-gray-200"></div>
+        <!-- Marker 3 -->
+        <div class="absolute bottom-1/3 right-1/4 w-14 h-6 bg-white rounded-full shadow-sm border border-gray-200"></div>
+        <!-- Marker 4 -->
+        <div class="absolute top-1/3 right-1/3 w-12 h-6 bg-white rounded-full shadow-sm border border-gray-200"></div>
+    </div>
+    
+    <!-- Spinner central optionnel (ou texte) -->
+    <div class="absolute flex flex-col items-center">
+        <i data-lucide="map" class="w-8 h-8 text-gray-400 mb-2 animate-bounce"></i>
+        <span class="text-sm font-medium text-gray-500">Chargement de la carte...</span>
+    </div>
+</div>

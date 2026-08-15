@@ -1,3 +1,4 @@
+{% load static %}
 <!DOCTYPE html>
 <html lang="fr" class="h-full">
 <head>
@@ -6,28 +7,8 @@
     <title>Widget Chatbot</title>
     <!-- Google Font: Poppins -->
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
-    <!-- Tailwind CSS CDN -->
-    <script src="https://cdn.tailwindcss.com"></script>
-    <script>
-        tailwind.config = {
-            theme: {
-                extend: {
-                    colors: {
-                        primary: '#8B1E24',
-                        'primary-hover': '#6F171C',
-                        background: '#FAFAFA',
-                        surface: '#FFFFFF',
-                        border: '#E5E7EB',
-                        'text-primary': '#1F2937',
-                        'text-secondary': '#6B7280',
-                    },
-                    fontFamily: {
-                        sans: ['Poppins', 'sans-serif'],
-                    }
-                }
-            }
-        }
-    </script>
+    <!-- Tailwind CSS (compilé localement, voir README pour la commande de build) -->
+    <link rel="stylesheet" href="{% static 'css/tailwind.css' %}">
     <!-- HTMX -->
     <script src="https://unpkg.com/htmx.org@1.9.10"></script>
     <!-- Lucide Icons -->
@@ -56,7 +37,7 @@
 
     <!-- Interactive Form -->
     <form id="chat-form" 
-          hx-post="{% url 'chatbot_response' %}" 
+          hx-post="{% url 'support:chatbot_response' %}" 
           hx-target="#chat-messages-container" 
           hx-swap="beforeend" 
           class="p-3 bg-white border-t border-[#E5E7EB] flex items-center space-x-2"

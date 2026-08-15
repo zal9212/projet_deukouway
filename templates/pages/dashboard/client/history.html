@@ -1,0 +1,30 @@
+{% extends "layouts/dashboard.html" %}
+
+{% block title %}Historique - DEKOUWAY{% endblock %}
+
+{% block page_header %}
+<div class="md:flex md:items-center md:justify-between mb-8 mt-2">
+    <div class="min-w-0 flex-1">
+        <h2 class="text-2xl font-bold leading-7 text-gray-900 sm:truncate sm:text-3xl sm:tracking-tight">
+            Historique de mon compte
+        </h2>
+        <p class="mt-1 text-sm text-gray-500">Trace de toutes vos actions (réservations, paiements, sécurité).</p>
+    </div>
+</div>
+{% endblock %}
+
+{% block content %}
+<div class="max-w-3xl mx-auto bg-white border border-gray-200 rounded-xl p-6 sm:p-8 shadow-sm">
+    <div class="flow-root">
+        {% if audit_logs %}
+            <ul role="list" class="-mb-8">
+                {% for log in audit_logs %}
+                    {% include "components/dashboard/activity_card.html" with icon="activity" user="Vous" action=log.action date=log.created_at|date:"d M Y H:i" description=log.details|default:"" icon_type="info" is_last=forloop.last %}
+                {% endfor %}
+            </ul>
+        {% else %}
+            {% include "components/empty_state.html" with title="Aucun historique" description="Vos activités d'authentification et de sécurité s'afficheront ici." icon="clock" %}
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,56 @@
+{% extends "layouts/dashboard.html" %}
+
+{% block title %}Paramètres - DEKOUWAY{% endblock %}
+
+{% block page_header %}
+<div class="md:flex md:items-center md:justify-between mb-8 mt-2">
+    <div class="min-w-0 flex-1">
+        <h2 class="text-2xl font-bold leading-7 text-gray-900 sm:truncate sm:text-3xl sm:tracking-tight">
+            Paramètres
+        </h2>
+    </div>
+</div>
+{% endblock %}
+
+{% block content %}
+<div class="space-y-10 divide-y divide-gray-900/10 max-w-4xl">
+
+    <!-- Paramètres de Notifications -->
+    <div class="grid grid-cols-1 gap-x-8 gap-y-8 md:grid-cols-3">
+        <div class="px-4 sm:px-0">
+            <h2 class="text-base font-semibold leading-7 text-gray-900">Notifications</h2>
+            <p class="mt-1 text-sm leading-6 text-gray-600">Choisissez comment DEKOUWAY vous contacte.</p>
+        </div>
+
+        <form method="POST" class="bg-white shadow-sm ring-1 ring-gray-900/5 sm:rounded-xl md:col-span-2">
+            {% csrf_token %}
+            <div class="px-4 py-6 sm:p-8 space-y-6">
+
+                <div class="relative flex gap-x-3">
+                    <div class="flex h-6 items-center">
+                        <input id="email_enabled" name="email_enabled" type="checkbox" {% if preferences.email_enabled %}checked{% endif %} class="h-4 w-4 rounded border-gray-300 text-[#8B1E24] focus:ring-[#8B1E24]">
+                    </div>
+                    <div class="text-sm leading-6">
+                        <label for="email_enabled" class="font-medium text-gray-900">Recevoir les notifications par Email</label>
+                        <p class="text-gray-500">Mises à jour de réservation, confirmations de paiement, offres importantes.</p>
+                    </div>
+                </div>
+
+                <div class="relative flex gap-x-3 pt-6 border-t border-gray-200">
+                    <div class="flex h-6 items-center">
+                        <input id="sms_enabled" name="sms_enabled" type="checkbox" {% if preferences.sms_enabled %}checked{% endif %} class="h-4 w-4 rounded border-gray-300 text-[#8B1E24] focus:ring-[#8B1E24]">
+                    </div>
+                    <div class="text-sm leading-6">
+                        <label for="sms_enabled" class="font-medium text-gray-900">Recevoir les alertes critiques par SMS</label>
+                        <p class="text-gray-500">Réservé aux alertes urgentes (ex : changement de dernière minute sur un séjour).</p>
+                    </div>
+                </div>
+
+            </div>
+            <div class="flex items-center justify-end gap-x-6 border-t border-gray-900/10 px-4 py-4 sm:px-8">
+                <button type="submit" class="rounded-md bg-[#8B1E24] px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-[#6F171C]">Enregistrer</button>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}

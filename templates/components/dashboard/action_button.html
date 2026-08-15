@@ -1,0 +1,14 @@
+<button type="button" class="inline-flex items-center rounded-md bg-white px-2.5 py-1.5 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#8B1E24] transition-colors {% if custom_class %}{{ custom_class }}{% endif %}">
+    {% if action == 'edit' %}
+        <i data-lucide="pencil" class="h-4 w-4 mr-1 text-gray-400"></i> Modifier
+    {% elif action == 'delete' %}
+        <i data-lucide="trash-2" class="h-4 w-4 mr-1 text-red-500"></i> <span class="text-red-600">Supprimer</span>
+    {% elif action == 'view' %}
+        <i data-lucide="eye" class="h-4 w-4 mr-1 text-gray-400"></i> Voir
+    {% else %}
+        {% if icon %}
+            <i data-lucide="{{ icon }}" class="h-4 w-4 mr-1 text-gray-400"></i>
+        {% endif %}
+        {{ text|default:'Action' }}
+    {% endif %}
+</button>

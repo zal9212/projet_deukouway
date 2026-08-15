@@ -1,0 +1,150 @@
+{% extends "layouts/public.html" %}
+
+{% block title %}Foire Aux Questions — DEKOUWAY{% endblock %}
+{% block meta_description %}Toutes les réponses à vos questions sur la réservation, le paiement et la publication de logements sur DEKOUWAY.{% endblock %}
+
+{% block content %}
+<section class="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
+
+    <div class="text-center mb-12">
+        <span class="inline-flex items-center px-3 py-1 rounded-full bg-[#8B1E24]/10 text-[#8B1E24] text-[10px] font-bold uppercase tracking-wider mb-4">
+            Centre d'aide
+        </span>
+        <h1 class="text-3xl font-bold text-[#1F2937] mb-4">Foire Aux Questions</h1>
+        <p class="text-sm text-[#6B7280]">
+            Vous ne trouvez pas votre réponse ? Utilisez l'assistant IA ou notre
+            <a href="{% url 'public:contact' %}" class="text-[#8B1E24] font-semibold hover:underline">formulaire de contact</a>.
+        </p>
+    </div>
+
+    <!-- Réservations -->
+    <div class="mb-10">
+        <h2 class="text-xs font-bold text-[#8B1E24] uppercase tracking-wider mb-4 flex items-center gap-2">
+            <i data-lucide="calendar" class="w-4 h-4"></i> Réservations
+        </h2>
+        <div class="space-y-3" x-data="{ active: null }">
+            <div class="bg-white border border-[#E5E7EB] rounded-xl">
+                <button @click="active !== 1 ? active = 1 : active = null" class="flex w-full items-center justify-between text-left p-4 focus:outline-none">
+                    <span class="text-sm font-semibold text-[#1F2937]">Comment réserver un logement ?</span>
+                    <i data-lucide="chevron-down" class="w-4 h-4 text-[#6B7280] transition-transform flex-shrink-0" :class="active === 1 ? 'rotate-180' : ''"></i>
+                </button>
+                <div class="px-4 pb-4 text-xs text-[#6B7280] leading-relaxed" x-show="active === 1" x-transition x-cloak>
+                    Parcourez nos annonces sur la page « Explorer », choisissez vos dates sur la fiche du logement souhaité
+                    puis envoyez votre demande. Elle est d'abord vérifiée par notre équipe avant d'être transmise au propriétaire.
+                </div>
+            </div>
+            <div class="bg-white border border-[#E5E7EB] rounded-xl">
+                <button @click="active !== 2 ? active = 2 : active = null" class="flex w-full items-center justify-between text-left p-4 focus:outline-none">
+                    <span class="text-sm font-semibold text-[#1F2937]">Combien de temps prend la validation ?</span>
+                    <i data-lucide="chevron-down" class="w-4 h-4 text-[#6B7280] transition-transform flex-shrink-0" :class="active === 2 ? 'rotate-180' : ''"></i>
+                </button>
+                <div class="px-4 pb-4 text-xs text-[#6B7280] leading-relaxed" x-show="active === 2" x-transition x-cloak>
+                    Votre demande est généralement examinée par notre équipe puis transmise au propriétaire sous 24 à 48h.
+                    Vous êtes notifié dès qu'une décision est prise.
+                </div>
+            </div>
+            <div class="bg-white border border-[#E5E7EB] rounded-xl">
+                <button @click="active !== 3 ? active = 3 : active = null" class="flex w-full items-center justify-between text-left p-4 focus:outline-none">
+                    <span class="text-sm font-semibold text-[#1F2937]">Puis-je annuler une demande ?</span>
+                    <i data-lucide="chevron-down" class="w-4 h-4 text-[#6B7280] transition-transform flex-shrink-0" :class="active === 3 ? 'rotate-180' : ''"></i>
+                </button>
+                <div class="px-4 pb-4 text-xs text-[#6B7280] leading-relaxed" x-show="active === 3" x-transition x-cloak>
+                    Oui, tant que votre demande n'est pas encore payée, vous pouvez l'annuler librement depuis
+                    la page « Mes Réservations » de votre espace personnel.
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Paiements -->
+    <div class="mb-10">
+        <h2 class="text-xs font-bold text-[#8B1E24] uppercase tracking-wider mb-4 flex items-center gap-2">
+            <i data-lucide="credit-card" class="w-4 h-4"></i> Paiements
+        </h2>
+        <div class="space-y-3" x-data="{ active: null }">
+            <div class="bg-white border border-[#E5E7EB] rounded-xl">
+                <button @click="active !== 1 ? active = 1 : active = null" class="flex w-full items-center justify-between text-left p-4 focus:outline-none">
+                    <span class="text-sm font-semibold text-[#1F2937]">Quels moyens de paiement sont acceptés ?</span>
+                    <i data-lucide="chevron-down" class="w-4 h-4 text-[#6B7280] transition-transform flex-shrink-0" :class="active === 1 ? 'rotate-180' : ''"></i>
+                </button>
+                <div class="px-4 pb-4 text-xs text-[#6B7280] leading-relaxed" x-show="active === 1" x-transition x-cloak>
+                    Wave, Orange Money, ainsi que les cartes bancaires Visa et Mastercard. Le paiement s'effectue
+                    uniquement après acceptation de votre demande par le propriétaire.
+                </div>
+            </div>
+            <div class="bg-white border border-[#E5E7EB] rounded-xl">
+                <button @click="active !== 2 ? active = 2 : active = null" class="flex w-full items-center justify-between text-left p-4 focus:outline-none">
+                    <span class="text-sm font-semibold text-[#1F2937]">Le prix affiché inclut-il des frais ?</span>
+                    <i data-lucide="chevron-down" class="w-4 h-4 text-[#6B7280] transition-transform flex-shrink-0" :class="active === 2 ? 'rotate-180' : ''"></i>
+                </button>
+                <div class="px-4 pb-4 text-xs text-[#6B7280] leading-relaxed" x-show="active === 2" x-transition x-cloak>
+                    Le prix du séjour est calculé sur la base du tarif par nuit du logement. Un frais de service
+                    DEKOUWAY, clairement indiqué avant le règlement final, s'ajoute au sous-total de l'hébergement.
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Propriétaires -->
+    <div class="mb-10">
+        <h2 class="text-xs font-bold text-[#8B1E24] uppercase tracking-wider mb-4 flex items-center gap-2">
+            <i data-lucide="home" class="w-4 h-4"></i> Propriétaires
+        </h2>
+        <div class="space-y-3" x-data="{ active: null }">
+            <div class="bg-white border border-[#E5E7EB] rounded-xl">
+                <button @click="active !== 1 ? active = 1 : active = null" class="flex w-full items-center justify-between text-left p-4 focus:outline-none">
+                    <span class="text-sm font-semibold text-[#1F2937]">Comment publier mon logement ?</span>
+                    <i data-lucide="chevron-down" class="w-4 h-4 text-[#6B7280] transition-transform flex-shrink-0" :class="active === 1 ? 'rotate-180' : ''"></i>
+                </button>
+                <div class="px-4 pb-4 text-xs text-[#6B7280] leading-relaxed" x-show="active === 1" x-transition x-cloak>
+                    Créez un compte « Propriétaire », chargez une pièce d'identité pour vérification, puis
+                    accédez à votre tableau de bord pour ajouter votre annonce avec photos et tarifs.
+                </div>
+            </div>
+            <div class="bg-white border border-[#E5E7EB] rounded-xl">
+                <button @click="active !== 2 ? active = 2 : active = null" class="flex w-full items-center justify-between text-left p-4 focus:outline-none">
+                    <span class="text-sm font-semibold text-[#1F2937]">Quand suis-je payé après une réservation ?</span>
+                    <i data-lucide="chevron-down" class="w-4 h-4 text-[#6B7280] transition-transform flex-shrink-0" :class="active === 2 ? 'rotate-180' : ''"></i>
+                </button>
+                <div class="px-4 pb-4 text-xs text-[#6B7280] leading-relaxed" x-show="active === 2" x-transition x-cloak>
+                    Le montant net (déduction faite de la commission DEKOUWAY) vous est reversé après le début
+                    effectif du séjour du voyageur, via Wave, Orange Money ou virement bancaire.
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Sécurité -->
+    <div>
+        <h2 class="text-xs font-bold text-[#8B1E24] uppercase tracking-wider mb-4 flex items-center gap-2">
+            <i data-lucide="shield-check" class="w-4 h-4"></i> Sécurité
+        </h2>
+        <div class="space-y-3" x-data="{ active: null }">
+            <div class="bg-white border border-[#E5E7EB] rounded-xl">
+                <button @click="active !== 1 ? active = 1 : active = null" class="flex w-full items-center justify-between text-left p-4 focus:outline-none">
+                    <span class="text-sm font-semibold text-[#1F2937]">Les logements sont-ils vérifiés ?</span>
+                    <i data-lucide="chevron-down" class="w-4 h-4 text-[#6B7280] transition-transform flex-shrink-0" :class="active === 1 ? 'rotate-180' : ''"></i>
+                </button>
+                <div class="px-4 pb-4 text-xs text-[#6B7280] leading-relaxed" x-show="active === 1" x-transition x-cloak>
+                    Oui. Chaque annonce est examinée par notre équipe avant publication, et chaque propriétaire
+                    doit fournir une pièce d'identité vérifiée.
+                </div>
+            </div>
+        </div>
+    </div>
+
+    {% if support_categories %}
+    <div class="mt-14 pt-10 border-t border-[#E5E7EB]">
+        <h2 class="text-xs font-bold text-[#1F2937] uppercase tracking-wider mb-4">Catégories d'assistance</h2>
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            {% for category in support_categories %}
+            <div class="bg-white p-4 rounded-xl border border-[#E5E7EB]">
+                <h3 class="text-sm font-bold text-[#1F2937]">{{ category.name }}</h3>
+                <p class="text-xs text-[#6B7280] mt-1">{{ category.description|default:"Questions relatives à cette catégorie." }}</p>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+    {% endif %}
+</section>
+{% endblock %}

@@ -1,0 +1,57 @@
+<div class="flex flex-col md:flex-row md:items-start justify-between gap-4">
+    <div class="flex-1 space-y-2">
+        <h1 class="text-2xl md:text-3xl font-bold text-gray-900 leading-tight">
+            {{ property.title }}
+        </h1>
+
+        <div class="flex flex-wrap items-center text-sm text-gray-600 gap-x-4 gap-y-2">
+            {% if avg_rating %}
+            <div class="flex items-center text-gray-900 font-semibold">
+                <i data-lucide="star" class="w-4 h-4 text-[#8B1E24] fill-current mr-1"></i>
+                {{ avg_rating }}
+                <a href="#avis" class="text-gray-500 font-normal ml-1 underline hover:text-gray-900">({{ review_count }} avis)</a>
+            </div>
+            <span class="hidden sm:inline text-gray-300">•</span>
+            {% endif %}
+
+            {% if owner_avg_rating and owner_avg_rating >= 4.5 and owner_review_count >= 5 %}
+            <div class="flex items-center text-[#8B1E24]">
+                <i data-lucide="award" class="w-4 h-4 mr-1"></i>
+                <span class="font-medium">Hôte exceptionnel</span>
+            </div>
+            <span class="hidden sm:inline text-gray-300">•</span>
+            {% endif %}
+
+            <div class="flex items-center">
+                <i data-lucide="map-pin" class="w-4 h-4 mr-1 text-gray-400"></i>
+                <a href="#localisation" class="underline hover:text-gray-900">{{ property.district }}, {{ property.city }}, Sénégal</a>
+            </div>
+        </div>
+    </div>
+
+    <div class="flex items-center gap-3 self-start">
+        <button aria-label="Partager ce logement" onclick="if(navigator.share){navigator.share({title: document.title, url: window.location.href});}else{navigator.clipboard.writeText(window.location.href);}" class="flex items-center space-x-2 px-3 py-1.5 rounded-lg hover:bg-gray-100 transition-colors text-sm font-semibold text-gray-900 focus:outline-none focus:ring-2 focus:ring-gray-200 focus-visible:ring-2">
+            <i data-lucide="share" class="w-4 h-4"></i>
+            <span class="hidden sm:inline">Partager</span>
+        </button>
+        {% if request.user.is_authenticated and request.user.is_client %}
+        <form method="POST" action="{% url 'public:favorite_toggle' property.id %}"
+              hx-post="{% url 'public:favorite_toggle' property.id %}" hx-swap="none"
+              x-data="{ favorited: {% if is_favorite %}true{% else %}false{% endif %} }">
+            {% csrf_token %}
+            <button type="submit" @click="favorited = !favorited"
+                    :aria-label="favorited ? 'Retirer des favoris' : 'Enregistrer ce logement dans les favoris'"
+                    class="flex items-center space-x-2 px-3 py-1.5 rounded-lg hover:bg-gray-100 transition-colors text-sm font-semibold text-gray-900 focus:outline-none focus:ring-2 focus:ring-gray-200 focus-visible:ring-2">
+                <span x-show="!favorited" x-cloak class="flex items-center space-x-2">
+                    <i data-lucide="heart" class="w-4 h-4"></i>
+                    <span class="hidden sm:inline">Enregistrer</span>
+                </span>
+                <span x-show="favorited" x-cloak class="flex items-center space-x-2">
+                    <i data-lucide="heart" class="w-4 h-4 fill-current text-[#8B1E24]"></i>
+                    <span class="hidden sm:inline">Enregistré</span>
+                </span>
+            </button>
+        </form>
+        {% endif %}
+    </div>
+</div>

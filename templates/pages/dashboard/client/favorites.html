@@ -1,0 +1,102 @@
+{% extends "layouts/dashboard.html" %}
+{% load static property_tags %}
+
+{% block title %}Mes Favoris - DEKOUWAY{% endblock %}
+
+{% block page_header %}
+<div class="md:flex md:items-center md:justify-between mb-8 mt-2">
+    <div class="min-w-0 flex-1">
+        <h2 class="text-2xl font-bold leading-7 text-gray-900 sm:truncate sm:text-3xl sm:tracking-tight">
+            Mes Favoris
+        </h2>
+        <p class="mt-1 text-sm text-gray-500">Logements que vous avez sauvegardés pour plus tard.</p>
+    </div>
+</div>
+{% endblock %}
+
+{% block content %}
+{% if favorites %}
+<div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+    
+    {% for property in favorites %}
+    <div class="group relative bg-white border border-gray-200 rounded-xl overflow-hidden shadow-sm hover:shadow-md transition-all flex flex-col">
+        <div class="aspect-w-3 aspect-h-2 relative bg-gray-200 h-48">
+            {% if property.images.all %}
+                <img src="{{ property.images.first.image.url }}" alt="{{ property.title }}" class="object-cover w-full h-full group-hover:scale-105 transition-transform duration-500">
+            {% else %}
+                <img src="{% placeholder_image property.id %}" alt="{{ property.title }}" class="object-cover w-full h-full group-hover:scale-105 transition-transform duration-500">
+            {% endif %}
+            <form method="POST" action="{% url 'public:favorite_toggle' property.id %}" class="absolute top-3 right-3 z-10"
+                  hx-post="{% url 'public:favorite_toggle' property.id %}" hx-swap="none">
+                {% csrf_token %}
+                <button type="submit" @click="$el.closest('.group').remove()" class="p-2 rounded-full bg-white/90 shadow-sm text-[#8B1E24] hover:bg-white hover:scale-110 transition-transform" title="Retirer des favoris">
+                    <i data-lucide="heart" class="w-5 h-5 fill-current"></i>
+                </button>
+            </form>
+        </div>
+        <div class="p-5 flex-1 flex flex-col">
+            <div class="flex items-center justify-between mb-1">
+                <p class="text-xs font-semibold uppercase tracking-wide text-[#8B1E24]">{{ property.property_type.name|default:"Logement" }}</p>
+                {% if property.avg_rating %}
+                <div class="flex items-center text-sm font-medium text-gray-900">
+                    <i data-lucide="star" class="w-4 h-4 fill-yellow-400 text-yellow-400 mr-1"></i> {{ property.avg_rating|floatformat:1 }}
+                </div>
+                {% endif %}
+            </div>
+            <h3 class="text-lg font-bold text-gray-900 line-clamp-1">
+                <a href="{% url 'public:property_detail' property.id %}">
+                    <span class="absolute inset-0"></span>{{ property.title }}
+                </a>
+            </h3>
+            <p class="text-sm text-gray-500 flex items-center mt-1">
+                <i data-lucide="map-pin" class="w-3 h-3 mr-1 shrink-0"></i> {{ property.city }}{% if property.district %}, {{ property.district }}{% endif %}
+            </p>
+            
+            <div class="mt-auto pt-4 flex items-center justify-between">
+                <div>
+                    <span class="text-lg font-bold text-gray-900">{{ property.price }} F</span>
+                    <span class="text-sm text-gray-500"> {{ property.pricing_period|price_unit }}</span>
+                </div>
+                <a href="{% url 'public:property_detail' property.id %}" class="relative z-10 rounded-md bg-[#8B1E24]/10 px-3 py-2 text-sm font-semibold text-[#8B1E24] hover:bg-[#8B1E24] hover:text-white transition-colors">Réserver</a>
+            </div>
+        </div>
+    </div>
+    {% endfor %}
+
+    <!-- Zone Add new -->
+    <div class="relative bg-gray-50/50 border-2 border-dashed border-gray-300 rounded-xl overflow-hidden flex flex-col items-center justify-center p-8 hover:bg-gray-50 transition-colors hover:border-gray-400">
+        <div class="h-14 w-14 rounded-full bg-white flex items-center justify-center shadow-sm mb-4">
+            <i data-lucide="search" class="w-6 h-6 text-gray-400"></i>
+        </div>
+        <h3 class="text-base font-semibold text-gray-900 mb-1">Trouver d'autres pépites</h3>
+        <p class="text-sm text-gray-500 text-center mb-6">Explorez plus de 500 logements au Sénégal.</p>
+        <a href="{% url 'public:properties_list' %}" class="rounded-md bg-white px-4 py-2 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50">Parcourir les annonces</a>
+    </div>
+
+</div>
+
+<!-- Pagination -->
+{% if is_paginated %}
+<div class="mt-8">
+    {% include "components/dashboard/pagination.html" %}
+</div>
+{% endif %}
+
+{% else %}
+<!-- State quand 0 favoris -->
+<div class="bg-white border border-gray-200 rounded-xl p-8 sm:p-12 text-center shadow-xs max-w-2xl mx-auto">
+    <div class="h-16 w-16 rounded-full bg-[#8B1E24]/10 flex items-center justify-center mx-auto mb-4 text-[#8B1E24]">
+        <i data-lucide="heart" class="w-8 h-8"></i>
+    </div>
+    <h3 class="text-lg font-bold text-gray-900 mb-2">Aucun logement en favori</h3>
+    <p class="text-sm text-gray-500 mb-6">
+        Vous n'avez pas encore sauvegardé de logement dans vos favoris. Parcourez nos annonces et ajoutez vos coups de cœur en favoris pour les retrouver facilement plus tard.
+    </p>
+    <a href="{% url 'public:properties_list' %}" class="inline-flex items-center justify-center rounded-lg bg-[#8B1E24] px-5 py-2.5 text-sm font-semibold text-white shadow-sm hover:bg-[#6F171C] transition-colors">
+        <i data-lucide="search" class="w-4 h-4 mr-2"></i>
+        Parcourir les annonces
+    </a>
+</div>
+{% endif %}
+
+{% endblock %}

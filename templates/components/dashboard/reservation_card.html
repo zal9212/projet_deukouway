@@ -1,0 +1,15 @@
+<div class="flex items-center justify-between p-4 bg-[#FAFAFA] hover:bg-gray-100 rounded-xl border border-gray-200 transition-colors">
+    <div class="flex items-center space-x-4">
+        <div class="w-12 h-12 rounded-lg bg-gray-200 overflow-hidden flex-shrink-0">
+            <img src="{{ image_url|default:'https://images.unsplash.com/photo-1512917774080-9991f1c4c750?auto=format&fit=crop&w=300&q=80' }}" alt="Propriété" class="w-full h-full object-cover">
+        </div>
+        <div>
+            <h4 class="text-xs font-bold text-gray-900">{{ property_title }}</h4>
+            <p class="text-[11px] text-gray-500">{{ location }} • {{ dates }}</p>
+            <p class="text-[11px] font-semibold text-[#8B1E24] mt-0.5">{{ price }}</p>
+        </div>
+    </div>
+    <span class="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-medium bg-gray-100 text-gray-800">
+        {{ status|default:"Confirmée" }}
+    </span>
+</div>

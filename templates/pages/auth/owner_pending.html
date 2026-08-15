@@ -1,0 +1,62 @@
+{% extends "layouts/auth_layout.html" %}
+
+{% block title %}Compte en attente de validation - DEKOUWAY{% endblock %}
+
+{% block content %}
+    <div class="text-center">
+        <!-- Icône de validation en cours avec un léger effet Pulse (Alpine) -->
+        <div class="mx-auto flex h-20 w-20 items-center justify-center rounded-full bg-orange-100 mb-6 relative" x-data="{ pulse: true }">
+            <div class="absolute inset-0 rounded-full bg-orange-200 animate-ping opacity-75"></div>
+            <i data-lucide="clock" class="h-10 w-10 text-orange-600 relative z-10"></i>
+        </div>
+        
+        <h2 class="text-3xl font-bold tracking-tight text-gray-900 mb-4">Votre compte est en cours de validation</h2>
+        
+        <div class="bg-gray-50 border border-gray-200 rounded-xl p-6 text-left mb-8">
+            <p class="text-sm text-gray-700 leading-relaxed font-medium">
+                Merci d'avoir choisi DEKOUWAY pour publier vos annonces !
+            </p>
+            <p class="text-sm text-gray-600 leading-relaxed mt-2">
+                Notre équipe SuperAdmin vérifie actuellement votre pièce d'identité et vos informations afin de garantir la sécurité de notre plateforme.
+            </p>
+            
+            <div class="mt-6 border-t border-gray-200 pt-6">
+                <h4 class="text-xs font-bold text-gray-900 uppercase tracking-wider mb-4">Étapes de validation</h4>
+                
+                <div class="space-y-4">
+                    <div class="flex items-start">
+                        <i data-lucide="check-circle-2" class="w-5 h-5 text-green-500 mr-3 mt-0.5"></i>
+                        <div>
+                            <p class="text-sm font-bold text-gray-900">Inscription complétée</p>
+                            <p class="text-xs text-gray-500">Documents reçus avec succès.</p>
+                        </div>
+                    </div>
+                    <div class="flex items-start">
+                        <i data-lucide="loader-2" class="w-5 h-5 text-orange-500 mr-3 mt-0.5 animate-spin"></i>
+                        <div>
+                            <p class="text-sm font-bold text-gray-900">Vérification par l'équipe DEKOUWAY</p>
+                            <p class="text-xs text-gray-500">Temps estimé : 24 à 48 heures ouvrées.</p>
+                        </div>
+                    </div>
+                    <div class="flex items-start opacity-50">
+                        <i data-lucide="circle" class="w-5 h-5 text-gray-300 mr-3 mt-0.5"></i>
+                        <div>
+                            <p class="text-sm font-bold text-gray-900">Validation finale</p>
+                            <p class="text-xs text-gray-500">Vous recevrez une notification par e-mail.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="flex flex-col gap-3">
+            <a href="/" class="w-full flex w-full justify-center rounded-lg bg-[#8B1E24] px-3 py-3 text-sm font-semibold leading-6 text-white shadow-sm hover:bg-[#6F171C] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#8B1E24] transition-colors">
+                Retour à l'accueil
+            </a>
+            <a href="{% url 'public:faq_owner' %}" class="w-full flex w-full justify-center rounded-lg bg-white px-3 py-3 text-sm font-semibold leading-6 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50 transition-colors">
+                Consulter la FAQ Hôte
+            </a>
+        </div>
+        
+    </div>
+{% endblock %}

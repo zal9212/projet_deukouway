@@ -1,0 +1,166 @@
+{% extends "layouts/dashboard.html" %}
+
+{% block title %}Validation Partenaires (KYC) - DEKOUWAY ERP{% endblock %}
+
+{% block page_header %}
+<div class="md:flex md:items-center md:justify-between mb-8 mt-2">
+    <div class="min-w-0 flex-1">
+        <h2 class="text-2xl font-bold leading-7 text-gray-900 sm:truncate sm:text-3xl sm:tracking-tight flex items-center">
+            Validation KYC Partenaires
+            <span class="ml-3 inline-flex items-center rounded-full bg-red-100 px-3 py-1 text-sm font-medium text-red-700">
+                {{ pending_owners.count|default:0 }} dossier(s) en attente
+            </span>
+        </h2>
+        <p class="mt-1 text-sm text-gray-500">Analysez les pièces d'identité avant d'autoriser l'ajout de logements.</p>
+    </div>
+</div>
+{% endblock %}
+
+{% block content %}
+{% if pending_owners %}
+<div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+    
+    <!-- File d'attente (Sidebar gauche) -->
+    <div class="lg:col-span-1 border border-gray-200 bg-white rounded-xl shadow-sm overflow-hidden lg:h-[calc(100vh-16rem)] h-auto flex flex-col">
+        <div class="px-4 py-4 border-b border-gray-200 bg-gray-50">
+            <h3 class="font-semibold text-gray-900 text-sm">Dossiers à traiter (Triage)</h3>
+        </div>
+        <ul role="list" class="flex-1 overflow-y-auto divide-y divide-gray-100">
+            {% for owner in pending_owners %}
+            <li>
+                <a href="?id={{ owner.id }}" class="block relative px-4 py-4 {% if active_owner.id == owner.id %}bg-blue-50/50 border-l-4 border-blue-600{% else %}hover:bg-gray-50{% endif %}">
+                    <div class="flex justify-between">
+                        <div>
+                            <p class="text-sm font-bold text-gray-900">{{ owner.profile.first_name|default:owner.email }}</p>
+                            <p class="text-xs text-gray-500 mt-1">Soumis le {{ owner.date_joined|date:"d M Y" }}</p>
+                        </div>
+                        <span class="inline-flex items-center rounded-md bg-yellow-50 px-2 py-1 text-xs font-medium text-yellow-800 ring-1 ring-inset ring-yellow-600/20 h-fit">En attente</span>
+                    </div>
+                </a>
+            </li>
+            {% endfor %}
+        </ul>
+    </div>
+
+    <!-- Zone d'Analyse Centrale -->
+    <div class="lg:col-span-2">
+        <div class="bg-white border border-gray-200 rounded-xl shadow-sm overflow-hidden flex flex-col lg:h-[calc(100vh-16rem)] h-auto">
+            
+            <div class="border-b border-gray-200 px-6 py-5 flex items-center justify-between bg-white">
+                <div class="flex items-center">
+                    <div class="h-12 w-12 rounded-full bg-[#8B1E24] text-white flex items-center justify-center font-bold text-lg">
+                        {{ active_owner.email|slice:":2"|upper }}
+                    </div>
+                    <div class="ml-4">
+                        <h3 class="text-lg font-bold leading-6 text-gray-900">Dossier : {{ active_owner.profile.first_name|default:active_owner.email }}</h3>
+                        <p class="text-sm text-gray-500">ID: #OWNER-{{ active_owner.id }} • Inscrit le {{ active_owner.date_joined|date:"d M Y" }}</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="flex-1 overflow-y-auto p-6 space-y-8 bg-gray-50">
+                <!-- Données saisies -->
+                <section class="bg-white p-6 border border-gray-200 rounded-xl shadow-sm">
+                    <h4 class="text-sm font-semibold text-gray-900 mb-4 border-b border-gray-100 pb-2">Informations Déclarées</h4>
+                    <div class="grid grid-cols-2 gap-6">
+                        <div>
+                            <p class="text-xs text-gray-500 uppercase tracking-wider font-semibold">Nom complet</p>
+                            <p class="mt-1 font-medium text-gray-900">{{ active_owner.profile.first_name }} {{ active_owner.profile.last_name|default:"" }}</p>
+                        </div>
+                        <div>
+                            <p class="text-xs text-gray-500 uppercase tracking-wider font-semibold">Téléphone</p>
+                            <p class="mt-1 font-medium text-gray-900">{{ active_owner.profile.phone|default:"Non renseigné" }}</p>
+                        </div>
+                        <div>
+                            <p class="text-xs text-gray-500 uppercase tracking-wider font-semibold">Email</p>
+                            <p class="mt-1 font-medium text-gray-900">{{ active_owner.email }}</p>
+                        </div>
+                        <div>
+                            <p class="text-xs text-gray-500 uppercase tracking-wider font-semibold">Statut KYC</p>
+                            <p class="mt-1 font-medium text-yellow-700">En attente de validation administrative</p>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Pièce d'identité + Selfie de vérification -->
+                <section class="bg-white p-6 border border-gray-200 rounded-xl shadow-sm">
+                    <h4 class="text-sm font-semibold text-gray-900 mb-4 border-b border-gray-100 pb-2">Pièce d'identité soumise</h4>
+                    {% with identity_doc=active_owner.identity_documents.first %}
+                    {% if identity_doc %}
+                        <div class="grid grid-cols-2 gap-6 mb-4">
+                            <div>
+                                <p class="text-xs text-gray-500 uppercase tracking-wider font-semibold">Type de document</p>
+                                <p class="mt-1 font-medium text-gray-900">{{ identity_doc.document_type }}</p>
+                            </div>
+                            <div>
+                                <p class="text-xs text-gray-500 uppercase tracking-wider font-semibold">Numéro</p>
+                                <p class="mt-1 font-medium text-gray-900">{{ identity_doc.document_number }}</p>
+                            </div>
+                        </div>
+                        <div class="grid grid-cols-2 gap-4">
+                            <a href="{% url 'accounts:identity_document_file' identity_doc.id 'recto' %}" target="_blank" rel="noopener"
+                               class="flex flex-col items-center justify-center border border-gray-200 rounded-lg p-4 text-center hover:bg-gray-50 transition-colors">
+                                <i data-lucide="file-text" class="w-8 h-8 text-[#8B1E24] mb-2"></i>
+                                <span class="text-xs font-semibold text-gray-900">Voir le recto</span>
+                            </a>
+                            {% if identity_doc.file_back %}
+                            <a href="{% url 'accounts:identity_document_file' identity_doc.id 'verso' %}" target="_blank" rel="noopener"
+                               class="flex flex-col items-center justify-center border border-gray-200 rounded-lg p-4 text-center hover:bg-gray-50 transition-colors">
+                                <i data-lucide="file-text" class="w-8 h-8 text-[#8B1E24] mb-2"></i>
+                                <span class="text-xs font-semibold text-gray-900">Voir le verso</span>
+                            </a>
+                            {% elif identity_doc.document_type == 'CNI' %}
+                            <div class="flex items-center justify-center border border-red-200 bg-red-50 rounded-lg p-4 text-center">
+                                <span class="text-xs font-semibold text-red-700">Aucun verso fourni</span>
+                            </div>
+                            {% endif %}
+                            {% if identity_doc.selfie_file %}
+                            <a href="{% url 'accounts:identity_document_file' identity_doc.id 'selfie' %}" target="_blank" rel="noopener"
+                               class="block border border-gray-200 rounded-lg overflow-hidden hover:opacity-90 transition-opacity">
+                                <img src="{% url 'accounts:identity_document_file' identity_doc.id 'selfie' %}" alt="Selfie de vérification" class="w-full h-32 object-cover">
+                            </a>
+                            {% else %}
+                            <div class="flex items-center justify-center border border-red-200 bg-red-50 rounded-lg p-4 text-center">
+                                <span class="text-xs font-semibold text-red-700">Aucun selfie fourni</span>
+                            </div>
+                            {% endif %}
+                        </div>
+                    {% else %}
+                        <p class="text-sm text-red-600 font-semibold flex items-center gap-2">
+                            <i data-lucide="alert-triangle" class="w-4 h-4"></i>
+                            Aucun document d'identité soumis — ne validez pas ce compte sans vérification.
+                        </p>
+                    {% endif %}
+                    {% endwith %}
+                </section>
+            </div>
+
+            <!-- Barre de décision ERP -->
+            <div class="border-t border-gray-200 px-6 py-4 bg-white flex justify-between items-center">
+                <form method="POST" class="inline">
+                    {% csrf_token %}
+                    <input type="hidden" name="owner_id" value="{{ active_owner.id }}">
+                    <input type="hidden" name="action" value="reject">
+                    <button type="submit" class="text-red-600 hover:text-red-800 text-sm font-semibold flex items-center">
+                        <i data-lucide="x-circle" class="w-4 h-4 mr-1.5"></i> Rejeter le dossier
+                    </button>
+                </form>
+                
+                <form method="POST" class="inline">
+                    {% csrf_token %}
+                    <input type="hidden" name="owner_id" value="{{ active_owner.id }}">
+                    <input type="hidden" name="action" value="approve">
+                    <button type="submit" class="rounded-md bg-green-600 px-4 py-2 text-sm font-semibold text-white shadow-sm hover:bg-green-500 flex items-center">
+                        <i data-lucide="check-circle-2" class="w-4 h-4 mr-1.5"></i> Valider le Partenaire
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% else %}
+<div class="bg-white border border-gray-200 rounded-xl p-12 text-center shadow-sm">
+    {% include "components/empty_state.html" with title="Aucun dossier en attente" description="Tous les dossiers de validation KYC des partenaires hôtes ont été traités." icon="user-check" %}
+</div>
+{% endif %}
+{% endblock %}

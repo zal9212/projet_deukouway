@@ -1,0 +1,38 @@
+<ul role="list" class="-mb-8">
+    <li>
+        <div class="relative pb-8">
+            {% if not is_last %}
+            <span class="absolute left-5 top-5 -ml-px h-full w-0.5 bg-gray-200" aria-hidden="true"></span>
+            {% endif %}
+            <div class="relative flex items-start space-x-3">
+                <div class="relative">
+                    {% if icon_type == 'success' %}
+                        <div class="flex h-10 w-10 items-center justify-center rounded-full bg-green-100 ring-8 ring-white">
+                            <i data-lucide="check" class="h-5 w-5 text-green-600"></i>
+                        </div>
+                    {% elif icon_type == 'error' %}
+                        <div class="flex h-10 w-10 items-center justify-center rounded-full bg-red-100 ring-8 ring-white">
+                            <i data-lucide="x" class="h-5 w-5 text-red-600"></i>
+                        </div>
+                    {% else %}
+                        <div class="flex h-10 w-10 items-center justify-center rounded-full bg-gray-100 ring-8 ring-white">
+                            <i data-lucide="{{ icon|default:'info' }}" class="h-5 w-5 text-gray-600"></i>
+                        </div>
+                    {% endif %}
+                </div>
+                <div class="min-w-0 flex-1 py-1.5">
+                    <div class="text-sm text-gray-500">
+                        <span class="font-medium text-gray-900">{{ user|default:'Utilisateur' }}</span>
+                        {{ action }}
+                        <span class="whitespace-nowrap">{{ date }}</span>
+                    </div>
+                    {% if description %}
+                    <div class="mt-2 text-sm text-gray-700">
+                        <p>{{ description }}</p>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </li>
+</ul>

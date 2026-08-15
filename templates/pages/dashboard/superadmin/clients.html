@@ -1,0 +1,124 @@
+{% extends "layouts/dashboard.html" %}
+
+{% block title %}Gestion Clients - DEKOUWAY ERP{% endblock %}
+
+{% block page_header %}
+<div class="md:flex md:items-center md:justify-between mb-8 mt-2">
+    <div class="min-w-0 flex-1">
+        <h2 class="text-2xl font-bold leading-7 text-gray-900 sm:truncate sm:text-3xl sm:tracking-tight">
+            Base Clients (Locataires)
+        </h2>
+        <p class="mt-1 text-sm text-gray-500">Gérez les comptes des voyageurs utilisant la plateforme.</p>
+    </div>
+</div>
+{% endblock %}
+
+{% block content %}
+<div class="px-4 sm:px-6 lg:px-8 bg-white border border-gray-200 rounded-xl py-6 shadow-sm">
+    
+    <!-- Filtres & Recherche -->
+    <form method="GET" action="{% url 'dashboard:admin_clients' %}" class="sm:flex sm:items-center justify-between mb-6">
+        <div class="flex space-x-2 overflow-x-auto pb-2 sm:pb-0">
+            <a href="{% url 'dashboard:admin_clients' %}" 
+               class="whitespace-nowrap px-4 py-2 text-sm font-medium rounded-full {% if not request.GET.status %}bg-gray-900 text-white{% else %}bg-white text-gray-700 border border-gray-300 hover:bg-gray-50{% endif %}">
+                Tous les clients ({{ stats.total_clients }})
+            </a>
+            <a href="{% url 'dashboard:admin_clients' %}?status=active{% if request.GET.search %}&search={{ request.GET.search }}{% endif %}" 
+               class="whitespace-nowrap px-4 py-2 text-sm font-medium rounded-full {% if request.GET.status == 'active' %}bg-gray-900 text-white{% else %}bg-white text-gray-700 border border-gray-300 hover:bg-gray-50{% endif %}">
+                Actifs ({{ stats.active_clients }})
+            </a>
+            <a href="{% url 'dashboard:admin_clients' %}?status=blocked{% if request.GET.search %}&search={{ request.GET.search }}{% endif %}" 
+               class="whitespace-nowrap px-4 py-2 text-sm font-medium rounded-full {% if request.GET.status == 'blocked' %}bg-red-700 text-white{% else %}bg-white text-red-700 border border-red-300 hover:bg-red-50{% endif %}">
+                Bloqués ({{ stats.blocked_clients }})
+            </a>
+        </div>
+        <div class="mt-4 sm:ml-4 sm:mt-0 sm:flex-none">
+            <div class="relative max-w-xs flex items-center">
+                <i data-lucide="search" class="absolute left-3 top-1/2 -mt-2 h-4 w-4 text-gray-400"></i>
+                <input type="text" name="search" value="{{ request.GET.search|default:'' }}" 
+                       class="block w-full rounded-md border-0 py-1.5 pl-10 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-[#8B1E24] sm:text-sm sm:leading-6" 
+                       placeholder="Rechercher nom, email, téléphone...">
+                {% if request.GET.status %}
+                    <input type="hidden" name="status" value="{{ request.GET.status }}">
+                {% endif %}
+            </div>
+        </div>
+    </form>
+
+    <!-- Table Clients -->
+    <div class="mt-4 flow-root">
+        <div class="-mx-4 -my-2 overflow-x-auto sm:-mx-6 lg:-mx-8">
+            <div class="inline-block min-w-full py-2 align-middle sm:px-6 lg:px-8">
+                <table class="min-w-full divide-y divide-gray-300">
+                    <thead class="bg-gray-50">
+                        <tr>
+                            <th scope="col" class="py-3.5 pl-4 pr-3 text-left text-sm font-semibold text-gray-900 sm:pl-0">Client</th>
+                            <th scope="col" class="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">Contact</th>
+                            <th scope="col" class="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">Réservations</th>
+                            <th scope="col" class="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">Statut</th>
+                            <th scope="col" class="relative py-3.5 pl-3 pr-4 sm:pr-0">
+                                <span class="sr-only">Actions</span>
+                            </th>
+                        </tr>
+                    </thead>
+                    <tbody class="divide-y divide-gray-200 bg-white">
+                        {% for client in clients %}
+                        <tr>
+                            <td class="whitespace-nowrap py-5 pl-4 pr-3 sm:pl-0">
+                                <div class="flex items-center">
+                                    <div class="h-10 w-10 flex-shrink-0">
+                                        {% if client.profile.avatar %}
+                                            <img class="h-10 w-10 rounded-full" src="{{ client.profile.avatar.url }}" alt="">
+                                        {% else %}
+                                            <img class="h-10 w-10 rounded-full" src="https://ui-avatars.com/api/?name={{ client.profile.first_name|default:client.email }}&background=E5E7EB&color=374151" alt="">
+                                        {% endif %}
+                                    </div>
+                                    <div class="ml-4">
+                                        <div class="font-medium text-gray-900">{{ client.profile.first_name|default:client.email }}</div>
+                                        <div class="text-gray-500 text-xs mt-0.5">Inscrit(e) le {{ client.date_joined|date:"d M Y" }}</div>
+                                    </div>
+                                </div>
+                            </td>
+                            <td class="whitespace-nowrap px-3 py-5 text-sm text-gray-500">
+                                <div class="text-gray-900">{{ client.email }}</div>
+                                <div class="text-gray-500">{{ client.profile.phone|default:"Non renseigné" }}</div>
+                            </td>
+                            <td class="whitespace-nowrap px-3 py-5 text-sm text-gray-500">
+                                <div class="text-gray-900 font-medium">{{ client.reservations_count|default:"0" }} séjour(s)</div>
+                            </td>
+                            <td class="whitespace-nowrap px-3 py-5 text-sm text-gray-500">
+                                {% if client.is_active %}
+                                    {% include "components/dashboard/status_badge.html" with status="success" label="Actif" %}
+                                {% else %}
+                                    {% include "components/dashboard/status_badge.html" with status="error" label="Bloqué" %}
+                                {% endif %}
+                            </td>
+                            <td class="relative whitespace-nowrap py-5 pl-3 pr-4 text-right text-sm font-medium sm:pr-0">
+                                <form method="POST" class="inline">
+                                    {% csrf_token %}
+                                    <input type="hidden" name="client_id" value="{{ client.id }}">
+                                    <input type="hidden" name="action" value="toggle_status">
+                                    <button type="submit" class="text-xs font-semibold px-3 py-1 rounded-md border border-gray-200 hover:bg-gray-50 text-gray-700">
+                                        {% if client.is_active %}Bloquer{% else %}Débloquer{% endif %}
+                                    </button>
+                                </form>
+                            </td>
+                        </tr>
+                        {% empty %}
+                        <tr>
+                            <td colspan="5" class="py-8 text-center text-gray-500">
+                                Aucun client trouvé.
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+    
+    <div class="mt-6 border-t border-gray-200 pt-4">
+        {% include "components/dashboard/pagination.html" %}
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,25 @@
+<div class="border-b border-gray-200">
+    <nav class="-mb-px flex space-x-8" aria-label="Tabs">
+        <!-- Onglet Toutes -->
+        <button type="button" 
+                @click="activeTab = 'all'"
+                :class="activeTab === 'all' ? 'border-[#8B1E24] text-[#8B1E24]' : 'border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700'"
+                class="whitespace-nowrap border-b-2 py-4 px-1 text-sm font-medium flex items-center transition-colors">
+            Toutes les notifications
+            <span :class="activeTab === 'all' ? 'bg-[#8B1E24] text-white' : 'bg-gray-100 text-gray-900'" class="ml-3 rounded-full py-0.5 px-2.5 text-xs font-medium inline-block transition-colors">
+                24
+            </span>
+        </button>
+
+        <!-- Onglet Non lues -->
+        <button type="button" 
+                @click="activeTab = 'unread'"
+                :class="activeTab === 'unread' ? 'border-[#8B1E24] text-[#8B1E24]' : 'border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700'"
+                class="whitespace-nowrap border-b-2 py-4 px-1 text-sm font-medium flex items-center transition-colors">
+            Non lues
+            <span :class="activeTab === 'unread' ? 'bg-[#8B1E24] text-white' : 'bg-[#8B1E24]/10 text-[#8B1E24]'" class="ml-3 rounded-full py-0.5 px-2.5 text-xs font-medium inline-block transition-colors">
+                3
+            </span>
+        </button>
+    </nav>
+</div>

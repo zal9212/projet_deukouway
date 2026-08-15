@@ -1,0 +1,57 @@
+<div class="py-6 border-b border-gray-200" x-data="{ activeAccordion: null }">
+    <h3 class="text-xl font-bold text-gray-900 mb-6">Questions fréquentes</h3>
+    
+    <div class="space-y-4">
+        <!-- FAQ 1 -->
+        <div class="border-b border-gray-100 pb-4">
+            <button @click="activeAccordion = activeAccordion === 1 ? null : 1" 
+                    class="flex w-full items-center justify-between text-left focus:outline-none"
+                    :aria-expanded="activeAccordion === 1">
+                <span class="font-bold text-gray-900">Comment fonctionne la réservation ?</span>
+                <i data-lucide="chevron-down" class="w-5 h-5 text-gray-500 transition-transform duration-200" :class="{ 'rotate-180': activeAccordion === 1 }"></i>
+            </button>
+            <div x-show="activeAccordion === 1" x-collapse x-cloak class="mt-2 text-sm text-gray-700 leading-relaxed">
+                Lorsque vous cliquez sur "Demander une réservation", votre demande est envoyée à l'équipe DEKOUWAY. Nous vérifions la disponibilité avec le propriétaire et nous vous confirmons la réservation dans les plus brefs délais.
+            </div>
+        </div>
+        
+        <!-- FAQ 2 -->
+        <div class="border-b border-gray-100 pb-4">
+            <button @click="activeAccordion = activeAccordion === 2 ? null : 2" 
+                    class="flex w-full items-center justify-between text-left focus:outline-none"
+                    :aria-expanded="activeAccordion === 2">
+                <span class="font-bold text-gray-900">Quand vais-je recevoir la confirmation ?</span>
+                <i data-lucide="chevron-down" class="w-5 h-5 text-gray-500 transition-transform duration-200" :class="{ 'rotate-180': activeAccordion === 2 }"></i>
+            </button>
+            <div x-show="activeAccordion === 2" x-collapse x-cloak class="mt-2 text-sm text-gray-700 leading-relaxed">
+                Généralement, la confirmation de votre demande de réservation prend moins de 24 heures. Vous recevrez une notification par e-mail et sur votre tableau de bord DEKOUWAY dès que l'hôte aura accepté.
+            </div>
+        </div>
+        
+        <!-- FAQ 3 -->
+        <div class="border-b border-gray-100 pb-4">
+            <button @click="activeAccordion = activeAccordion === 3 ? null : 3" 
+                    class="flex w-full items-center justify-between text-left focus:outline-none"
+                    :aria-expanded="activeAccordion === 3">
+                <span class="font-bold text-gray-900">Puis-je annuler ?</span>
+                <i data-lucide="chevron-down" class="w-5 h-5 text-gray-500 transition-transform duration-200" :class="{ 'rotate-180': activeAccordion === 3 }"></i>
+            </button>
+            <div x-show="activeAccordion === 3" x-collapse x-cloak class="mt-2 text-sm text-gray-700 leading-relaxed">
+                Oui, les conditions d'annulation dépendent de chaque logement. Pour celui-ci, l'annulation est gratuite jusqu'à 48h après la confirmation par DEKOUWAY. Passé ce délai, des frais peuvent s'appliquer.
+            </div>
+        </div>
+        
+        <!-- FAQ 4 -->
+        <div class="pb-2">
+            <button @click="activeAccordion = activeAccordion === 4 ? null : 4" 
+                    class="flex w-full items-center justify-between text-left focus:outline-none"
+                    :aria-expanded="activeAccordion === 4">
+                <span class="font-bold text-gray-900">Comment se passe le paiement ?</span>
+                <i data-lucide="chevron-down" class="w-5 h-5 text-gray-500 transition-transform duration-200" :class="{ 'rotate-180': activeAccordion === 4 }"></i>
+            </button>
+            <div x-show="activeAccordion === 4" x-collapse x-cloak class="mt-2 text-sm text-gray-700 leading-relaxed">
+                Le paiement s'effectue de manière 100% sécurisée via la plateforme DEKOUWAY. Vous ne serez débité qu'une fois la réservation confirmée par le propriétaire. Nous retenons les fonds jusqu'à votre arrivée pour garantir votre sécurité.
+            </div>
+        </div>
+    </div>
+</div>

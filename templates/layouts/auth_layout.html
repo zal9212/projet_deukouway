@@ -1,0 +1,103 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="fr" class="h-full bg-white antialiased">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Authentification - DEKOUWAY{% endblock %}</title>
+    
+    <!-- Tailwind CSS (compilé localement, voir README pour la commande de build) -->
+    <link rel="stylesheet" href="{% static 'css/tailwind.css' %}">
+    
+    <!-- Alpine.js -->
+    <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
+    
+    <!-- Lucide Icons -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+    
+    <!-- Fonts : Inter -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    
+    <style>
+        body { font-family: 'Inter', sans-serif; }
+        [x-cloak] { display: none !important; }
+    </style>
+</head>
+<body class="h-full font-sans text-gray-900 overflow-x-hidden">
+
+    <!-- Messages flash (succès / erreur / info) -->
+    {% include "components/messages.html" %}
+
+    <div class="flex min-h-full">
+        <!-- Colonne Gauche : Illustration (Visible uniquement sur Desktop lg) -->
+        <div class="hidden lg:flex lg:w-1/2 lg:flex-col lg:justify-between bg-gray-50 border-r border-gray-200 relative overflow-hidden">
+            <!-- Pattern de fond subtil -->
+            <div class="absolute inset-0 opacity-10 bg-[url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjAiIGhlaWdodD0iMjAiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+PGNpcmNsZSBjeD0iMiIgY3k9IjIiIHI9IjIiIGZpbGw9IiM4QjFFMjQiLz48L3N2Zz4=')]"></div>
+            
+            <div class="p-12 relative z-10">
+                <!-- Logo -->
+                <a href="/" class="flex items-center gap-3 w-fit focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#8B1E24] rounded-lg">
+                    {% if platform_settings.logo %}
+                        <img src="{{ platform_settings.logo.url }}" alt="{{ platform_settings.site_name }}" class="w-10 h-10 rounded-xl object-cover shadow-lg">
+                    {% else %}
+                        <div class="w-10 h-10 bg-[#8B1E24] rounded-xl flex items-center justify-center text-white font-bold text-xl shadow-lg">
+                            {{ platform_settings.site_name|default:"DEKOUWAY"|slice:":1" }}
+                        </div>
+                    {% endif %}
+                    <span class="text-2xl font-black text-gray-900 tracking-tight">{{ platform_settings.site_name|default:"DEKOUWAY" }}</span>
+                </a>
+                
+                <!-- Slogan -->
+                <div class="mt-24 max-w-lg">
+                    <h1 class="text-4xl font-bold text-gray-900 leading-tight mb-6">Trouvez le logement idéal au Sénégal, en toute sécurité.</h1>
+                    <p class="text-lg text-gray-600 leading-relaxed">
+                        Rejoignez notre communauté de voyageurs et de propriétaires de confiance. Une plateforme pensée pour des séjours authentiques et sans tracas.
+                    </p>
+                </div>
+            </div>
+            
+            <!-- Footer de la colonne gauche -->
+            <div class="p-12 relative z-10 flex items-center gap-6 text-sm font-medium text-gray-500">
+                <span>© 2026 {{ platform_settings.site_name|default:"DEKOUWAY" }}</span>
+                <a href="{% url 'public:privacy' %}" class="hover:text-gray-900 transition-colors">Confidentialité</a>
+                <a href="{% url 'public:terms' %}" class="hover:text-gray-900 transition-colors">Conditions</a>
+            </div>
+        </div>
+
+        <!-- Colonne Droite : Formulaire -->
+        <div class="flex w-full flex-col justify-center px-4 py-12 sm:px-6 lg:w-1/2 lg:flex-none xl:px-24">
+            <div class="mx-auto w-full max-w-sm sm:max-w-md lg:max-w-sm xl:max-w-md">
+                
+                <!-- Logo (Mobile uniquement) -->
+                <div class="lg:hidden flex justify-center mb-8">
+                    <a href="/" class="flex items-center gap-3 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#8B1E24] rounded-lg">
+                        <div class="w-10 h-10 bg-[#8B1E24] rounded-xl flex items-center justify-center text-white font-bold text-xl shadow-lg">
+                            D
+                        </div>
+                        <span class="text-2xl font-black text-gray-900 tracking-tight">DEKOUWAY</span>
+                    </a>
+                </div>
+                
+                <!-- Contenu principal -->
+                <main>
+                    {% block content %}{% endblock %}
+                </main>
+                
+            </div>
+        </div>
+    </div>
+    
+    <!-- Initialisation des icônes Lucide -->
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            if (typeof lucide !== 'undefined') {
+                lucide.createIcons();
+            }
+        });
+    </script>
+    
+    {% block extra_js %}{% endblock %}
+</body>
+</html>
