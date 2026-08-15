@@ -367,6 +367,11 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 # Security settings for production
 if not DEBUG:
+    # Derrière un proxy TLS-terminating (Render, nginx, etc.), la connexion TCP
+    # que voit Django est du HTTP brut : sans ce header, SECURE_SSL_REDIRECT
+    # considère TOUTE requête comme non sécurisée et boucle en redirection 301
+    # (observé sur Render : le health-check interne n'obtenait jamais de 200).
+    SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
     SECURE_BROWSER_XSS_FILTER = True
     SECURE_CONTENT_TYPE_NOSNIFF = True
     X_FRAME_OPTIONS = 'DENY'
