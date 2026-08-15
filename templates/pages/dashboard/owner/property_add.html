@@ -27,10 +27,10 @@
         </h2>
 
         <!-- Progress Bar -->
-        <nav aria-label="Progress">
-            <ol role="list" class="flex items-center">
+        <nav aria-label="Progress" class="overflow-x-auto -mx-4 px-4 pb-1 sm:mx-0 sm:px-0">
+            <ol role="list" class="flex items-center w-max">
                 <template x-for="i in maxStep" :key="i">
-                    <li class="relative pr-8 sm:pr-20" :class="i !== maxStep ? '' : 'pr-0 sm:pr-0'">
+                    <li class="relative pr-8 sm:pr-20 shrink-0" :class="i !== maxStep ? '' : 'pr-0 sm:pr-0'">
                         <div class="absolute inset-0 flex items-center" aria-hidden="true" x-show="i !== maxStep">
                             <div class="h-0.5 w-full bg-gray-200" :class="step > i ? 'bg-[#8B1E24]' : 'bg-gray-200'"></div>
                         </div>
@@ -49,6 +49,14 @@
         <input type="hidden" name="latitude" :value="latitude">
         <input type="hidden" name="longitude" :value="longitude">
         <div class="bg-white shadow-sm ring-1 ring-gray-900/5 sm:rounded-xl">
+            {% if not property or property.status == 'DRAFT' %}
+            <div class="flex justify-end border-b border-gray-100 px-4 py-3 sm:px-8">
+                <button type="submit" name="save_action" value="draft" class="inline-flex items-center gap-1.5 text-sm font-semibold text-gray-600 hover:text-gray-900">
+                    <i data-lucide="save" class="w-4 h-4"></i>
+                    Enregistrer comme brouillon
+                </button>
+            </div>
+            {% endif %}
             <div class="px-4 py-6 sm:p-8">
 
                 <!-- ETAPE 1: Informations générales -->
