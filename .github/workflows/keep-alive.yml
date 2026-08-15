@@ -1,11 +1,11 @@
 name: Keep Render Instance Awake
 
-# Ping /health/ toutes les 10 min pour empêcher le plan gratuit Render de
+# Ping /health/ toutes les 5 min pour empêcher le plan gratuit Render de
 # s'endormir après 15 min d'inactivité (le "cold start" suivant peut prendre
 # 50s+). Purement pour du confort de test : n'affecte ni le code ni le CI.
 on:
   schedule:
-    - cron: '*/10 * * * *'
+    - cron: '*/5 * * * *'
   workflow_dispatch: {}
 
 jobs:
