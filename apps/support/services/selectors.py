@@ -1,5 +1,5 @@
 from django.db.models import QuerySet, Q
-from apps.support.models import Ticket, TicketMessage, Dispute, Complaint, SupportCategory, ContactMessage
+from apps.support.models import Ticket, Dispute, SupportCategory, ContactMessage
 
 class TicketSelector:
 

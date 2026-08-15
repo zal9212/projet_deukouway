@@ -1,7 +1,7 @@
 from rest_framework.test import APITestCase
 from rest_framework import status
 from django.core.files.uploadedfile import SimpleUploadedFile
-from apps.accounts.models import User, Address
+from apps.accounts.models import User
 
 class AccountsAPITestCase(APITestCase):
     def setUp(self):

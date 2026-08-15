@@ -51,8 +51,13 @@ class ModerationService:
                 'categories': list(result.get('categories', []))
             }
         except Exception:
+            # Échec fermé : une réponse LLM non exploitable (JSON malformé, refus,
+            # texte hors format) doit être signalée pour revue humaine plutôt que
+            # silencieusement laissée passer — c'est une fonction de modération,
+            # pas une fonctionnalité de confort.
+            logger.warning(f"Réponse de modération LLM non exploitable, signalée par prudence : {llm_reply!r}")
             return {
-                'flagged': False,
-                'reason': "Contenu conforme.",
-                'categories': []
+                'flagged': True,
+                'reason': "Analyse automatique indisponible : contenu signalé par prudence pour revue manuelle.",
+                'categories': ['moderation_uncertain']
             }

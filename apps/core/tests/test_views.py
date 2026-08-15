@@ -1,6 +1,5 @@
 from django.test import TestCase, Client
 from django.urls import reverse
-from apps.accounts.models import User
 from apps.accounts.services.services import AccountService
 from apps.properties.models import PropertyCategory, PropertyType
 from apps.properties.services.services import PropertyService
@@ -82,10 +81,11 @@ class PublicViewsTestCase(TestCase):
         response = self.client.get(reverse('public:home'))
         self.assertEqual(response.status_code, 200)
         detail_url = reverse('public:property_detail', kwargs={'pk': self.property.id})
-        # La carte apparaît sur 3 sections de la page d'accueil (2x property_card.html
-        # + 1x carrousel "Logements recommandés") ; chacune ne doit contenir qu'UN SEUL
-        # lien vers le détail (au lieu de 2 sur les property_card.html avant le fix).
-        self.assertContains(response, f'href="{detail_url}"', count=3)
+        # La carte apparaît sur 2 sections de la page d'accueil (1x grille desktop
+        # via property_card.html + 1x carrousel mobile "Logements recommandés") ;
+        # chacune ne doit contenir qu'UN SEUL lien vers le détail (au lieu de 2 sur
+        # property_card.html avant le fix, ou 3 avant la fusion des sections dupliquées).
+        self.assertContains(response, f'href="{detail_url}"', count=2)
 
 
 class SearchFilterTestCase(TestCase):

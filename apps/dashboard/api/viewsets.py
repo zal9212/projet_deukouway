@@ -1,8 +1,8 @@
-from rest_framework import viewsets, permissions, status
+from rest_framework import viewsets, permissions
 from rest_framework.decorators import action
 from rest_framework.response import Response
 from decimal import Decimal
-from django.db.models import Sum, Count
+from django.db.models import Sum
 
 from apps.core.api.cache import cache_response
 from apps.core.api.permissions import IsSuperAdmin, IsOwner, IsClient
@@ -27,7 +27,7 @@ class DashboardViewSet(viewsets.ViewSet):
         requests_qs = ReservationRequest.objects.filter(client=user, is_deleted=False)
         reservations_qs = Reservation.objects.filter(client=user, is_deleted=False)
 
-        total_spent = payments = Payment.objects.filter(user=user, status='SUCCESS').aggregate(s=Sum('amount'))['s'] or Decimal('0.00')
+        total_spent = Payment.objects.filter(user=user, status='SUCCESS').aggregate(s=Sum('amount'))['s'] or Decimal('0.00')
 
         data = {
             'total_reservations': requests_qs.count(),
@@ -44,7 +44,7 @@ class DashboardViewSet(viewsets.ViewSet):
         properties_qs = Property.objects.filter(owner=user, is_deleted=False)
         reservations_qs = Reservation.objects.filter(property__owner=user, is_deleted=False)
 
-        revenue = payments = Payment.objects.filter(reservation__property__owner=user, status='SUCCESS').aggregate(s=Sum('amount'))['s'] or Decimal('0.00')
+        revenue = Payment.objects.filter(reservation__property__owner=user, status='SUCCESS').aggregate(s=Sum('amount'))['s'] or Decimal('0.00')
 
         total_props = properties_qs.count()
         published_props = properties_qs.filter(status='PUBLISHED').count()

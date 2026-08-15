@@ -1,7 +1,7 @@
 from rest_framework.test import APITestCase
 from rest_framework import status
 from apps.accounts.models import User
-from apps.support.models import SupportCategory, Ticket
+from apps.support.models import SupportCategory
 
 class SupportAPITestCase(APITestCase):
     def setUp(self):

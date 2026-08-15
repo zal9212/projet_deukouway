@@ -10,3 +10,7 @@ class PropertyStatusChoices(models.TextChoices):
     PUBLISHED = 'PUBLISHED', _('Publié')
     SUSPENDED = 'SUSPENDED', _('Suspendu')
     ARCHIVED = 'ARCHIVED', _('Archivé')
+
+class PropertyPricingPeriodChoices(models.TextChoices):
+    NIGHTLY = 'NIGHTLY', _('Par nuit')
+    MONTHLY = 'MONTHLY', _('Par mois')

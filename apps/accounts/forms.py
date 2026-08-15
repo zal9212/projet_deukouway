@@ -215,10 +215,15 @@ class OwnerRegisterForm(TailwindFormMixin, forms.Form):
         error_messages={'required': 'Veuillez renseigner le numéro de votre pièce d\'identité.'}
     )
     identity_file = forms.FileField(
-        label="Photo de la pièce d'identité (PDF, PNG, JPG - max 5 Mo)",
+        label="Photo de la pièce d'identité, recto (PDF, PNG, JPG - max 5 Mo)",
         required=True,
         widget=forms.FileInput(attrs={'accept': '.pdf,.png,.jpg,.jpeg', 'required': 'required'}),
         error_messages={'required': "Veuillez téléverser une photo lisible de votre pièce d'identité."}
+    )
+    identity_file_back = forms.FileField(
+        label="Photo de la pièce d'identité, verso (PDF, PNG, JPG - max 5 Mo)",
+        required=False,
+        widget=forms.FileInput(attrs={'accept': '.pdf,.png,.jpg,.jpeg'}),
     )
     selfie_with_id_file = forms.ImageField(
         label="Selfie tenant la pièce d'identité (PNG, JPG - max 5 Mo)",
@@ -268,6 +273,14 @@ class OwnerRegisterForm(TailwindFormMixin, forms.Form):
             validate_max_file_size(file_obj, max_size_mb=5.0)
         return file_obj
 
+    def clean_identity_file_back(self) -> Any:
+        file_obj = self.cleaned_data.get('identity_file_back')
+        if file_obj:
+            validate_allowed_file_extensions(file_obj, ('pdf', 'png', 'jpg', 'jpeg'))
+            validate_file_content_type(file_obj, ('pdf', 'png', 'jpg', 'jpeg'))
+            validate_max_file_size(file_obj, max_size_mb=5.0)
+        return file_obj
+
     def clean_selfie_with_id_file(self) -> Any:
         file_obj = self.cleaned_data.get('selfie_with_id_file')
         if file_obj:
@@ -281,6 +294,11 @@ class OwnerRegisterForm(TailwindFormMixin, forms.Form):
         p2 = cleaned_data.get('password2')
         if p1 and p2 and p1 != p2:
             raise ValidationError({'password2': "Les mots de passe ne correspondent pas."})
+
+        # La CNI est un document recto/verso : les deux faces sont nécessaires pour la
+        # vérification KYC. Un passeport ou titre de séjour n'a qu'une page utile.
+        if cleaned_data.get('document_type') == 'CNI' and not cleaned_data.get('identity_file_back'):
+            raise ValidationError({'identity_file_back': "Veuillez téléverser également le verso de votre carte nationale d'identité."})
         return cleaned_data
 
 

@@ -24,19 +24,24 @@
             {% if property.images.all %}
                 <img src="{{ property.images.first.image.url }}" alt="{{ property.title }}" class="object-cover w-full h-full group-hover:scale-105 transition-transform duration-500">
             {% else %}
-                {% placeholder_image property.id as ph_img %}
-                <img src="{% static ph_img %}" alt="{{ property.title }}" class="object-cover w-full h-full group-hover:scale-105 transition-transform duration-500">
+                <img src="{% placeholder_image property.id %}" alt="{{ property.title }}" class="object-cover w-full h-full group-hover:scale-105 transition-transform duration-500">
             {% endif %}
-            <button class="absolute top-3 right-3 p-2 rounded-full bg-white/90 shadow-sm text-[#8B1E24] hover:bg-white hover:scale-110 transition-transform z-10" title="Favori">
-                <i data-lucide="heart" class="w-5 h-5 fill-current"></i>
-            </button>
+            <form method="POST" action="{% url 'public:favorite_toggle' property.id %}" class="absolute top-3 right-3 z-10"
+                  hx-post="{% url 'public:favorite_toggle' property.id %}" hx-swap="none">
+                {% csrf_token %}
+                <button type="submit" @click="$el.closest('.group').remove()" class="p-2 rounded-full bg-white/90 shadow-sm text-[#8B1E24] hover:bg-white hover:scale-110 transition-transform" title="Retirer des favoris">
+                    <i data-lucide="heart" class="w-5 h-5 fill-current"></i>
+                </button>
+            </form>
         </div>
         <div class="p-5 flex-1 flex flex-col">
             <div class="flex items-center justify-between mb-1">
                 <p class="text-xs font-semibold uppercase tracking-wide text-[#8B1E24]">{{ property.property_type.name|default:"Logement" }}</p>
+                {% if property.avg_rating %}
                 <div class="flex items-center text-sm font-medium text-gray-900">
-                    <i data-lucide="star" class="w-4 h-4 fill-yellow-400 text-yellow-400 mr-1"></i> 4.8
+                    <i data-lucide="star" class="w-4 h-4 fill-yellow-400 text-yellow-400 mr-1"></i> {{ property.avg_rating|floatformat:1 }}
                 </div>
+                {% endif %}
             </div>
             <h3 class="text-lg font-bold text-gray-900 line-clamp-1">
                 <a href="{% url 'public:property_detail' property.id %}">
@@ -50,7 +55,7 @@
             <div class="mt-auto pt-4 flex items-center justify-between">
                 <div>
                     <span class="text-lg font-bold text-gray-900">{{ property.price }} F</span>
-                    <span class="text-sm text-gray-500"> / nuit</span>
+                    <span class="text-sm text-gray-500"> {{ property.pricing_period|price_unit }}</span>
                 </div>
                 <a href="{% url 'public:property_detail' property.id %}" class="relative z-10 rounded-md bg-[#8B1E24]/10 px-3 py-2 text-sm font-semibold text-[#8B1E24] hover:bg-[#8B1E24] hover:text-white transition-colors">Réserver</a>
             </div>

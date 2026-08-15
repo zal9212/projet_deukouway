@@ -25,10 +25,14 @@
             <!-- En-tête avec Logo et Bouton de Fermeture intégré (Pas de chevauchement) -->
             <div class="flex h-16 shrink-0 items-center justify-between border-b border-gray-800 px-6">
                 <a href="{% url 'public:home' %}" class="flex items-center space-x-3">
-                    <div class="w-10 h-10 bg-[#8B1E24] rounded-xl flex items-center justify-center shrink-0 shadow-sm">
-                        <i data-lucide="shield-check" class="text-white w-6 h-6"></i>
-                    </div>
-                    <span class="text-xl font-bold tracking-tight text-white">DEKOUWAY</span>
+                    {% if platform_settings.logo %}
+                        <img src="{{ platform_settings.logo.url }}" alt="{{ platform_settings.site_name }}" class="w-10 h-10 rounded-xl object-cover shrink-0 shadow-sm">
+                    {% else %}
+                        <div class="w-10 h-10 bg-[#8B1E24] rounded-xl flex items-center justify-center shrink-0 shadow-sm">
+                            <i data-lucide="shield-check" class="text-white w-6 h-6"></i>
+                        </div>
+                    {% endif %}
+                    <span class="text-xl font-bold tracking-tight text-white">{{ platform_settings.site_name|default:"DEKOUWAY" }}</span>
                 </a>
                 <button type="button" 
                         class="rounded-lg p-2 text-gray-400 hover:text-white hover:bg-gray-800 transition-colors focus:outline-none" 
@@ -90,6 +94,12 @@
                                         {% endif %}
                                     </a>
                                 </li>
+                                <li>
+                                    <a href="{% url 'dashboard:admin_validate_reservations' %}" @click="sidebarOpen = false" class="{% if request.resolver_match.url_name == 'admin_validate_reservations' %}bg-gray-800 text-white{% else %}text-gray-300 hover:text-white hover:bg-gray-800{% endif %} group flex gap-x-3 rounded-md p-2 text-sm leading-6 font-medium">
+                                        <i data-lucide="calendar-check" class="h-5 w-5 shrink-0 text-gray-400 group-hover:text-white"></i>
+                                        Validation Réservations
+                                    </a>
+                                </li>
                             </ul>
                         </li>
                         <li>
@@ -113,10 +123,39 @@
                                         Reversements
                                     </a>
                                 </li>
+                            </ul>
+                        </li>
+                        <li>
+                            <div class="text-xs font-semibold leading-6 text-gray-400 uppercase tracking-wider mb-1">Support & Système</div>
+                            <ul role="list" class="-mx-2 space-y-1">
+                                <li>
+                                    <a href="{% url 'dashboard:admin_support' %}" @click="sidebarOpen = false" class="text-gray-300 hover:text-white hover:bg-gray-800 group flex gap-x-3 rounded-md p-2 text-sm font-medium">
+                                        <i data-lucide="life-buoy" class="h-5 w-5 shrink-0 text-gray-400 group-hover:text-white"></i>
+                                        Tickets Support
+                                    </a>
+                                </li>
+                                <li>
+                                    <a href="{% url 'dashboard:admin_disputes' %}" @click="sidebarOpen = false" class="text-gray-300 hover:text-white hover:bg-gray-800 group flex gap-x-3 rounded-md p-2 text-sm font-medium">
+                                        <i data-lucide="scale" class="h-5 w-5 shrink-0 text-gray-400 group-hover:text-white"></i>
+                                        Litiges
+                                    </a>
+                                </li>
                                 <li>
                                     <a href="{% url 'dashboard:admin_analytics' %}" @click="sidebarOpen = false" class="text-gray-300 hover:text-white hover:bg-gray-800 group flex gap-x-3 rounded-md p-2 text-sm font-medium">
                                         <i data-lucide="bar-chart-2" class="h-5 w-5 shrink-0 text-gray-400 group-hover:text-white"></i>
                                         Analytics & IA
+                                    </a>
+                                </li>
+                                <li>
+                                    <a href="{% url 'dashboard:admin_config' %}" @click="sidebarOpen = false" class="text-gray-300 hover:text-white hover:bg-gray-800 group flex gap-x-3 rounded-md p-2 text-sm font-medium">
+                                        <i data-lucide="sliders-horizontal" class="h-5 w-5 shrink-0 text-gray-400 group-hover:text-white"></i>
+                                        Configuration
+                                    </a>
+                                </li>
+                                <li>
+                                    <a href="{% url 'dashboard:admin_settings' %}" @click="sidebarOpen = false" class="text-gray-300 hover:text-white hover:bg-gray-800 group flex gap-x-3 rounded-md p-2 text-sm font-medium">
+                                        <i data-lucide="settings" class="h-5 w-5 shrink-0 text-gray-400 group-hover:text-white"></i>
+                                        Préférences
                                     </a>
                                 </li>
                             </ul>

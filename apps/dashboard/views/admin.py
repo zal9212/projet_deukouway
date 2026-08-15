@@ -1,4 +1,4 @@
-from django.views.generic import TemplateView, ListView, DetailView, View
+from django.views.generic import TemplateView, ListView, View
 from django.shortcuts import redirect
 from django.urls import reverse_lazy
 from django.contrib import messages
@@ -41,6 +41,15 @@ class AdminValidateOwnersView(AdminRequiredMixin, ViewExceptionHandlingMixin, Li
     def get_queryset(self):
         return UserSelector.get_pending_owners()
 
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        selected_id = self.request.GET.get('id')
+        active_owner = self.get_queryset().filter(id=selected_id).first() if selected_id else None
+        if not active_owner and context['pending_owners']:
+            active_owner = context['pending_owners'][0]
+        context['active_owner'] = active_owner
+        return context
+
     def post(self, request, *args, **kwargs):
         owner_id = request.POST.get('owner_id')
         action = request.POST.get('action')
@@ -63,6 +72,15 @@ class AdminValidatePropertiesView(AdminRequiredMixin, ViewExceptionHandlingMixin
 
     def get_queryset(self):
         return PropertySelector.get_pending_properties()
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        selected_id = self.request.GET.get('id')
+        active_prop = self.get_queryset().filter(id=selected_id).first() if selected_id else None
+        if not active_prop and context['pending_properties']:
+            active_prop = context['pending_properties'][0]
+        context['active_prop'] = active_prop
+        return context
 
     def post(self, request, *args, **kwargs):
         prop_id = request.POST.get('property_id')
@@ -187,6 +205,15 @@ class AdminValidateReservationsView(AdminRequiredMixin, ViewExceptionHandlingMix
     def get_queryset(self):
         return ReservationSelector.get_pending_requests()
 
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        selected_id = self.request.GET.get('id')
+        active_req = self.get_queryset().filter(id=selected_id).first() if selected_id else None
+        if not active_req and context['pending_requests']:
+            active_req = context['pending_requests'][0]
+        context['active_req'] = active_req
+        return context
+
     def post(self, request, *args, **kwargs):
         req_id = request.POST.get('request_id')
         action = request.POST.get('action')
@@ -261,6 +288,29 @@ class AdminPayoutsView(AdminRequiredMixin, ViewExceptionHandlingMixin, ListView)
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context['stats'] = DashboardSelector.get_admin_stats()
+        return context
+
+class AdminPaymentDetailView(AdminRequiredMixin, ViewExceptionHandlingMixin, TemplateView):
+    template_name = 'pages/dashboard/superadmin/payment_detail.html'
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        payment = PaymentSelector.get_payment_by_id(self.kwargs.get('pk'))
+        if not payment:
+            raise Http404("Paiement introuvable.")
+        context['payment'] = payment
+        context['history'] = payment.history.order_by('-created_at')
+        return context
+
+class AdminPayoutDetailView(AdminRequiredMixin, ViewExceptionHandlingMixin, TemplateView):
+    template_name = 'pages/dashboard/superadmin/payout_detail.html'
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        payout = PaymentSelector.get_payout_by_id(self.kwargs.get('pk'))
+        if not payout:
+            raise Http404("Reversement introuvable.")
+        context['payout'] = payout
         return context
 
 class AdminDocumentsView(AdminRequiredMixin, ViewExceptionHandlingMixin, ListView):
@@ -362,6 +412,19 @@ class AdminConfigurationView(AdminRequiredMixin, ViewExceptionHandlingMixin, Tem
     def post(self, request, *args, **kwargs):
         from decimal import Decimal, InvalidOperation
         from django.core.exceptions import ValidationError
+
+        if request.POST.get('form_type') == 'branding':
+            try:
+                PaymentService.update_branding_settings(
+                    site_name=request.POST.get('site_name', '').strip(),
+                    logo=request.FILES.get('logo'),
+                    hero_image=request.FILES.get('hero_image'),
+                )
+                messages.success(request, "Identité de la marque mise à jour avec succès.")
+            except ValidationError as exc:
+                messages.error(request, " ".join(exc.messages))
+            return redirect('dashboard:admin_config')
+
         try:
             commission_percentage = Decimal(request.POST.get('commission_percentage', '0'))
             client_service_fee = Decimal(request.POST.get('client_service_fee', '0'))

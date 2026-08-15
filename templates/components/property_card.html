@@ -6,8 +6,7 @@
             {% if property.images.all %}
                 <img src="{{ property.images.first.image.url }}" alt="{{ property.title }}" class="w-full h-full object-cover" loading="lazy">
             {% else %}
-                {% placeholder_image property.id as ph_img %}
-                <img src="{% static ph_img %}" alt="{{ property.title }}" class="w-full h-full object-cover" loading="lazy">
+                <img src="{% placeholder_image property.id %}" alt="{{ property.title }}" class="w-full h-full object-cover" loading="lazy">
             {% endif %}
 
             <!-- Availability Badge -->
@@ -29,14 +28,15 @@
                             {{ property.title }}
                         </h3>
 
-                        <!-- Rating / Stars (Mockup compliant) -->
+                        <!-- Rating / Stars (données réelles) -->
                         <div class="flex items-center space-x-0.5 mt-1">
-                            <i data-lucide="star" class="w-3 h-3 text-[#C89B3C] fill-[#C89B3C]"></i>
-                            <i data-lucide="star" class="w-3 h-3 text-[#C89B3C] fill-[#C89B3C]"></i>
-                            <i data-lucide="star" class="w-3 h-3 text-[#C89B3C] fill-[#C89B3C]"></i>
-                            <i data-lucide="star" class="w-3 h-3 text-[#C89B3C] fill-[#C89B3C]"></i>
-                            <i data-lucide="star" class="w-3 h-3 text-[#C89B3C] fill-[#C89B3C]"></i>
-                            <span class="text-[9px] text-[#6B7280] font-semibold pl-1">(9)</span>
+                            {% if property.avg_rating %}
+                                <i data-lucide="star" class="w-3 h-3 text-[#C89B3C] fill-[#C89B3C]"></i>
+                                <span class="text-[10px] text-[#1F2937] font-bold pl-0.5">{{ property.avg_rating|floatformat:1 }}</span>
+                                <span class="text-[9px] text-[#6B7280] font-semibold pl-1">({{ property.review_count }})</span>
+                            {% else %}
+                                <span class="text-[9px] text-[#6B7280] font-semibold">Nouveau</span>
+                            {% endif %}
                         </div>
                     </div>
 
@@ -46,7 +46,7 @@
                             {{ property.price }} F
                         </span>
                         <span class="text-[8px] uppercase tracking-wider text-[#6B7280] font-bold block">
-                            / nuit
+                            {{ property.pricing_period|price_unit }}
                         </span>
                     </div>
                 </div>
@@ -75,8 +75,17 @@
     </a>
 
     <!-- Favori (hors du lien, pour ne pas déclencher la navigation) -->
-    <button aria-label="Ajouter aux favoris"
-            class="absolute top-3.5 right-3.5 p-2 bg-white border border-[#E5E7EB] rounded-full text-[#6B7280] hover:text-[#8B1E24] shadow-sm transition-colors focus:outline-none cursor-pointer z-10">
-        <i data-lucide="heart" class="w-3.5 h-3.5"></i>
-    </button>
+    {% if request.user.is_authenticated and request.user.is_client %}
+    <form method="POST" action="{% url 'public:favorite_toggle' property.id %}" class="absolute top-3.5 right-3.5 z-10"
+          hx-post="{% url 'public:favorite_toggle' property.id %}" hx-swap="none"
+          x-data="{ favorited: {% if property.id in user_favorite_ids %}true{% else %}false{% endif %} }">
+        {% csrf_token %}
+        <button type="submit" @click="favorited = !favorited"
+                :aria-label="favorited ? 'Retirer des favoris' : 'Ajouter aux favoris'"
+                class="p-2 bg-white border border-[#E5E7EB] rounded-full text-[#6B7280] hover:text-[#8B1E24] shadow-sm transition-colors focus:outline-none cursor-pointer">
+            <span x-show="!favorited" x-cloak><i data-lucide="heart" class="w-3.5 h-3.5"></i></span>
+            <span x-show="favorited" x-cloak><i data-lucide="heart" class="w-3.5 h-3.5 fill-current text-[#8B1E24]"></i></span>
+        </button>
+    </form>
+    {% endif %}
 </div>

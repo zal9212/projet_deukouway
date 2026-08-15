@@ -1,4 +1,4 @@
-from django.db.models import QuerySet, Q
+from django.db.models import QuerySet, Q, Avg, Count
 from django.core.cache import cache
 from django.conf import settings
 from apps.properties.models import Property, PropertyCategory, PropertyType, PropertyFavorite, PropertyAvailability
@@ -36,13 +36,26 @@ class PropertySelector:
     @staticmethod
     def get_published_properties() -> QuerySet[Property]:
         return Property.objects.filter(
-            status=PropertyStatusChoices.PUBLISHED, 
+            status=PropertyStatusChoices.PUBLISHED,
             is_deleted=False
-        ).select_related('owner', 'property_type').prefetch_related('images').order_by('-created_at')
+        ).select_related('owner', 'property_type').prefetch_related('images').annotate(
+            avg_rating=Avg('reviews__rating'), review_count=Count('reviews', distinct=True)
+        ).order_by('-created_at')
 
     @staticmethod
     def get_featured_properties(limit: int = 6) -> QuerySet[Property]:
         return PropertySelector.get_published_properties()[:limit]
+
+    @staticmethod
+    def get_similar_properties(prop: Property, limit: int = 4) -> QuerySet[Property]:
+        qs = PropertySelector.get_published_properties().exclude(id=prop.id)
+        same_city = qs.filter(city=prop.city)
+        if same_city.count() >= limit:
+            return same_city[:limit]
+        # Complète avec des logements du même type si la ville n'a pas assez de résultats.
+        extra_ids = list(same_city.values_list('id', flat=True))
+        extra = qs.filter(property_type=prop.property_type).exclude(id__in=extra_ids)[:limit - len(extra_ids)]
+        return list(same_city) + list(extra)
 
     @staticmethod
     def get_pending_properties() -> QuerySet[Property]:
@@ -111,7 +124,15 @@ class PropertySelector:
     @staticmethod
     def get_user_favorites(user_id: str) -> QuerySet[Property]:
         favorite_ids = PropertyFavorite.objects.filter(user_id=user_id, is_deleted=False).values_list('property_id', flat=True)
-        return Property.objects.filter(id__in=favorite_ids, is_deleted=False).select_related('property_type').prefetch_related('images')
+        return Property.objects.filter(id__in=favorite_ids, is_deleted=False).select_related('property_type').prefetch_related('images').annotate(
+            avg_rating=Avg('reviews__rating'), review_count=Count('reviews', distinct=True)
+        ).order_by('-created_at')
+
+    @staticmethod
+    def get_user_favorite_ids(user_id: str) -> set:
+        if not user_id:
+            return set()
+        return set(PropertyFavorite.objects.filter(user_id=user_id, is_deleted=False).values_list('property_id', flat=True))
 
     @staticmethod
     def get_all_categories() -> list:

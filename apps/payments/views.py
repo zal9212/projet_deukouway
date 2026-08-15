@@ -12,11 +12,11 @@ from apps.reservations.services.selectors import ReservationSelector
 from apps.reservations.services.services import ReservationService
 from apps.payments.services.selectors import PaymentSelector
 from apps.payments.services.services import PaymentService
+from apps.properties.services.services import PropertyService
 
 
 def _compute_rental_subtotal(req):
-    nights = (req.check_out - req.check_in).days
-    return req.property.price * nights
+    return PropertyService.calculate_price_for_stay(req.property, req.check_in, req.check_out)
 
 
 class PaymentCheckoutView(LoginRequiredMixin, View):

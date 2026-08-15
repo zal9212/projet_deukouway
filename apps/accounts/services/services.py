@@ -1,5 +1,4 @@
 from django.db import transaction
-from django.utils import timezone
 from django.contrib.auth.tokens import default_token_generator
 from django.utils.http import urlsafe_base64_encode
 from django.utils.encoding import force_bytes
@@ -135,13 +134,14 @@ class AccountService:
 
     @staticmethod
     @transaction.atomic
-    def upload_identity_document(user: User, document_type: str, document_number: str, file, selfie_file=None) -> IdentityDocument:
+    def upload_identity_document(user: User, document_type: str, document_number: str, file, selfie_file=None, file_back=None) -> IdentityDocument:
         doc = IdentityDocument.objects.create(
             user=user,
             document_type=document_type,
             document_number=document_number,
             file=file,
+            file_back=file_back,
             selfie_file=selfie_file
         )
-        logger.info(f"Document d'identité (+ selfie: {bool(selfie_file)}) téléchargé pour l'utilisateur {user.email}")
+        logger.info(f"Document d'identité (+ verso: {bool(file_back)}, + selfie: {bool(selfie_file)}) téléchargé pour l'utilisateur {user.email}")
         return doc

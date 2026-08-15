@@ -11,8 +11,10 @@ services:
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-securepassword123}
     volumes:
       - postgres_data:/var/lib/postgresql/data
-    ports:
-      - "5432:5432"
+    # Pas de "ports:" : seul le service "web" doit joindre PostgreSQL, via le
+    # réseau interne docker-compose (nom de service "db" comme host). Exposer
+    # 5432 sur l'hôte rendrait la base directement joignable depuis l'extérieur
+    # en production. Pour un accès ponctuel en local : `docker compose exec db psql ...`.
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-dekouway_user}"]
       interval: 10s
@@ -23,8 +25,8 @@ services:
     image: redis:7-alpine
     container_name: dekouway_redis
     restart: always
-    ports:
-      - "6379:6379"
+    # Idem que "db" : Redis (cache + compteurs de rate-limiting) ne doit être
+    # joignable que par "web" sur le réseau interne, jamais depuis l'hôte.
     healthcheck:
       test: ["CMD", "redis-cli", "ping"]
       interval: 10s

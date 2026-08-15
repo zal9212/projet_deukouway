@@ -63,6 +63,7 @@ class AccountsFormsTestCase(SimpleTestCase):
             b"iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNk+A8AAQUBAScY42YAAAAASUVORK5CYII="
         )
         id_file = SimpleUploadedFile('cni.jpg', png_bytes, content_type='image/jpeg')
+        id_file_back = SimpleUploadedFile('cni_back.jpg', png_bytes, content_type='image/jpeg')
         selfie_file = SimpleUploadedFile('selfie.jpg', png_bytes, content_type='image/jpeg')
         form = OwnerRegisterForm(
             data={
@@ -75,6 +76,57 @@ class AccountsFormsTestCase(SimpleTestCase):
                 'address': 'Almadies',
                 'city': 'Dakar',
                 'document_type': 'CNI',
+                'document_number': '1234567890123',
+                'password1': 'Password123!',
+                'password2': 'Password123!',
+                'accept_terms': True
+            },
+            files={'identity_file': id_file, 'identity_file_back': id_file_back, 'selfie_with_id_file': selfie_file}
+        )
+        self.assertTrue(form.is_valid(), form.errors)
+
+    def test_owner_register_form_cni_requires_back_file(self):
+        import base64
+        png_bytes = base64.b64decode(
+            b"iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNk+A8AAQUBAScY42YAAAAASUVORK5CYII="
+        )
+        id_file = SimpleUploadedFile('cni.jpg', png_bytes, content_type='image/jpeg')
+        selfie_file = SimpleUploadedFile('selfie.jpg', png_bytes, content_type='image/jpeg')
+        form = OwnerRegisterForm(
+            data={
+                'first_name': 'Ibrahima',
+                'last_name': 'Diop',
+                'email': 'owner@dekouway.sn',
+                'phone': '+221771112233',
+                'address': 'Almadies',
+                'city': 'Dakar',
+                'document_type': 'CNI',
+                'document_number': '1234567890123',
+                'password1': 'Password123!',
+                'password2': 'Password123!',
+                'accept_terms': True
+            },
+            files={'identity_file': id_file, 'selfie_with_id_file': selfie_file}
+        )
+        self.assertFalse(form.is_valid())
+        self.assertIn('identity_file_back', form.errors)
+
+    def test_owner_register_form_passeport_does_not_require_back_file(self):
+        import base64
+        png_bytes = base64.b64decode(
+            b"iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNk+A8AAQUBAScY42YAAAAASUVORK5CYII="
+        )
+        id_file = SimpleUploadedFile('passeport.jpg', png_bytes, content_type='image/jpeg')
+        selfie_file = SimpleUploadedFile('selfie.jpg', png_bytes, content_type='image/jpeg')
+        form = OwnerRegisterForm(
+            data={
+                'first_name': 'Ibrahima',
+                'last_name': 'Diop',
+                'email': 'owner@dekouway.sn',
+                'phone': '+221771112233',
+                'address': 'Almadies',
+                'city': 'Dakar',
+                'document_type': 'PASSEPORT',
                 'document_number': '1234567890123',
                 'password1': 'Password123!',
                 'password2': 'Password123!',

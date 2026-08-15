@@ -1,4 +1,4 @@
-from typing import List, Dict, Any
+from typing import Dict, Any
 from apps.properties.services.selectors import PropertySelector
 from apps.ai.prompt_builder import PromptBuilder
 from apps.ai.services.groq_service import GroqService

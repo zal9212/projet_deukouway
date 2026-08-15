@@ -1,7 +1,7 @@
 from rest_framework.test import APITestCase
 from rest_framework import status
 from apps.accounts.models import User
-from apps.properties.models import PropertyCategory, PropertyType, Property, PropertyFavorite
+from apps.properties.models import PropertyCategory, PropertyType, Property
 
 class PropertiesAPITestCase(APITestCase):
     def setUp(self):

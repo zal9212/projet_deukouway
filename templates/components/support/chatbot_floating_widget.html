@@ -1,9 +1,14 @@
 <div x-data class="relative z-50">
 
     <!-- Bouton Flottant (FAB - Floating Action Button) -->
+    <!-- Sur les pages publiques, la barre de navigation basse mobile (components/mobile_nav.html)
+         a déjà son propre onglet "Assistant" qui pilote ce même $store.chat.open : y garder ce
+         bouton flottant en plus provoquait un chevauchement visuel avec cette barre. Le tableau
+         de bord n'a pas cet onglet, donc il passe hide_fab_on_mobile=False (défaut) pour garder
+         ce bouton comme seul point d'accès au chat sur mobile. -->
     <button @click="$store.chat.open = !$store.chat.open"
             type="button"
-            class="fixed bottom-5 right-6 z-40 flex items-center gap-2 rounded-full bg-[#8B1E24] px-4 py-3 text-white shadow-xl hover:bg-[#6F171C] transition-all transform hover:scale-105 active:scale-95 focus:outline-none ring-4 ring-[#8B1E24]/20"
+            class="{% if hide_fab_on_mobile %}hidden md:flex{% else %}flex{% endif %} fixed bottom-5 right-6 z-40 items-center gap-2 rounded-full bg-[#8B1E24] px-4 py-3 text-white shadow-xl hover:bg-[#6F171C] transition-all transform hover:scale-105 active:scale-95 focus:outline-none ring-4 ring-[#8B1E24]/20"
             aria-label="Assistant IA DEKOUWAY">
         <i data-lucide="bot" class="w-6 h-6" x-show="!$store.chat.open"></i>
         <i data-lucide="x" class="w-6 h-6" x-show="$store.chat.open" x-cloak></i>

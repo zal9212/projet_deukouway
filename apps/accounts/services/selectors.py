@@ -1,5 +1,5 @@
 from django.db.models import QuerySet, Q, Count
-from apps.accounts.models import User, UserProfile, AuditUser, UserSession
+from apps.accounts.models import User, UserProfile, AuditUser, UserSession, IdentityDocument
 
 class UserSelector:
     @staticmethod
@@ -79,6 +79,10 @@ class UserSelector:
     @staticmethod
     def get_user_audit_logs(user_id: str) -> QuerySet[AuditUser]:
         return AuditUser.objects.filter(user_id=user_id).order_by('-created_at')
+
+    @staticmethod
+    def get_user_identity_documents(user_id: str) -> QuerySet[IdentityDocument]:
+        return IdentityDocument.objects.filter(user_id=user_id, is_deleted=False).order_by('-created_at')
 
     @staticmethod
     def get_all_audit_logs() -> QuerySet[AuditUser]:

@@ -102,10 +102,18 @@ class IdentityDocument(BaseModel):
     document_type = models.CharField(_('Type de document'), max_length=50) # ex: CNI, PASSPORT
     document_number = models.CharField(_('Numéro de document'), max_length=100)
     file = models.FileField(
-        _('Fichier (pièce d\'identité)'),
+        _('Fichier (pièce d\'identité, recto)'),
         upload_to='identity_documents/',
         storage=private_storage,
         validators=[FileExtensionValidator(allowed_extensions=['pdf', 'jpg', 'jpeg', 'png'])]
+    )
+    file_back = models.FileField(
+        _('Fichier (pièce d\'identité, verso)'),
+        upload_to='identity_documents/',
+        storage=private_storage,
+        null=True, blank=True,
+        validators=[FileExtensionValidator(allowed_extensions=['pdf', 'jpg', 'jpeg', 'png'])],
+        help_text=_("Obligatoire pour une carte nationale d'identité (recto/verso) ; sans objet pour un passeport.")
     )
     selfie_file = models.ImageField(
         _('Selfie avec la pièce d\'identité'),

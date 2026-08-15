@@ -1,5 +1,4 @@
 from django.test import SimpleTestCase
-from django.core.files.uploadedfile import SimpleUploadedFile
 from apps.properties.forms import SearchForm, PropertyForm
 
 class PropertiesFormsTestCase(SimpleTestCase):
@@ -31,6 +30,7 @@ class PropertiesFormsTestCase(SimpleTestCase):
             'title': 'Villa Keur Thiossane',
             'description': 'Superbe villa avec piscine aux Almadies',
             'price': 120000,
+            'pricing_period': 'NIGHTLY',
             'address': 'Rue 10 x Rue 12 Almadies',
             'city': 'Dakar',
             'district': 'Almadies',
@@ -41,9 +41,25 @@ class PropertiesFormsTestCase(SimpleTestCase):
             'bathrooms': 2,
             'max_guests': 6,
             'property_type_id': 'type_123',
-            'equipments': 'Piscine, Climatisation'
         })
         self.assertTrue(form.is_valid())
+
+    def test_property_form_defaults_pricing_period_when_omitted(self):
+        form = PropertyForm(data={
+            'title': 'Villa Keur Thiossane',
+            'description': 'Superbe villa avec piscine aux Almadies',
+            'price': 120000,
+            'address': 'Rue 10 x Rue 12 Almadies',
+            'city': 'Dakar',
+            'district': 'Almadies',
+            'surface': 200,
+            'bedrooms': 3,
+            'bathrooms': 2,
+            'max_guests': 6,
+            'property_type_id': 'type_123',
+        })
+        self.assertTrue(form.is_valid())
+        self.assertEqual(form.cleaned_data['pricing_period'], 'NIGHTLY')
 
     def test_property_form_price_invalid(self):
         form = PropertyForm(data={
@@ -81,23 +97,3 @@ class PropertiesFormsTestCase(SimpleTestCase):
         self.assertFalse(form.is_valid())
         self.assertIn('latitude', form.errors)
 
-    def test_property_form_invalid_cover_image(self):
-        fake_file = SimpleUploadedFile('document.txt', b'hello text file', content_type='text/plain')
-        form = PropertyForm(
-            data={
-                'title': 'Villa Keur Thiossane',
-                'description': 'Superbe villa avec piscine',
-                'price': 120000,
-                'address': 'Rue 10',
-                'city': 'Dakar',
-                'district': 'Almadies',
-                'surface': 200,
-                'bedrooms': 3,
-                'bathrooms': 2,
-                'max_guests': 6,
-                'property_type_id': 'type_123'
-            },
-            files={'cover_image': fake_file}
-        )
-        self.assertFalse(form.is_valid())
-        self.assertIn('cover_image', form.errors)

@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from apps.reservations.models import ReservationRequest, Reservation, ReservationHistory, ReservationStatusHistory
+from apps.reservations.models import ReservationRequest, Reservation, ReservationStatusHistory
 from apps.properties.api.serializers import PropertyListSerializer
 
 class ReservationRequestSerializer(serializers.ModelSerializer):

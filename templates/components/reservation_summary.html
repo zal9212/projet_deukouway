@@ -1,8 +1,9 @@
-<div class="bg-white border border-gray-200 rounded-2xl shadow-xl p-6 sticky top-28 hidden lg:block"
-     x-data="reservationBox({{ property.price }}, {{ platform_settings.client_service_fee }}, {{ property.max_guests }})">
+{% load property_tags l10n %}
+<div id="reservation-panel" class="bg-white border border-gray-200 rounded-2xl shadow-xl p-6 lg:sticky lg:top-28 scroll-mt-24 mb-24 lg:mb-0"
+     x-data="reservationBox({{ property.price|unlocalize }}, {{ platform_settings.client_service_fee|unlocalize }}, {{ property.max_guests }}, '{{ property.pricing_period }}')">
     <div class="flex items-baseline mb-6">
         <span class="text-2xl font-bold text-gray-900">{{ property.price }} FCFA</span>
-        <span class="text-gray-500 ml-1">/ nuit</span>
+        <span class="text-gray-500 ml-1">{{ property.pricing_period|price_unit }}</span>
     </div>
 
     {% if request.user.is_authenticated and request.user.is_client %}
@@ -24,7 +25,7 @@
 
             <div class="p-3 flex justify-between items-center">
                 <div class="flex-1">
-                    <label class="block text-[10px] font-bold text-gray-900 uppercase tracking-wide">Voyageurs</label>
+                    <label class="block text-[10px] font-bold text-gray-900 uppercase tracking-wide">Personnes</label>
                     <input type="number" name="guests" x-model.number="guests" min="1" max="{{ property.max_guests }}" required
                            class="w-full text-sm text-gray-900 mt-1 border-0 p-0 focus:ring-0">
                 </div>
@@ -41,7 +42,9 @@
 
     <div class="space-y-3 text-sm text-gray-700 pb-4 border-b border-gray-200" x-show="nights > 0" x-cloak>
         <div class="flex justify-between">
-            <span class="underline" x-text="pricePerNight + ' FCFA x ' + nights + ' nuit' + (nights > 1 ? 's' : '')"></span>
+            <span class="underline" x-text="pricingPeriod === 'MONTHLY'
+                ? (pricePerNight + ' FCFA/mois x ' + nights + ' nuit' + (nights > 1 ? 's' : '') + ' (proraté)')
+                : (pricePerNight + ' FCFA x ' + nights + ' nuit' + (nights > 1 ? 's' : ''))"></span>
             <span x-text="subtotal.toLocaleString('fr-FR') + ' FCFA'"></span>
         </div>
         <div class="flex justify-between">
@@ -67,24 +70,24 @@
 <!-- Barre d'action collante sur Mobile (remplace la carte sticky) -->
 <div class="fixed bottom-0 left-0 w-full bg-white border-t border-gray-200 p-4 px-6 flex justify-between items-center z-50 lg:hidden shadow-[0_-4px_6px_-1px_rgba(0,0,0,0.1)]">
     <div>
-        <div class="text-lg font-bold text-gray-900">{{ property.price }} FCFA <span class="text-sm font-normal text-gray-500">/ nuit</span></div>
+        <div class="text-lg font-bold text-gray-900">{{ property.price }} FCFA <span class="text-sm font-normal text-gray-500">{{ property.pricing_period|price_unit }}</span></div>
     </div>
     {% if request.user.is_authenticated and request.user.is_client %}
-    <button type="submit" form="reservation-form" class="px-6 py-3 bg-[#8B1E24] hover:bg-[#6F171C] text-white font-bold rounded-xl shadow-md transition-colors">
-        Demander
-    </button>
+    <a href="#reservation-panel" class="px-6 py-3 bg-[#8B1E24] hover:bg-[#6F171C] text-white font-bold rounded-xl shadow-md transition-colors">
+        Réserver
+    </a>
     {% else %}
     <a href="{% url 'accounts:login' %}?next={{ request.path }}" class="px-6 py-3 bg-[#8B1E24] hover:bg-[#6F171C] text-white font-bold rounded-xl shadow-md transition-colors">
-        Se connecter
+        Réserver
     </a>
     {% endif %}
 </div>
 
 <script>
-    function reservationBox(pricePerNight, serviceFee, maxGuests) {
+    function reservationBox(pricePerNight, serviceFee, maxGuests, pricingPeriod) {
         return {
             checkIn: '', checkOut: '', guests: 1,
-            pricePerNight: pricePerNight, serviceFee: serviceFee, maxGuests: maxGuests,
+            pricePerNight: pricePerNight, serviceFee: serviceFee, maxGuests: maxGuests, pricingPeriod: pricingPeriod,
 
             get nights() {
                 if (!this.checkIn || !this.checkOut) return 0;
@@ -92,6 +95,12 @@
                 return Math.max(0, Math.round(diffMs / (1000 * 60 * 60 * 24)));
             },
             get subtotal() {
+                // Un logement "Par mois" affiche un prix mensuel : on le proratise sur 30
+                // jours (même règle que PropertyService.calculate_price_for_stay côté serveur)
+                // au lieu de le multiplier tel quel par le nombre de nuits.
+                if (this.pricingPeriod === 'MONTHLY') {
+                    return Math.round((this.pricePerNight / 30) * this.nights * 100) / 100;
+                }
                 return this.nights * this.pricePerNight;
             },
             get total() {

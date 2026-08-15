@@ -28,9 +28,9 @@
             </button>
         </div>
     </form>
-    
+
     {% include "components/auth/social_login.html" %}
-    
+
     {% url 'register_choice' as register_choice_url %}
     {% include "components/auth/auth_footer.html" with text="Nouveau sur DEKOUWAY ?" link_text="Créer un compte" link_url=register_choice_url %}
 {% endblock %}

@@ -1,0 +1,94 @@
+{% extends "layouts/dashboard.html" %}
+
+{% block title %}Reversement #{{ payout.id|slice:":8" }} - DEKOUWAY ERP{% endblock %}
+
+{% block page_header %}
+<div class="md:flex md:items-center md:justify-between mb-8 mt-2">
+    <div class="min-w-0 flex-1">
+        <a href="{% url 'dashboard:admin_payouts' %}" class="inline-flex items-center text-sm text-gray-500 hover:text-gray-900 mb-2">
+            <i data-lucide="arrow-left" class="w-4 h-4 mr-1"></i> Retour aux reversements
+        </a>
+        <h2 class="text-2xl font-bold leading-7 text-gray-900 sm:truncate sm:text-3xl sm:tracking-tight">
+            Reversement #PAYOUT-{{ payout.id|slice:":8" }}
+        </h2>
+    </div>
+</div>
+{% endblock %}
+
+{% block content %}
+<div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+
+    <div class="lg:col-span-2 space-y-6">
+        <div class="bg-white border border-gray-200 rounded-xl p-6 shadow-sm">
+            <div class="flex items-center justify-between mb-6">
+                <h3 class="text-sm font-semibold text-gray-900">Détails du reversement</h3>
+                {% if payout.status == 'SUCCESS' %}
+                    {% include "components/dashboard/status_badge.html" with status="success" label="Transféré" %}
+                {% else %}
+                    {% include "components/dashboard/status_badge.html" with status="pending" label=payout.get_status_display %}
+                {% endif %}
+            </div>
+            <dl class="grid grid-cols-1 sm:grid-cols-2 gap-6 text-sm">
+                <div>
+                    <dt class="text-gray-500">Montant net</dt>
+                    <dd class="mt-1 text-lg font-bold text-gray-900">{{ payout.amount }} {{ payout.currency }}</dd>
+                </div>
+                <div>
+                    <dt class="text-gray-500">Méthode</dt>
+                    <dd class="mt-1 font-medium text-gray-900">{{ payout.get_method_display }}</dd>
+                </div>
+                <div>
+                    <dt class="text-gray-500">Partenaire</dt>
+                    <dd class="mt-1 font-medium text-gray-900">{{ payout.owner.profile.first_name|default:payout.owner.email }} ({{ payout.owner.email }})</dd>
+                </div>
+                <div>
+                    <dt class="text-gray-500">Date</dt>
+                    <dd class="mt-1 font-medium text-gray-900">{{ payout.created_at|date:"d M Y à H:i" }}</dd>
+                </div>
+                <div class="sm:col-span-2">
+                    <dt class="text-gray-500">ID Transaction (Gateway)</dt>
+                    <dd class="mt-1 font-mono text-xs text-gray-700">{{ payout.gateway_transaction_id|default:"—" }}</dd>
+                </div>
+            </dl>
+        </div>
+
+        {% if payout.reservation %}
+        <div class="bg-white border border-gray-200 rounded-xl p-6 shadow-sm">
+            <h3 class="text-sm font-semibold text-gray-900 mb-4">Réservation source</h3>
+            <dl class="grid grid-cols-1 sm:grid-cols-2 gap-6 text-sm">
+                <div>
+                    <dt class="text-gray-500">Référence</dt>
+                    <dd class="mt-1 font-medium text-[#8B1E24]">#RES-{{ payout.reservation.confirmation_code|default:payout.reservation.id|slice:":8" }}</dd>
+                </div>
+                <div>
+                    <dt class="text-gray-500">Logement</dt>
+                    <dd class="mt-1 font-medium text-gray-900">{{ payout.reservation.property.title }}</dd>
+                </div>
+                <div>
+                    <dt class="text-gray-500">Séjour</dt>
+                    <dd class="mt-1 font-medium text-gray-900">{{ payout.reservation.check_in|date:"d M Y" }} — {{ payout.reservation.check_out|date:"d M Y" }}</dd>
+                </div>
+            </dl>
+        </div>
+        {% endif %}
+    </div>
+
+    <div class="space-y-6">
+        <div class="bg-white border border-gray-200 rounded-xl p-6 shadow-sm">
+            <h3 class="text-sm font-semibold text-gray-900 mb-4">Partenaire</h3>
+            <a href="{% url 'dashboard:admin_owner_detail' payout.owner.id %}" class="text-sm font-medium text-[#8B1E24] hover:underline flex items-center">
+                Voir la fiche partenaire <i data-lucide="arrow-right" class="w-4 h-4 ml-1"></i>
+            </a>
+        </div>
+
+        {% if payout.reservation.payments.first %}
+        <div class="bg-white border border-gray-200 rounded-xl p-6 shadow-sm">
+            <h3 class="text-sm font-semibold text-gray-900 mb-4">Paiement lié</h3>
+            <a href="{% url 'dashboard:admin_payment_detail' payout.reservation.payments.first.id %}" class="text-sm font-medium text-[#8B1E24] hover:underline flex items-center">
+                Voir le paiement <i data-lucide="arrow-right" class="w-4 h-4 ml-1"></i>
+            </a>
+        </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

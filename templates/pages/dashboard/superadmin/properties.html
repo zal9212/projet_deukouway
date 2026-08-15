@@ -1,5 +1,6 @@
 {% extends "layouts/dashboard.html" %}
 
+{% load property_tags %}
 {% block title %}Gestion du Parc - DEKOUWAY ERP{% endblock %}
 
 {% block page_header %}
@@ -86,7 +87,7 @@
                                 <div class="text-gray-500 text-xs">{{ property.owner.email }}</div>
                             </td>
                             <td class="whitespace-nowrap px-3 py-5 text-sm text-gray-500">
-                                <div class="text-gray-900 font-semibold">{{ property.price }} F <span class="text-gray-400 font-normal text-xs">/nuit</span></div>
+                                <div class="text-gray-900 font-semibold">{{ property.price }} F <span class="text-gray-400 font-normal text-xs">{{ property.pricing_period|price_unit }}</span></div>
                             </td>
                             <td class="whitespace-nowrap px-3 py-5 text-sm text-gray-500">
                                 {% if property.status == 'PUBLISHED' %}

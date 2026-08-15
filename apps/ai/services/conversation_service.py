@@ -1,8 +1,7 @@
 from django.db import transaction
-from typing import List, Dict
 from apps.accounts.models import User
 from apps.ai.models import Conversation, ConversationMessage
-from apps.ai.choices import ConversationRoleChoices, AIModeChoices
+from apps.ai.choices import AIModeChoices
 import logging
 
 logger = logging.getLogger(__name__)

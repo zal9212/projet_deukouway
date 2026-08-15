@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from apps.payments.models import Payment, Commission, Payout, Invoice, Refund
+from apps.payments.models import Payment, Commission, Payout, Invoice
 
 class PaymentSerializer(serializers.ModelSerializer):
     user_email = serializers.EmailField(source='user.email', read_only=True)

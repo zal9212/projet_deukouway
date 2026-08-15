@@ -19,7 +19,7 @@ class ContactFormTestCase(TestCase):
         self.assertTrue(ContactMessage.objects.filter(email='awa@test.com').exists())
 
     def test_contact_form_missing_fields_rejected(self):
-        response = self.client.post(self.url, {
+        self.client.post(self.url, {
             'name': '', 'email': '', 'subject': '', 'message': '',
         })
         self.assertEqual(ContactMessage.objects.count(), 0)

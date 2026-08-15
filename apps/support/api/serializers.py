@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from apps.support.models import SupportCategory, Ticket, TicketMessage, Complaint, Dispute
+from apps.support.models import SupportCategory, Ticket, TicketMessage
 
 class SupportCategorySerializer(serializers.ModelSerializer):
     class Meta:

@@ -1,9 +1,8 @@
 from typing import Any, Dict, Optional
 from django import forms
 from django.core.exceptions import ValidationError
-from apps.core.forms import (
-    TailwindFormMixin, validate_max_file_size, validate_allowed_file_extensions
-)
+from apps.core.forms import TailwindFormMixin
+from apps.properties.choices import PropertyPricingPeriodChoices
 
 SORT_CHOICES = (
     ('', 'Trier par...'),
@@ -117,12 +116,18 @@ class PropertyForm(TailwindFormMixin, forms.Form):
         error_messages={'required': 'Veuillez saisir une description.'}
     )
     price = forms.DecimalField(
-        label="Prix par nuit (FCFA)",
+        label="Prix (FCFA)",
         max_digits=12,
         decimal_places=2,
         min_value=0.01,
         widget=forms.NumberInput(attrs={'placeholder': '120000', 'min': '0.01', 'step': '0.01', 'required': 'required'}),
-        error_messages={'required': 'Veuillez indiquer le prix par nuit.'}
+        error_messages={'required': 'Veuillez indiquer le prix.'}
+    )
+    pricing_period = forms.ChoiceField(
+        label="Type de location",
+        choices=PropertyPricingPeriodChoices.choices,
+        required=False,
+        widget=forms.RadioSelect()
     )
     address = forms.CharField(
         label="Adresse exacte",
@@ -173,7 +178,7 @@ class PropertyForm(TailwindFormMixin, forms.Form):
         widget=forms.NumberInput(attrs={'placeholder': '2', 'min': '0', 'required': 'required'})
     )
     max_guests = forms.IntegerField(
-        label="Capacité d'accueil max (voyageurs)",
+        label="Capacité d'accueil max (personnes)",
         min_value=1,
         widget=forms.NumberInput(attrs={'placeholder': '6', 'min': '1', 'required': 'required'})
     )
@@ -181,21 +186,11 @@ class PropertyForm(TailwindFormMixin, forms.Form):
         label="Type de bien (ID)",
         widget=forms.TextInput(attrs={'required': 'required'})
     )
-    equipments = forms.CharField(
-        label="Équipements disponibles",
-        required=False,
-        widget=forms.TextInput(attrs={'placeholder': 'Wifi, Climatisation, Piscine, Parking...'})
-    )
-    cover_image = forms.ImageField(
-        label="Photo de couverture (PNG, JPG, WEBP - max 5 Mo)",
-        required=False,
-        widget=forms.FileInput(attrs={'accept': 'image/png,image/jpeg,image/jpg,image/webp'})
-    )
 
     def clean_price(self) -> Optional[Any]:
         price = self.cleaned_data.get('price')
         if price is not None and price <= 0:
-            raise ValidationError("Le prix par nuit doit être strictement positif.")
+            raise ValidationError("Le prix doit être strictement positif.")
         return price
 
     def clean_surface(self) -> Optional[int]:
@@ -204,15 +199,10 @@ class PropertyForm(TailwindFormMixin, forms.Form):
             raise ValidationError("La surface doit être strictement supérieure à 0 m².")
         return surface
 
-    def clean_cover_image(self) -> Any:
-        image = self.cleaned_data.get('cover_image')
-        if image:
-            validate_allowed_file_extensions(image, ('png', 'jpg', 'jpeg', 'webp'))
-            validate_max_file_size(image, max_size_mb=5.0)
-        return image
-
     def clean(self) -> Dict[str, Any]:
         cleaned_data = super().clean()
+        if not cleaned_data.get('pricing_period'):
+            cleaned_data['pricing_period'] = PropertyPricingPeriodChoices.NIGHTLY
         lat = cleaned_data.get('latitude')
         lng = cleaned_data.get('longitude')
         if lat is not None and (lat < -90 or lat > 90):

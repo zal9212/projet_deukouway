@@ -172,7 +172,7 @@
                             </div>
                         </div>
                         <div class="sm:col-span-2">
-                            <label class="block text-sm font-medium leading-6 text-gray-900">Capacité (voyageurs)</label>
+                            <label class="block text-sm font-medium leading-6 text-gray-900">Capacité (personnes)</label>
                             <div class="mt-2">
                                 <input type="number" name="max_guests" x-model="max_guests" min="1" required
                                        class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-[#8B1E24] sm:text-sm sm:leading-6">
@@ -195,8 +195,25 @@
                                        class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-[#8B1E24] sm:text-sm sm:leading-6">
                             </div>
                         </div>
+                        <div class="sm:col-span-6">
+                            <label class="block text-sm font-medium leading-6 text-gray-900">Type de location</label>
+                            <div class="mt-2 grid grid-cols-2 gap-4">
+                                <label class="flex items-center gap-2 rounded-lg border px-3 py-2.5 cursor-pointer"
+                                       :class="pricing_period === 'NIGHTLY' ? 'border-[#8B1E24] ring-1 ring-[#8B1E24]' : 'border-gray-300'">
+                                    <input type="radio" name="pricing_period" value="NIGHTLY" x-model="pricing_period"
+                                           class="text-[#8B1E24] focus:ring-[#8B1E24]">
+                                    <span class="text-sm text-gray-900">Par nuit <span class="text-gray-500">(courte durée)</span></span>
+                                </label>
+                                <label class="flex items-center gap-2 rounded-lg border px-3 py-2.5 cursor-pointer"
+                                       :class="pricing_period === 'MONTHLY' ? 'border-[#8B1E24] ring-1 ring-[#8B1E24]' : 'border-gray-300'">
+                                    <input type="radio" name="pricing_period" value="MONTHLY" x-model="pricing_period"
+                                           class="text-[#8B1E24] focus:ring-[#8B1E24]">
+                                    <span class="text-sm text-gray-900">Par mois <span class="text-gray-500">(longue durée)</span></span>
+                                </label>
+                            </div>
+                        </div>
                         <div class="sm:col-span-4">
-                            <label class="block text-sm font-medium leading-6 text-gray-900">Prix par nuit (FCFA)</label>
+                            <label class="block text-sm font-medium leading-6 text-gray-900" x-text="pricing_period === 'MONTHLY' ? 'Prix par mois (FCFA)' : 'Prix par nuit (FCFA)'"></label>
                             <div class="mt-2">
                                 <input type="number" name="price" x-model="price" min="1" step="1" required
                                        class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-[#8B1E24] sm:text-sm sm:leading-6"
@@ -246,6 +263,15 @@
                                 <span class="text-sm text-gray-900">{{ amenity }}</span>
                             </label>
                             {% endfor %}
+                        </div>
+                    </div>
+
+                    <div class="mt-6">
+                        <label class="block text-sm font-medium leading-6 text-gray-900">Autre équipement (optionnel)</label>
+                        <div class="mt-2">
+                            <input type="text" name="extra_amenity" x-model="extra_amenity"
+                                   class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-[#8B1E24] sm:text-sm sm:leading-6"
+                                   placeholder="Ex: Terrain de sport, Ascenseur...">
                         </div>
                     </div>
 
@@ -302,8 +328,8 @@
                     <label for="property-images" class="flex flex-col items-center justify-center gap-2 rounded-xl border-2 border-dashed border-gray-300 p-8 cursor-pointer hover:border-[#8B1E24] transition-colors">
                         <i data-lucide="image-plus" class="w-8 h-8 text-gray-400"></i>
                         <span class="text-sm font-semibold text-gray-900">{% if property %}Cliquez pour ajouter d'autres photos{% else %}Cliquez pour ajouter des photos{% endif %}</span>
-                        <span class="text-xs text-gray-500">JPG, PNG, WEBP — 8 Mo max par photo.{% if not property %} La première photo sera la couverture.{% endif %}</span>
-                        <input id="property-images" type="file" name="images" multiple accept=".jpg,.jpeg,.png,.webp" {% if not property %}required{% endif %}
+                        <span class="text-xs text-gray-500">JPG, PNG, WEBP — 8 Mo max par photo.{% if not property %} La première photo sera la couverture. Optionnel si vous enregistrez comme brouillon.{% endif %}</span>
+                        <input id="property-images" type="file" name="images" multiple accept=".jpg,.jpeg,.png,.webp"
                                class="sr-only" @change="onImagesChange($event)">
                     </label>
                     <div class="mt-6 grid grid-cols-3 sm:grid-cols-4 gap-3" x-show="imagePreviews.length > 0">
@@ -361,11 +387,11 @@
                             </div>
                             <div class="px-4 py-4 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-0">
                                 <dt class="text-sm font-medium leading-6 text-gray-900">Tarif de base</dt>
-                                <dd class="mt-1 text-sm leading-6 text-gray-700 sm:col-span-2 sm:mt-0" x-text="(price || '—') + ' FCFA / nuit'"></dd>
+                                <dd class="mt-1 text-sm leading-6 text-gray-700 sm:col-span-2 sm:mt-0" x-text="(price || '—') + ' FCFA / ' + (pricing_period === 'MONTHLY' ? 'mois' : 'nuit')"></dd>
                             </div>
                             <div class="px-4 py-4 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-0">
                                 <dt class="text-sm font-medium leading-6 text-gray-900">Capacité</dt>
-                                <dd class="mt-1 text-sm leading-6 text-gray-700 sm:col-span-2 sm:mt-0" x-text="(max_guests || '—') + ' voyageurs, ' + (bedrooms || '0') + ' chambres, ' + (bathrooms || '0') + ' salles de bain'"></dd>
+                                <dd class="mt-1 text-sm leading-6 text-gray-700 sm:col-span-2 sm:mt-0" x-text="(max_guests || '—') + ' personnes, ' + (bedrooms || '0') + ' chambres, ' + (bathrooms || '0') + ' salles de bain'"></dd>
                             </div>
                             <div class="px-4 py-4 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-0">
                                 <dt class="text-sm font-medium leading-6 text-gray-900">Photos</dt>
@@ -373,11 +399,22 @@
                             </div>
                         </dl>
                     </div>
-                    <div class="mt-8 flex justify-between">
+                    <div class="mt-8 flex flex-col-reverse sm:flex-row sm:justify-between gap-3">
                         <button type="button" @click="step = 6" class="text-sm font-semibold text-gray-900">Précédent</button>
-                        <button type="submit" class="rounded-md bg-[#8B1E24] px-4 py-2 text-sm font-semibold text-white shadow-sm hover:bg-[#6F171C]">
-                            {% if property %}Enregistrer les modifications{% else %}Envoyer pour validation (SuperAdmin){% endif %}
-                        </button>
+                        <div class="flex flex-col-reverse sm:flex-row gap-3">
+                            {% if not property or property.status == 'DRAFT' %}
+                            <button type="submit" name="save_action" value="draft" class="rounded-md bg-white px-4 py-2 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50">
+                                Enregistrer comme brouillon
+                            </button>
+                            <button type="submit" name="save_action" value="submit" class="rounded-md bg-[#8B1E24] px-4 py-2 text-sm font-semibold text-white shadow-sm hover:bg-[#6F171C]">
+                                Envoyer pour validation
+                            </button>
+                            {% else %}
+                            <button type="submit" name="save_action" value="submit" class="rounded-md bg-[#8B1E24] px-4 py-2 text-sm font-semibold text-white shadow-sm hover:bg-[#6F171C]">
+                                Enregistrer les modifications
+                            </button>
+                            {% endif %}
+                        </div>
                     </div>
                 </div>
 
@@ -396,7 +433,7 @@
             title: '', description: '', property_type_id: '', selectedCategorySlug: '',
             address: '', city: '', district: '',
             price: '', surface: '', bedrooms: '', bathrooms: '', max_guests: '',
-            amenities: [], rules: [], extra_rule: '',
+            amenities: [], rules: [], extra_rule: '', extra_amenity: '', pricing_period: 'NIGHTLY',
             imagePreviews: [], existingImagesCount: 0, hasExistingImages: false,
             latitude: null, longitude: null,
             mapLinkInput: '', mapError: '', resolvingLink: false,
@@ -543,6 +580,7 @@
                     this.latitude = data.latitude;
                     this.longitude = data.longitude;
                     this.price = data.price;
+                    this.pricing_period = data.pricing_period || 'NIGHTLY';
                     this.surface = data.surface;
                     this.bedrooms = data.bedrooms;
                     this.bathrooms = data.bathrooms;

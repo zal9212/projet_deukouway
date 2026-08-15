@@ -4,7 +4,7 @@ from rest_framework.response import Response
 
 from apps.documents.services.services import DocumentService
 from apps.documents.services.selectors import DocumentSelector
-from apps.documents.models import DocumentCategory, Document
+from apps.documents.models import DocumentCategory
 from apps.documents.api.serializers import (
     DocumentSerializer, DocumentUploadSerializer, DocumentCategorySerializer
 )
@@ -53,12 +53,12 @@ class DocumentViewSet(viewsets.ModelViewSet):
     @action(detail=True, methods=['post'], permission_classes=[IsSuperAdmin], url_path='verify')
     def verify(self, request, pk=None):
         doc = self.get_object()
-        verification = DocumentService.validate_document(doc, admin_user=request.user)
+        DocumentService.validate_document(doc, admin_user=request.user)
         return Response({'detail': "Document vérifié et approuvé.", 'document': DocumentSerializer(doc).data})
 
     @action(detail=True, methods=['post'], permission_classes=[IsSuperAdmin], url_path='reject')
     def reject(self, request, pk=None):
         doc = self.get_object()
         reason = request.data.get('reason', 'Document non conforme')
-        verification = DocumentService.reject_document(doc, admin_user=request.user, notes=reason)
+        DocumentService.reject_document(doc, admin_user=request.user, notes=reason)
         return Response({'detail': "Document rejeté.", 'document': DocumentSerializer(doc).data})

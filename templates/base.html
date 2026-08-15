@@ -1,3 +1,4 @@
+{% load static %}
 <!DOCTYPE html>
 <html lang="fr" class="h-full bg-[#FAFAFA]">
 <head>
@@ -13,44 +14,8 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
 
-    <!-- Tailwind CSS CDN -->
-    <script src="https://cdn.tailwindcss.com"></script>
-    <script>
-        tailwind.config = {
-            theme: {
-                extend: {
-                    colors: {
-                        primary: '#8B1E24',
-                        'primary-hover': '#6F171C',
-                        secondary: '#A52A2F',
-                        accent: '#C89B3C',
-                        background: '#FAFAFA',
-                        surface: '#FFFFFF',
-                        border: '#E5E7EB',
-                        'text-primary': '#1F2937',
-                        'text-secondary': '#6B7280',
-                        muted: '#9CA3AF',
-                        success: '#16A34A',
-                        warning: '#F59E0B',
-                        danger: '#DC2626',
-                        info: '#2563EB',
-                    },
-                    fontFamily: {
-                        sans: ['Poppins', 'sans-serif'],
-                    },
-                    borderRadius: {
-                        '4': '4px',
-                        '8': '8px',
-                        '12': '12px',
-                        '16': '16px',
-                        '20': '20px',
-                        '24': '24px',
-                        '32': '32px',
-                    }
-                }
-            }
-        }
-    </script>
+    <!-- Tailwind CSS (compilé localement, voir README pour la commande de build) -->
+    <link rel="stylesheet" href="{% static 'css/tailwind.css' %}">
     
     <!-- HTMX CDN -->
     <script src="https://unpkg.com/htmx.org@1.9.10"></script>
@@ -84,7 +49,9 @@
     {% block layout %}{% endblock %}
 
     <!-- Chatbot Assistant Flottant -->
+    {% block chatbot_widget %}
     {% include "components/support/chatbot_floating_widget.html" %}
+    {% endblock %}
 
     <!-- Initialize Lucide Icons -->
     <script>

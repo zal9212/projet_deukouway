@@ -10,7 +10,7 @@
 
     <!-- Hero Mobile plein écran -->
     <section class="relative w-full h-screen bg-cover bg-center flex flex-col items-center justify-center text-center select-none"
-             style="background-image: url('{% static 'img/hero_bg.png' %}');">
+             style="background-image: url('{% if platform_settings.hero_image %}{{ platform_settings.hero_image.url }}{% else %}{% static 'img/hero_bg.png' %}{% endif %}');">
         <div class="absolute inset-0 bg-[#1F2937]/45 z-0"></div>
 
         <!-- Contenu centré -->
@@ -103,8 +103,7 @@
                             {% if property.images.all %}
                                 <img src="{{ property.images.first.image.url }}" alt="{{ property.title }}" class="w-full h-full object-cover" loading="lazy">
                             {% else %}
-                                {% placeholder_image property.id as ph_img %}
-                                <img src="{% static ph_img %}" alt="{{ property.title }}" class="w-full h-full object-cover" loading="lazy">
+                                <img src="{% placeholder_image property.id %}" alt="{{ property.title }}" class="w-full h-full object-cover" loading="lazy">
                             {% endif %}
                         </div>
                         <div class="p-4 flex-grow flex flex-col justify-between">
@@ -121,13 +120,23 @@
                                 </p>
                             </div>
                             <div class="flex items-center justify-between pt-2 border-t border-[#E5E7EB]">
-                                <span class="text-xs font-bold text-[#1F2937]">{{ property.price }} F <span class="text-[8px] font-normal text-[#6B7280]">/ nuit</span></span>
+                                <span class="text-xs font-bold text-[#1F2937]">{{ property.price }} F <span class="text-[8px] font-normal text-[#6B7280]">{{ property.pricing_period|price_unit }}</span></span>
                             </div>
                         </div>
                     </a>
-                    <button class="absolute top-2.5 right-2.5 p-1.5 bg-white border border-[#E5E7EB] rounded-full text-[#6B7280] hover:text-[#8B1E24] shadow-sm z-10" aria-label="Ajouter aux favoris">
-                        <i data-lucide="heart" class="w-3.5 h-3.5"></i>
-                    </button>
+                    {% if request.user.is_authenticated and request.user.is_client %}
+                    <form method="POST" action="{% url 'public:favorite_toggle' property.id %}" class="absolute top-2.5 right-2.5 z-10"
+                          hx-post="{% url 'public:favorite_toggle' property.id %}" hx-swap="none"
+                          x-data="{ favorited: {% if property.id in user_favorite_ids %}true{% else %}false{% endif %} }">
+                        {% csrf_token %}
+                        <button type="submit" @click="favorited = !favorited"
+                                :aria-label="favorited ? 'Retirer des favoris' : 'Ajouter aux favoris'"
+                                class="p-1.5 bg-white border border-[#E5E7EB] rounded-full text-[#6B7280] hover:text-[#8B1E24] shadow-sm">
+                            <span x-show="!favorited" x-cloak><i data-lucide="heart" class="w-3.5 h-3.5"></i></span>
+                            <span x-show="favorited" x-cloak><i data-lucide="heart" class="w-3.5 h-3.5 fill-current text-[#8B1E24]"></i></span>
+                        </button>
+                    </form>
+                    {% endif %}
                 </div>
             {% empty %}
                 <div class="w-full text-center py-6 text-xs text-[#9CA3AF]">Aucun bien disponible.</div>
@@ -140,7 +149,7 @@
 <div class="hidden md:block bg-[#FAFAFA] min-h-screen pb-16">
     <!-- Hero Banner (Modern Mockup Reome Structure) -->
     <section class="relative w-full h-[500px] bg-cover bg-center flex flex-col items-center justify-center text-center select-none" 
-             style="background-image: url('{% static 'img/hero_bg.png' %}');">
+             style="background-image: url('{% if platform_settings.hero_image %}{{ platform_settings.hero_image.url }}{% else %}{% static 'img/hero_bg.png' %}{% endif %}');">
         <!-- Backdrop mask layer -->
         <div class="absolute inset-0 bg-[#1F2937]/35 z-0"></div>
         
@@ -318,33 +327,15 @@
         </div>
     </section>
 
-    <!-- Section 1: "Browse the Listings" (Recommended properties) -->
-    <section class="py-12 max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 space-y-6">
-        <div class="text-center space-y-2">
-            <h3 class="text-2xl font-bold tracking-tight text-[#1F2937] font-sans">Parcourir les Logements</h3>
-            <p class="text-xs text-[#6B7280]">Découvrez notre sélection de biens les plus populaires au Sénégal.</p>
-        </div>
-
-        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
-            {% for property in featured_properties %}
-                {% include "components/property_card.html" with property=property %}
-            {% empty %}
-                <div class="col-span-full text-center py-6 text-xs text-[#9CA3AF]">
-                    Aucun logement disponible pour le moment.
-                </div>
-            {% endfor %}
-        </div>
-    </section>
-
-    <!-- Section 2: "Logements Récents" -->
+    <!-- Logements : grille unique, plus récents en premier, paginée automatiquement -->
     <section class="py-12 max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 space-y-6">
         <div class="text-center space-y-2">
             <h3 class="text-2xl font-bold tracking-tight text-[#1F2937] font-sans">Logements Récents</h3>
-            <p class="text-xs text-[#6B7280]">Découvrez les dernières annonces vérifiées publiées sur la plateforme.</p>
+            <p class="text-xs text-[#6B7280]">Toutes les annonces vérifiées, des plus récentes aux plus anciennes.</p>
         </div>
 
         <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
-            {% for property in featured_properties %}
+            {% for property in properties %}
                 {% include "components/property_card.html" with property=property %}
             {% empty %}
                 <div class="col-span-full text-center py-6 text-xs text-[#9CA3AF]">
@@ -352,6 +343,40 @@
                 </div>
             {% endfor %}
         </div>
+
+        {% if is_paginated %}
+        <nav class="flex items-center justify-center gap-2 pt-4" aria-label="Pagination">
+            {% if page_obj.has_previous %}
+                <a href="?page={{ page_obj.previous_page_number }}" class="inline-flex items-center justify-center h-9 w-9 rounded-full border border-[#E5E7EB] text-[#1F2937] hover:border-[#8B1E24] hover:text-[#8B1E24] transition-colors">
+                    <i data-lucide="chevron-left" class="w-4 h-4"></i>
+                    <span class="sr-only">Précédent</span>
+                </a>
+            {% else %}
+                <span class="inline-flex items-center justify-center h-9 w-9 rounded-full border border-[#E5E7EB] text-[#D1D5DB] cursor-not-allowed">
+                    <i data-lucide="chevron-left" class="w-4 h-4"></i>
+                </span>
+            {% endif %}
+
+            {% for page_num in page_obj.paginator.page_range %}
+                {% if page_num == page_obj.number %}
+                    <span aria-current="page" class="inline-flex items-center justify-center h-9 w-9 rounded-full bg-[#8B1E24] text-white text-xs font-bold">{{ page_num }}</span>
+                {% else %}
+                    <a href="?page={{ page_num }}" class="inline-flex items-center justify-center h-9 w-9 rounded-full border border-[#E5E7EB] text-[#1F2937] text-xs font-bold hover:border-[#8B1E24] hover:text-[#8B1E24] transition-colors">{{ page_num }}</a>
+                {% endif %}
+            {% endfor %}
+
+            {% if page_obj.has_next %}
+                <a href="?page={{ page_obj.next_page_number }}" class="inline-flex items-center justify-center h-9 w-9 rounded-full border border-[#E5E7EB] text-[#1F2937] hover:border-[#8B1E24] hover:text-[#8B1E24] transition-colors">
+                    <i data-lucide="chevron-right" class="w-4 h-4"></i>
+                    <span class="sr-only">Suivant</span>
+                </a>
+            {% else %}
+                <span class="inline-flex items-center justify-center h-9 w-9 rounded-full border border-[#E5E7EB] text-[#D1D5DB] cursor-not-allowed">
+                    <i data-lucide="chevron-right" class="w-4 h-4"></i>
+                </span>
+            {% endif %}
+        </nav>
+        {% endif %}
     </section>
 </div>
 {% endblock %}

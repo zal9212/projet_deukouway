@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from apps.documents.models import DocumentCategory, Document, DocumentVerification
+from apps.documents.models import DocumentCategory, Document
 
 class DocumentCategorySerializer(serializers.ModelSerializer):
     class Meta:

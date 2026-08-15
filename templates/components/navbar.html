@@ -1,13 +1,17 @@
-<header class="bg-white border-b border-[#E5E7EB] sticky top-0 z-40" x-data="{ mobileMenuOpen: false }">
+<header class="bg-white border-b border-[#E5E7EB] sticky top-0 z-40">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-20 flex items-center justify-between">
         
         <!-- Logo (Left) -->
         <a href="{% url 'home' %}" class="flex items-center space-x-2.5">
-            <span class="p-2.5 bg-[#8B1E24] rounded-xl text-white shadow-sm flex items-center justify-center">
-                <i data-lucide="home" class="w-5 h-5"></i>
-            </span>
+            {% if platform_settings.logo %}
+                <img src="{{ platform_settings.logo.url }}" alt="{{ platform_settings.site_name }}" class="w-9 h-9 rounded-xl object-cover shadow-sm">
+            {% else %}
+                <span class="p-2.5 bg-[#8B1E24] rounded-xl text-white shadow-sm flex items-center justify-center">
+                    <i data-lucide="home" class="w-5 h-5"></i>
+                </span>
+            {% endif %}
             <span class="text-lg font-bold tracking-wider text-[#1F2937] font-sans">
-                DEKOUWAY
+                {{ platform_settings.site_name|default:"DEKOUWAY" }}
             </span>
         </a>
 
@@ -86,6 +90,10 @@
                                 <i data-lucide="calendar" class="w-4 h-4 text-[#6B7280]"></i>
                                 <span>Mes Réservations</span>
                             </a>
+                            <a href="{% url 'dashboard:client_favorites' %}" class="flex items-center px-4 py-2.5 text-xs font-bold text-[#1F2937] hover:bg-[#FAFAFA] space-x-2">
+                                <i data-lucide="heart" class="w-4 h-4 text-[#6B7280]"></i>
+                                <span>Mes Favoris</span>
+                            </a>
                         {% endif %}
                         <form action="{% url 'logout' %}" method="post" class="border-t border-[#E5E7EB]">
                             {% csrf_token %}
@@ -105,12 +113,35 @@
             {% endif %}
         </div>
 
-        <!-- Mobile menu toggle button in rounded borders box -->
-        <button @click="mobileMenuOpen = !mobileMenuOpen" 
-                aria-label="Ouvrir le menu de navigation"
-                class="md:hidden p-2.5 border border-[#E5E7EB] rounded-xl text-[#1F2937] hover:bg-[#FAFAFA] transition-colors focus:outline-none">
-            <i data-lucide="menu" class="w-5 h-5" x-show="!mobileMenuOpen"></i>
-            <i data-lucide="x" class="w-5 h-5" x-show="mobileMenuOpen" x-cloak></i>
-        </button>
+        <!-- Actions mobile (profil + menu) -->
+        <div class="md:hidden flex items-center gap-1">
+            {% if user.is_authenticated %}
+                {% if user.is_owner %}
+                    {% url 'dashboard:owner_profile' as profile_url %}
+                {% elif user.is_superadmin or user.is_staff %}
+                    {% url 'dashboard:admin_profile' as profile_url %}
+                {% else %}
+                    {% url 'profile' as profile_url %}
+                {% endif %}
+                <a href="{{ profile_url }}" aria-label="Mon profil" class="p-1">
+                    {% if user.avatar %}
+                        <img src="{{ user.avatar.url }}" alt="{{ user.first_name }}" class="w-8 h-8 rounded-full object-cover">
+                    {% else %}
+                        <div class="w-8 h-8 rounded-full bg-[#8B1E24] text-white flex items-center justify-center font-bold text-xs select-none">
+                            {{ user.first_name|slice:":1"|upper|default:"?" }}
+                        </div>
+                    {% endif %}
+                </a>
+            {% else %}
+                <a href="{% url 'login' %}" aria-label="Se connecter" class="p-2 rounded-full text-[#1F2937] hover:bg-[#FAFAFA] transition-colors">
+                    <i data-lucide="user" class="w-6 h-6"></i>
+                </a>
+            {% endif %}
+            <button type="button" @click="menuOpen = !menuOpen" aria-label="Menu"
+                    class="p-2.5 rounded-full text-[#1F2937] hover:bg-[#FAFAFA] transition-colors focus:outline-none">
+                <span x-show="!menuOpen"><i data-lucide="menu" class="w-6 h-6"></i></span>
+                <span x-show="menuOpen" x-cloak><i data-lucide="x" class="w-6 h-6"></i></span>
+            </button>
+        </div>
     </div>
 </header>

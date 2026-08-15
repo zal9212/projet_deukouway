@@ -265,7 +265,6 @@ class AdminSupportTicketViewTestCase(TestCase):
         self.assertEqual(self.ticket.status, 'CLOSED')
 
     def test_cannot_reply_to_closed_ticket(self):
-        from apps.support.models import TicketMessage
         self.ticket.status = 'CLOSED'
         self.ticket.save(update_fields=['status'])
         response = self.client_http.post(reverse('dashboard:admin_support'), {
@@ -277,7 +276,6 @@ class AdminSupportTicketViewTestCase(TestCase):
 class OwnerAddPropertyViewTestCase(TestCase):
     def setUp(self):
         import base64
-        from django.core.files.uploadedfile import SimpleUploadedFile
         from apps.properties.models import PropertyType
 
         self.client_http = Client()
@@ -538,7 +536,7 @@ class OwnerCalendarViewTestCase(TestCase):
         from apps.reservations.services.services import ReservationService
         req = ReservationService.admin_validate(self.req, self.admin)
         req = ReservationService.owner_accept(req, self.owner)
-        res = ReservationService.confirm_payment(req, total_price=100000.0)
+        ReservationService.confirm_payment(req, total_price=100000.0)
 
         response = self.client_http.get(
             reverse('dashboard:owner_calendar'),

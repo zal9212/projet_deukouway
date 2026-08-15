@@ -1,8 +1,8 @@
+from decimal import Decimal
 from django.db import transaction
-from django.utils import timezone
 from apps.accounts.models import User
 from apps.properties.models import Property, PropertyStatusHistory, PropertyAmenity, PropertyRule, PropertyImage, PropertyAvailability
-from apps.properties.choices import PropertyStatusChoices
+from apps.properties.choices import PropertyStatusChoices, PropertyPricingPeriodChoices
 from apps.properties.services.exceptions import PropertyAlreadyPublished, InvalidPropertyStatus, UnauthorizedPropertyAction, DatesAlreadyBooked
 from apps.core.forms import validate_max_file_size, validate_allowed_file_extensions
 import datetime
@@ -26,6 +26,20 @@ class PropertyService:
         )
         logger.info(f"Propriété créée par le propriétaire {owner.email} : {prop.id}")
         return prop
+
+    @staticmethod
+    def calculate_price_for_stay(prop: Property, check_in, check_out) -> Decimal:
+        """
+        Calcule le sous-total du séjour à partir du tarif du logement. Un logement
+        "Par mois" affiche un prix mensuel : on le proratise sur 30 jours plutôt que
+        de le multiplier tel quel par le nombre de nuits (ce qui produirait un montant
+        absurde, ex: prix mensuel × 7 nuits).
+        """
+        nights = max((check_out - check_in).days, 1)
+        price = Decimal(str(prop.price))
+        if prop.pricing_period == PropertyPricingPeriodChoices.MONTHLY:
+            return (price / Decimal('30') * Decimal(nights)).quantize(Decimal('0.01'))
+        return price * Decimal(nights)
 
     @staticmethod
     @transaction.atomic
