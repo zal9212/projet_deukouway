@@ -1,0 +1,17 @@
+name: Keep Render Instance Awake
+
+# Ping /health/ toutes les 10 min pour empêcher le plan gratuit Render de
+# s'endormir après 15 min d'inactivité (le "cold start" suivant peut prendre
+# 50s+). Purement pour du confort de test : n'affecte ni le code ni le CI.
+on:
+  schedule:
+    - cron: '*/10 * * * *'
+  workflow_dispatch: {}
+
+jobs:
+  ping:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Ping health endpoint
+        run: |
+          curl -sf --max-time 60 https://dekouway.onrender.com/health/ || echo "Ping échoué (le service était peut-être déjà en train de redémarrer) — pas grave, réessai au prochain cycle."
