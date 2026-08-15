@@ -1,3 +1,5 @@
+import hashlib
+
 from django import template
 from django.templatetags.static import static
 
@@ -18,7 +20,17 @@ PLACEHOLDER_IMAGES = [
 def placeholder_image(property_id):
     """
     Retourne l'URL statique complète d'une image fictive basée sur l'ID du bien.
-    Rotation circulaire sur les 6 images disponibles.
+    Rotation circulaire sur les 6 images disponibles. Les ID étant des UUID (non
+    convertibles en int), on dérive un index stable via un hash MD5.
     """
-    index = (int(property_id) - 1) % len(PLACEHOLDER_IMAGES)
+    # usedforsecurity=False : usage non cryptographique (répartition déterministe
+    # sur 6 images), pas une empreinte de sécurité — évite le faux positif bandit B324.
+    digest = hashlib.md5(str(property_id).encode(), usedforsecurity=False).hexdigest()
+    index = int(digest, 16) % len(PLACEHOLDER_IMAGES)
     return static(PLACEHOLDER_IMAGES[index])
+
+
+@register.filter
+def price_unit(pricing_period):
+    """Libellé affiché après le prix : '/ nuit' ou '/ mois' selon le type de location."""
+    return '/ mois' if pricing_period == 'MONTHLY' else '/ nuit'
