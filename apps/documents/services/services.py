@@ -1,6 +1,5 @@
+from django.core.exceptions import PermissionDenied
 from django.db import transaction
-from django.core.exceptions import ValidationError
-from django.utils import timezone
 from apps.accounts.models import User
 from apps.core.forms import validate_max_file_size, validate_allowed_file_extensions, validate_file_content_type
 from apps.documents.models import Document, DocumentCategory, DocumentVerification
@@ -38,7 +37,10 @@ class DocumentService:
     @transaction.atomic
     def delete(document: Document, user: User) -> None:
         if document.user_id != user.id:
-            raise Exception("Non autorisé à supprimer ce document.")
+            # PermissionDenied (pas une exception générique) : géré nativement par
+            # ViewExceptionHandlingMixin (rendu 403) côté HTML, et par le handler
+            # DRF par défaut (403) côté API, sans configuration supplémentaire.
+            raise PermissionDenied("Non autorisé à supprimer ce document.")
         document.soft_delete()
         logger.info(f"Document supprimé logiquement : {document.id} par {user.email}")
 

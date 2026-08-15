@@ -1,6 +1,5 @@
-from django.views.generic import TemplateView, ListView, DetailView, FormView, View
+from django.views.generic import TemplateView, ListView, DetailView, View
 from django.shortcuts import redirect
-from django.urls import reverse_lazy
 from django.contrib import messages
 from django.contrib.auth import update_session_auth_hash
 from django.http import Http404

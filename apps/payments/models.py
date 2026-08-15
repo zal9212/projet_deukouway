@@ -1,11 +1,14 @@
 from decimal import Decimal
 from django.db import models
 from django.conf import settings
+from django.core.cache import cache
 from django.core.validators import MinValueValidator, MaxValueValidator, FileExtensionValidator
 from django.utils.translation import gettext_lazy as _
 from apps.core.models import BaseModel
 from apps.reservations.models import Reservation
 from .choices import PaymentMethodChoices, PaymentStatusChoices, PayoutStatusChoices
+
+PLATFORM_SETTINGS_CACHE_KEY = 'platform_settings'
 
 
 class Payment(BaseModel):
@@ -161,6 +164,9 @@ class PlatformSettings(BaseModel):
         max_digits=12, decimal_places=2, default=Decimal('5000.00'),
         validators=[MinValueValidator(Decimal('0.00'))]
     )
+    site_name = models.CharField(_('Nom du site'), max_length=100, default='DEKOUWAY')
+    logo = models.ImageField(_('Logo'), upload_to='branding/', blank=True, null=True)
+    hero_image = models.ImageField(_("Image Hero (page d'accueil)"), upload_to='branding/', blank=True, null=True)
 
     class Meta(BaseModel.Meta):
         verbose_name = _('Configuration de la Plateforme')
@@ -170,9 +176,26 @@ class PlatformSettings(BaseModel):
     def __str__(self) -> str:
         return f"Configuration Plateforme (Commission {self.commission_percentage}%)"
 
+    def save(self, *args, **kwargs):
+        super().save(*args, **kwargs)
+        cache.delete(PLATFORM_SETTINGS_CACHE_KEY)
+
+    def delete(self, *args, **kwargs):
+        super().delete(*args, **kwargs)
+        cache.delete(PLATFORM_SETTINGS_CACHE_KEY)
+
     @classmethod
     def load(cls) -> 'PlatformSettings':
+        # Lu sur quasi chaque page (context processor site_branding) : mis en cache,
+        # invalidé automatiquement dans save()/delete() dès qu'un admin modifie la config.
+        if settings.TESTING:
+            obj = cls.objects.filter(is_deleted=False).order_by('created_at').first()
+            return obj or cls.objects.create()
+        cached = cache.get(PLATFORM_SETTINGS_CACHE_KEY)
+        if cached is not None:
+            return cached
         obj = cls.objects.filter(is_deleted=False).order_by('created_at').first()
         if not obj:
             obj = cls.objects.create()
+        cache.set(PLATFORM_SETTINGS_CACHE_KEY, obj, timeout=3600)
         return obj

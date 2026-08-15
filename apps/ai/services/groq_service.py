@@ -1,6 +1,6 @@
 import time
 import logging
-from typing import List, Dict, Any, Tuple
+from typing import List, Dict, Tuple
 from django.conf import settings
 
 from apps.ai.sanitizer import AISanitizer
@@ -95,10 +95,10 @@ class GroqService:
             return f'{{"flagged": {str(has_forbidden).lower()}, "reason": "Détection automatique par filtre de sécurité local", "categories": ["pii_leak"]}}'
             
         elif feature == "DESCRIPTION":
-            return f"Superbe bien disponible sur DEKOUWAY. Confort exceptionnel, emplacement privilégié et équipements modernes. Idéal pour votre séjour."
+            return "Superbe bien disponible sur DEKOUWAY. Confort exceptionnel, emplacement privilégié et équipements modernes. Idéal pour votre séjour."
             
         elif feature == "SUMMARY":
-            return f"Logement confortable et idéalement situé pour vos séjours sur la plateforme DEKOUWAY."
+            return "Logement confortable et idéalement situé pour vos séjours sur la plateforme DEKOUWAY."
 
         return (
             "Bienvenue sur DEKOUWAY ! Notre assistant enregistre actuellement votre demande. "

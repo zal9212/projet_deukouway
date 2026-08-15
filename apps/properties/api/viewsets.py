@@ -3,7 +3,6 @@ from rest_framework.decorators import action
 from rest_framework.response import Response
 from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework.filters import SearchFilter, OrderingFilter
-from drf_spectacular.utils import extend_schema
 
 from apps.properties.services.selectors import PropertySelector
 from apps.properties.services.services import PropertyService
@@ -13,7 +12,7 @@ from apps.properties.api.serializers import (
     PropertyCategorySerializer, PropertyTypeSerializer, PropertyFavoriteSerializer
 )
 from apps.properties.api.filters import PropertyFilter
-from apps.core.api.permissions import IsOwner, IsVerifiedOwner, IsSuperAdmin, AdminOrReadOnly, IsPropertyOwner
+from apps.core.api.permissions import IsVerifiedOwner, IsSuperAdmin
 
 class PropertyViewSet(viewsets.ModelViewSet):
     """

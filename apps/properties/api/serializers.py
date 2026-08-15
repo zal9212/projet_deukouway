@@ -44,7 +44,7 @@ class PropertyListSerializer(serializers.ModelSerializer):
     class Meta:
         model = Property
         fields = [
-            'id', 'title', 'city', 'district', 'price', 'surface',
+            'id', 'title', 'city', 'district', 'price', 'pricing_period', 'surface',
             'bedrooms', 'bathrooms', 'max_guests', 'status',
             'property_type', 'cover_image', 'created_at'
         ]
@@ -67,7 +67,7 @@ class PropertyDetailSerializer(serializers.ModelSerializer):
         model = Property
         fields = [
             'id', 'title', 'description', 'address', 'city', 'district',
-            'latitude', 'longitude', 'price', 'surface', 'bedrooms',
+            'latitude', 'longitude', 'price', 'pricing_period', 'surface', 'bedrooms',
             'bathrooms', 'max_guests', 'status', 'owner_email',
             'property_type', 'images', 'amenities', 'rules', 'created_at'
         ]

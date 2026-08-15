@@ -28,6 +28,8 @@ class IdentityDocumentFileView(LoginRequiredMixin, View):
 
         if field == 'recto':
             file_field = doc.file
+        elif field == 'verso':
+            file_field = doc.file_back
         elif field == 'selfie':
             file_field = doc.selfie_file
         else:

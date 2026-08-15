@@ -4,11 +4,10 @@ from rest_framework.response import Response
 
 from apps.support.services.services import SupportService
 from apps.support.services.selectors import SupportSelector
-from apps.support.models import SupportCategory, Ticket
+from apps.support.models import SupportCategory
 from apps.support.api.serializers import (
     SupportCategorySerializer, TicketSerializer, TicketCreateSerializer, TicketMessageSerializer
 )
-from apps.core.api.permissions import IsSuperAdmin
 
 class SupportCategoryViewSet(viewsets.ReadOnlyModelViewSet):
     queryset = SupportCategory.objects.filter(is_deleted=False)

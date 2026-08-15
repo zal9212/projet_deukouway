@@ -4,8 +4,10 @@
             @click="notificationOpen = !notificationOpen">
         <span class="sr-only">Voir les notifications</span>
         <i data-lucide="bell" class="h-6 w-6"></i>
-        <!-- Pastille rouge de notification -->
+        <!-- Pastille rouge de notification : uniquement si des notifications ne sont pas lues -->
+        {% if unread_notifications_count %}
         <span class="absolute top-2 right-2.5 block h-2 w-2 rounded-full bg-[#8B1E24] ring-2 ring-white"></span>
+        {% endif %}
     </button>
 
     <!-- Dropdown menu -->
@@ -25,15 +27,20 @@
          
         <div class="px-4 py-3 border-b border-gray-100 flex justify-between items-center">
             <h3 class="text-sm font-bold text-gray-900">Notifications</h3>
-            <a href="#" class="text-xs font-semibold text-[#8B1E24] hover:text-[#6F171C]">Tout marquer comme lu</a>
+            {% if unread_notifications_count %}
+            <form method="POST" action="{% url 'notifications:mark_all_read' %}">
+                {% csrf_token %}
+                <button type="submit" class="text-xs font-semibold text-[#8B1E24] hover:text-[#6F171C]">Tout marquer comme lu</button>
+            </form>
+            {% endif %}
         </div>
-        
+
         <div class="max-h-96 overflow-y-auto">
             {% if notifications %}
                 {% for notif in notifications %}
-                    <a href="#" class="block px-4 py-3 hover:bg-gray-50 transition-colors {% if not notif.is_read %}border-l-2 border-[#8B1E24] bg-gray-50/50{% else %}border-l-2 border-transparent{% endif %}" role="menuitem" tabindex="-1">
+                    <a href="{% url 'notifications:open' notif.id %}" class="block px-4 py-3 hover:bg-gray-50 transition-colors {% if not notif.is_read %}border-l-2 border-[#8B1E24] bg-gray-50/50{% else %}border-l-2 border-transparent{% endif %}" role="menuitem" tabindex="-1">
                         <p class="text-sm font-semibold text-gray-900">{{ notif.title }}</p>
-                        <p class="text-xs text-gray-500 mt-1 line-clamp-2">{{ notif.message|default:notif.description }}</p>
+                        <p class="text-xs text-gray-500 mt-1 line-clamp-2">{{ notif.message }}</p>
                         <p class="text-[10px] text-gray-400 mt-2">{{ notif.created_at|date:"d M H:i" }}</p>
                     </a>
                 {% endfor %}

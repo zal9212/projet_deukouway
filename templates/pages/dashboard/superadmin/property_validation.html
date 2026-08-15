@@ -1,5 +1,6 @@
 {% extends "layouts/dashboard.html" %}
 
+{% load property_tags %}
 {% block title %}Validation Logement - DEKOUWAY ERP{% endblock %}
 
 {% block page_header %}
@@ -27,20 +28,21 @@
         </div>
         <ul role="list" class="flex-1 overflow-y-auto divide-y divide-gray-100">
             {% for prop in pending_properties %}
-            <li class="relative px-4 py-4 {% if forloop.first %}bg-blue-50/50 border-l-4 border-blue-600{% else %}hover:bg-gray-50{% endif %} cursor-pointer">
-                <div class="flex justify-between">
-                    <div>
-                        <p class="text-sm font-bold text-gray-900">{{ prop.title }}</p>
-                        <p class="text-xs text-gray-500 mt-1">Soumis par {{ prop.owner.email }}</p>
+            <li>
+                <a href="?id={{ prop.id }}" class="block relative px-4 py-4 {% if active_prop.id == prop.id %}bg-blue-50/50 border-l-4 border-blue-600{% else %}hover:bg-gray-50{% endif %}">
+                    <div class="flex justify-between">
+                        <div>
+                            <p class="text-sm font-bold text-gray-900">{{ prop.title }}</p>
+                            <p class="text-xs text-gray-500 mt-1">Soumis par {{ prop.owner.email }}</p>
+                        </div>
                     </div>
-                </div>
+                </a>
             </li>
             {% endfor %}
         </ul>
     </div>
 
     <!-- Zone d'Analyse Centrale -->
-    {% with active_prop=pending_properties.0 %}
     <div class="xl:col-span-3">
         <div class="bg-white border border-gray-200 rounded-xl shadow-sm overflow-hidden flex flex-col xl:h-[calc(100vh-16rem)] h-auto">
             
@@ -60,7 +62,7 @@
                     <h4 class="text-sm font-semibold text-gray-900 mb-4 border-b border-gray-100 pb-2">Détails de l'Annonce</h4>
                     <div class="grid grid-cols-1 md:grid-cols-3 gap-4 text-sm">
                         <div>
-                            <span class="text-gray-500">Prix par nuit :</span>
+                            <span class="text-gray-500">Prix {{ active_prop.pricing_period|price_unit }} :</span>
                             <span class="font-semibold text-gray-900 block mt-0.5">{{ active_prop.price }} CFA</span>
                         </div>
                         <div>
@@ -103,7 +105,6 @@
             </div>
         </div>
     </div>
-    {% endwith %}
 </div>
 {% else %}
 <div class="bg-white border border-gray-200 rounded-xl p-12 text-center shadow-sm">

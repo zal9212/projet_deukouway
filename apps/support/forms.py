@@ -1,4 +1,3 @@
-from typing import Optional
 from django import forms
 from django.core.exceptions import ValidationError
 from apps.core.forms import TailwindFormMixin

@@ -2,7 +2,6 @@ from rest_framework import viewsets, status, permissions
 from rest_framework.decorators import action
 from rest_framework.response import Response
 from rest_framework_simplejwt.tokens import RefreshToken
-from rest_framework_simplejwt.views import TokenObtainPairView
 from drf_spectacular.utils import extend_schema
 
 from apps.accounts.services.services import AccountService
@@ -12,7 +11,7 @@ from apps.accounts.api.serializers import (
     OwnerRegisterSerializer, PasswordChangeSerializer, AddressSerializer,
     IdentityDocumentSerializer
 )
-from apps.core.api.permissions import IsSuperAdmin, IsOwner
+from apps.core.api.permissions import IsSuperAdmin
 
 class AuthViewSet(viewsets.GenericViewSet):
     """

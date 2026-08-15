@@ -56,13 +56,14 @@
                             <th scope="col" class="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">Méthode</th>
                             <th scope="col" class="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">Montant Total</th>
                             <th scope="col" class="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">Statut</th>
+                            <th scope="col" class="px-3 py-3.5"><span class="sr-only">Actions</span></th>
                         </tr>
                     </thead>
                     <tbody class="divide-y divide-gray-200 bg-white">
                         {% for payment in payments %}
-                        <tr>
+                        <tr class="hover:bg-gray-50 transition-colors cursor-pointer" onclick="window.location='{% url 'dashboard:admin_payment_detail' payment.id %}'">
                             <td class="whitespace-nowrap py-5 pl-4 pr-3 sm:pl-0">
-                                <div class="font-bold text-gray-900">#PAY-{{ payment.gateway_transaction_id|default:payment.id }}</div>
+                                <a href="{% url 'dashboard:admin_payment_detail' payment.id %}" class="font-bold text-gray-900 hover:text-[#8B1E24]">#PAY-{% if payment.gateway_transaction_id %}{{ payment.gateway_transaction_id }}{% else %}{{ payment.id|slice:":8" }}{% endif %}</a>
                                 <div class="text-gray-500 text-xs mt-0.5">{{ payment.created_at|date:"d M Y H:i" }}</div>
                             </td>
                             <td class="whitespace-nowrap px-3 py-5 text-sm text-gray-500">
@@ -70,7 +71,7 @@
                                 <div class="text-gray-500 text-xs">Pour #RES-{{ payment.reservation.confirmation_code|default:payment.reservation.id }}</div>
                             </td>
                             <td class="whitespace-nowrap px-3 py-5 text-sm text-gray-500 font-semibold">
-                                {{ payment.payment_method|default:"Mobile Money / CB" }}
+                                {{ payment.get_method_display|default:"Mobile Money / CB" }}
                             </td>
                             <td class="whitespace-nowrap px-3 py-5 text-sm text-gray-500">
                                 <div class="text-gray-900 font-bold text-base">{{ payment.amount }} F</div>
@@ -84,10 +85,13 @@
                                     {% include "components/dashboard/status_badge.html" with status="pending" label=payment.get_status_display %}
                                 {% endif %}
                             </td>
+                            <td class="whitespace-nowrap px-3 py-5 text-sm text-right">
+                                <a href="{% url 'dashboard:admin_payment_detail' payment.id %}" class="text-xs font-semibold px-3 py-1 rounded-md bg-[#8B1E24] text-white hover:bg-[#7a1a1f]">Voir</a>
+                            </td>
                         </tr>
                         {% empty %}
                         <tr>
-                            <td colspan="5" class="py-8 text-center text-gray-500">
+                            <td colspan="6" class="py-8 text-center text-gray-500">
                                 Aucun encaissement trouvé.
                             </td>
                         </tr>

@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from apps.ai.models import Conversation, ConversationMessage, AIUsageLog
+from apps.ai.models import Conversation, ConversationMessage
 
 class ConversationMessageSerializer(serializers.ModelSerializer):
     class Meta:

@@ -57,9 +57,9 @@ class PaymentSelector:
         ).select_related('user', 'reservation', 'reservation__property')
         if search_query:
             qs = qs.filter(
-                Q(transaction_id__icontains=search_query) |
+                Q(gateway_transaction_id__icontains=search_query) |
                 Q(user__email__icontains=search_query) |
-                Q(reservation__code__icontains=search_query)
+                Q(reservation__confirmation_code__icontains=search_query)
             )
         if status:
             qs = qs.filter(status=status)
@@ -74,11 +74,23 @@ class PaymentSelector:
         if search_query:
             qs = qs.filter(
                 Q(owner__email__icontains=search_query) |
-                Q(reservation__code__icontains=search_query)
+                Q(reservation__confirmation_code__icontains=search_query)
             )
         if status:
             qs = qs.filter(status=status)
         return qs.order_by('-created_at')
+
+    @staticmethod
+    def get_payment_by_id(payment_id: str) -> Payment | None:
+        return Payment.objects.filter(id=payment_id, is_deleted=False).select_related(
+            'user', 'reservation', 'reservation__property', 'commission'
+        ).first()
+
+    @staticmethod
+    def get_payout_by_id(payout_id: str) -> Payout | None:
+        return Payout.objects.filter(id=payout_id, is_deleted=False).select_related(
+            'owner', 'reservation', 'reservation__property'
+        ).first()
 
     @staticmethod
     def get_all_commissions() -> QuerySet[Commission]:

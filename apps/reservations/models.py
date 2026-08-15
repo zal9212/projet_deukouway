@@ -18,7 +18,7 @@ class ReservationRequest(BaseModel):
     
     check_in = models.DateField(_('Date d\'arrivée'))
     check_out = models.DateField(_('Date de départ'))
-    guests = models.PositiveIntegerField(_('Nombre de voyageurs'), validators=[MinValueValidator(1)])
+    guests = models.PositiveIntegerField(_('Nombre de personnes'), validators=[MinValueValidator(1)])
     
     status = models.CharField(
         _('Statut de la demande'),
@@ -54,7 +54,7 @@ class Reservation(BaseModel):
     
     check_in = models.DateField(_('Date d\'arrivée'))
     check_out = models.DateField(_('Date de départ'))
-    guests = models.PositiveIntegerField(_('Nombre de voyageurs'), validators=[MinValueValidator(1)])
+    guests = models.PositiveIntegerField(_('Nombre de personnes'), validators=[MinValueValidator(1)])
     
     total_price = models.DecimalField(_('Prix total'), max_digits=12, decimal_places=2, validators=[MinValueValidator(0.01)])
     

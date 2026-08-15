@@ -1,25 +1,34 @@
 from django.db.models import Avg, Count
 from django.utils import timezone
 from django.views.generic import TemplateView, ListView, DetailView, View
-from django.core.paginator import Paginator
-from django.http import Http404
+from django.http import Http404, HttpResponse
 from django.shortcuts import redirect
 from django.contrib import messages
 from django.contrib.auth.mixins import LoginRequiredMixin
 from apps.core.mixins import ViewExceptionHandlingMixin
 from apps.properties.models import PropertyReview, PropertyFavorite
 from apps.properties.services.selectors import PropertySelector
-from apps.payments.models import PlatformSettings
 from apps.support.services.selectors import TicketSelector
 from apps.support.services.services import SupportService
 
-class HomeView(ViewExceptionHandlingMixin, TemplateView):
+class HomeView(ViewExceptionHandlingMixin, ListView):
     template_name = 'pages/public/home.html'
+    context_object_name = 'properties'
+    paginate_by = 12
+
+    def get_queryset(self):
+        # Déjà triées par -created_at (plus récentes en premier) dans le selector.
+        return PropertySelector.get_published_properties()
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
+        # Carrousel horizontal mobile ("Logements recommandés") : sélection courte
+        # distincte de la grille paginée desktop, pas de pagination sur un scroller.
         context['featured_properties'] = PropertySelector.get_featured_properties(limit=6)
         context['categories'] = PropertySelector.get_all_categories()
+        context['user_favorite_ids'] = PropertySelector.get_user_favorite_ids(
+            self.request.user.id if self.request.user.is_authenticated else None
+        )
         return context
 
 class SearchView(ViewExceptionHandlingMixin, ListView):
@@ -75,6 +84,9 @@ class SearchView(ViewExceptionHandlingMixin, ListView):
         context = super().get_context_data(**kwargs)
         context['categories'] = PropertySelector.get_all_categories()
         context['types'] = PropertySelector.get_all_types()
+        context['user_favorite_ids'] = PropertySelector.get_user_favorite_ids(
+            self.request.user.id if self.request.user.is_authenticated else None
+        )
         return context
 
 class SearchResultsView(SearchView):
@@ -111,11 +123,14 @@ class PropertyDetailView(ViewExceptionHandlingMixin, DetailView):
         context['owner_avg_rating'] = round(owner_review_stats['avg'], 2) if owner_review_stats['avg'] else None
         context['owner_properties_count'] = prop.owner.properties.filter(is_deleted=False).count()
 
-        context['platform_settings'] = PlatformSettings.load()
         context['today'] = timezone.now().date()
         context['is_favorite'] = (
             self.request.user.is_authenticated
             and PropertyFavorite.objects.filter(user=self.request.user, property_id=prop.id).exists()
+        )
+        context['similar_properties'] = PropertySelector.get_similar_properties(prop, limit=4)
+        context['user_favorite_ids'] = PropertySelector.get_user_favorite_ids(
+            self.request.user.id if self.request.user.is_authenticated else None
         )
         return context
 
@@ -133,6 +148,9 @@ class ToggleFavoriteView(LoginRequiredMixin, View):
             PropertyFavorite.objects.create(user=request.user, property_id=prop.id)
             messages.success(request, "Logement ajouté à vos favoris.")
 
+        if request.headers.get('HX-Request') == 'true':
+            # Le bouton se met à jour côté client (Alpine) ; pas de contenu à renvoyer.
+            return HttpResponse(status=204)
         return redirect(request.META.get('HTTP_REFERER') or 'public:property_detail', pk=prop.id)
 
 class FAQView(ViewExceptionHandlingMixin, TemplateView):

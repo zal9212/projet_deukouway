@@ -1,11 +1,14 @@
 from django.db import transaction
-from django.utils import timezone
 from decimal import Decimal
+from apps.core.forms import validate_allowed_file_extensions, validate_file_content_type, validate_max_file_size
 from apps.accounts.models import User
 from apps.reservations.models import Reservation
 from apps.payments.models import Payment, Commission, Payout, Invoice, Refund, PaymentHistory, PlatformSettings
 from apps.payments.choices import PaymentStatusChoices, PayoutStatusChoices
-from apps.payments.services.exceptions import PaymentAlreadyCompleted, InvalidAmount, PayoutAlreadyProcessed
+from apps.payments.services.exceptions import (
+    PaymentAlreadyCompleted, InvalidAmount, PayoutAlreadyProcessed,
+    CompletedPaymentNotFound, CommissionNotCalculated, InvalidPaymentState,
+)
 import logging
 import uuid
 
@@ -90,11 +93,11 @@ class PaymentService:
         # Reversement = Total - Commission
         payment = reservation.payments.filter(status=PaymentStatusChoices.SUCCESS).first()
         if not payment:
-            raise Exception("Aucun paiement terminé trouvé pour cette réservation.")
-            
+            raise CompletedPaymentNotFound("Aucun paiement terminé trouvé pour cette réservation.")
+
         commission = payment.commission
         if not commission:
-            raise Exception("La commission doit être calculée avant le reversement.")
+            raise CommissionNotCalculated("La commission doit être calculée avant le reversement.")
             
         payout_amount = payment.amount - commission.amount - commission.service_fee
         
@@ -125,7 +128,7 @@ class PaymentService:
     @transaction.atomic
     def refund_payment(payment: Payment, amount: Decimal, reason: str) -> Refund:
         if payment.status != PaymentStatusChoices.SUCCESS:
-            raise Exception("Impossible de rembourser un paiement non terminé.")
+            raise InvalidPaymentState("Impossible de rembourser un paiement non terminé.")
 
         refund = Refund.objects.create(
             payment=payment,
@@ -179,4 +182,34 @@ class PaymentService:
         settings_obj.full_clean()
         settings_obj.save(update_fields=['commission_percentage', 'client_service_fee'])
         logger.info(f"Configuration plateforme mise à jour : commission={commission_percentage}%, frais={client_service_fee}")
+        return settings_obj
+
+    @staticmethod
+    @transaction.atomic
+    def update_branding_settings(site_name: str, logo=None, hero_image=None) -> PlatformSettings:
+        settings_obj = PlatformSettings.load()
+        update_fields = []
+
+        if site_name:
+            settings_obj.site_name = site_name
+            update_fields.append('site_name')
+
+        if logo is not None:
+            validate_allowed_file_extensions(logo, ('png', 'jpg', 'jpeg'))
+            validate_file_content_type(logo, ('png', 'jpg', 'jpeg'))
+            validate_max_file_size(logo, max_size_mb=2.0)
+            settings_obj.logo = logo
+            update_fields.append('logo')
+
+        if hero_image is not None:
+            validate_allowed_file_extensions(hero_image, ('png', 'jpg', 'jpeg'))
+            validate_file_content_type(hero_image, ('png', 'jpg', 'jpeg'))
+            validate_max_file_size(hero_image, max_size_mb=5.0)
+            settings_obj.hero_image = hero_image
+            update_fields.append('hero_image')
+
+        if update_fields:
+            settings_obj.full_clean()
+            settings_obj.save(update_fields=update_fields)
+            logger.info(f"Identité de marque mise à jour : champs={update_fields}")
         return settings_obj

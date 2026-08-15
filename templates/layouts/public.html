@@ -1,7 +1,7 @@
 {% extends "base.html" %}
 
 {% block layout %}
-<div class="min-h-full flex flex-col pb-16 md:pb-0">
+<div class="min-h-full flex flex-col {% block mobile_bottom_padding %}pb-16 md:pb-0{% endblock %}" x-data="{ menuOpen: false }">
     <!-- Navbar -->
     {% include "components/navbar.html" %}
 
@@ -14,6 +14,15 @@
     {% include "components/footer.html" %}
 
     <!-- Mobile bottom nav -->
+    {% block mobile_nav %}
     {% include "components/mobile_nav.html" %}
+    {% endblock %}
+
+    <!-- Panneau menu mobile (toujours présent, même si la barre du bas est masquée sur certaines pages) -->
+    {% include "components/mobile_menu_panel.html" %}
 </div>
+{% endblock %}
+
+{% block chatbot_widget %}
+{% include "components/support/chatbot_floating_widget.html" with hide_fab_on_mobile=True %}
 {% endblock %}

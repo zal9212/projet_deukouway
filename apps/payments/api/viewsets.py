@@ -3,17 +3,16 @@ from rest_framework.decorators import action
 from rest_framework.response import Response
 from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework.filters import OrderingFilter
-from decimal import Decimal
 import uuid
 
 from apps.payments.services.services import PaymentService
 from apps.payments.services.selectors import PaymentSelector
+from apps.properties.services.services import PropertyService
 from apps.reservations.services.selectors import ReservationSelector
 from apps.reservations.services.services import ReservationService
-from apps.payments.models import Payment, Commission, Payout, Invoice
+from apps.payments.models import Payout, Invoice
 from apps.payments.api.serializers import (
-    PaymentSerializer, ProcessPaymentSerializer, CommissionSerializer,
-    PayoutSerializer, InvoiceSerializer
+    PaymentSerializer, ProcessPaymentSerializer, PayoutSerializer, InvoiceSerializer
 )
 from apps.payments.api.filters import PaymentFilter
 from apps.core.api.permissions import IsClient, IsOwner, IsSuperAdmin
@@ -54,14 +53,12 @@ class PaymentViewSet(viewsets.ModelViewSet):
         if not req:
             return Response({'request_id': ["Demande de réservation introuvable."]}, status=status.HTTP_404_NOT_FOUND)
 
-        # Calcul fictif du prix total (nombre de nuits * prix par nuit)
-        nights = max((req.check_out - req.check_in).days, 1)
-        total_price = Decimal(str(req.property.price)) * Decimal(str(nights))
+        total_price = PropertyService.calculate_price_for_stay(req.property, req.check_in, req.check_out)
 
         res = ReservationService.confirm_payment(req, total_price=total_price)
         payment = PaymentService.create_payment(res, user=request.user, amount=total_price, method=data['method'])
         payment = PaymentService.verify_payment(payment, gateway_transaction_id=str(uuid.uuid4()))
-        commission = PaymentService.create_commission(payment)
+        PaymentService.create_commission(payment)
 
         return Response({
             'detail': "Paiement effectué et réservation confirmée avec succès.",

@@ -26,11 +26,11 @@ class ReservationRequestForm(TailwindFormMixin, forms.Form):
         error_messages={'required': 'Veuillez sélectionner votre date de départ.'}
     )
     guests = forms.IntegerField(
-        label="Nombre de voyageurs",
+        label="Nombre de personnes",
         min_value=1,
         initial=1,
         widget=forms.NumberInput(attrs={'min': '1', 'max': '50', 'required': 'required'}),
-        error_messages={'required': 'Veuillez indiquer le nombre de voyageurs.'}
+        error_messages={'required': 'Veuillez indiquer le nombre de personnes.'}
     )
     special_requests = forms.CharField(
         label="Demandes spéciales / Message au propriétaire",
@@ -44,7 +44,7 @@ class ReservationRequestForm(TailwindFormMixin, forms.Form):
     def clean_guests(self) -> Optional[int]:
         guests: Optional[int] = self.cleaned_data.get('guests')
         if guests is not None and guests <= 0:
-            raise ValidationError("Le nombre de voyageurs doit être supérieur à zéro.")
+            raise ValidationError("Le nombre de personnes doit être supérieur à zéro.")
         return guests
 
     def clean(self) -> Dict[str, Any]:

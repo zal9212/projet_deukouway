@@ -54,7 +54,12 @@ INSTALLED_APPS = [
     'rest_framework_simplejwt.token_blacklist',
     'django_filters',
     'drf_spectacular',
-    
+    'django.contrib.sites',        # requis par allauth
+    'allauth',
+    'allauth.account',
+    'allauth.socialaccount',
+    'allauth.socialaccount.providers.google',
+
     # Local apps (monolith modules)
     'apps.core',
     'apps.accounts',
@@ -114,6 +119,7 @@ MIDDLEWARE = [
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
+    'allauth.account.middleware.AccountMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
@@ -131,6 +137,9 @@ TEMPLATES = [
                 'django.template.context_processors.request',
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
+                'apps.accounts.context_processors.social_login',
+                'apps.payments.context_processors.site_branding',
+                'apps.notifications.context_processors.notifications',
             ],
         },
     },
@@ -181,7 +190,42 @@ LOGOUT_REDIRECT_URL = 'public:home'
 # Authentication backends - support login via email (USERNAME_FIELD = 'email')
 AUTHENTICATION_BACKENDS = [
     'django.contrib.auth.backends.ModelBackend',
+    'allauth.account.auth_backends.AuthenticationBackend',
 ]
+
+SITE_ID = 1
+
+# --- django-allauth : connexion Google ---
+# Notre modèle User n'a pas de champ `username` (email = USERNAME_FIELD) : on
+# désactive tout ce qui concerne le username côté allauth, et on ne monte que
+# le sous-système socialaccount (nos propres vues gèrent déjà login/inscription
+# par email — voir apps/accounts/views/auth.py).
+ACCOUNT_USER_MODEL_USERNAME_FIELD = None
+ACCOUNT_LOGIN_METHODS = {'email'}
+ACCOUNT_SIGNUP_FIELDS = ['email*', 'password1*', 'password2*']
+ACCOUNT_ADAPTER = 'apps.accounts.adapters.AccountAdapter'
+SOCIALACCOUNT_ADAPTER = 'apps.accounts.adapters.SocialAccountAdapter'
+
+# Un compte Google authentifie l'email : si un compte DEKOUWAY existe déjà avec
+# cet email (inscrit normalement), on connecte l'utilisateur à CE compte plutôt
+# que d'en créer un doublon, et on relie durablement le compte Google dessus.
+SOCIALACCOUNT_EMAIL_AUTHENTICATION = True
+SOCIALACCOUNT_EMAIL_AUTHENTICATION_AUTO_CONNECT = True
+# Autorise un simple lien <a href> (GET) au lieu d'exiger un formulaire POST.
+SOCIALACCOUNT_LOGIN_ON_GET = True
+SOCIALACCOUNT_STORE_TOKENS = False
+
+SOCIALACCOUNT_PROVIDERS = {
+    'google': {
+        'APP': {
+            'client_id': env('GOOGLE_CLIENT_ID', default=''),
+            'secret': env('GOOGLE_CLIENT_SECRET', default=''),
+            'key': '',
+        },
+        'SCOPE': ['profile', 'email'],
+        'AUTH_PARAMS': {'access_type': 'online'},
+    }
+}
 
 # Django REST Framework Configuration
 REST_FRAMEWORK = {
@@ -290,9 +334,18 @@ STATICFILES_DIRS = [
 # `collectstatic` déjà exécuté et à jour : ce n'est pas une préoccupation de
 # correction fonctionnelle mais de build de production, donc les tests utilisent
 # une storage simple, sans manifeste, pour ne jamais dépendre de cet état externe.
+# MEDIA (photos de logements, logo, image hero) : Cloudinary si CLOUDINARY_URL est
+# défini (ex. déploiement Render, dont le disque est éphémère), sinon disque local.
+# Les documents d'identité (KYC) restent volontairement hors de ce mécanisme : ils
+# utilisent toujours `apps.core.storage.private_storage` (local), jamais un CDN public.
+CLOUDINARY_URL = env('CLOUDINARY_URL', default='')
 STORAGES = {
     "default": {
-        "BACKEND": "django.core.files.storage.FileSystemStorage",
+        "BACKEND": (
+            "cloudinary_storage.storage.MediaCloudinaryStorage"
+            if CLOUDINARY_URL
+            else "django.core.files.storage.FileSystemStorage"
+        ),
     },
     "staticfiles": {
         "BACKEND": (
@@ -302,6 +355,8 @@ STORAGES = {
         ),
     },
 }
+if CLOUDINARY_URL:
+    INSTALLED_APPS += ['cloudinary_storage', 'cloudinary']
 
 # Media files
 MEDIA_URL = 'media/'
@@ -323,5 +378,10 @@ if not DEBUG:
     SECURE_HSTS_INCLUDE_SUBDOMAINS = True
     SECURE_HSTS_PRELOAD = True
 else:
-    # Development CSRF settings
-    CSRF_TRUSTED_ORIGINS = ['http://localhost:8000', 'http://127.0.0.1:8000', 'http://192.168.0.106:8000']
+    # Development CSRF settings. Le domaine ngrok-free.dev change à chaque redémarrage
+    # du tunnel (tier gratuit sans domaine réservé) : on autorise tout le sous-domaine
+    # plutôt qu'une URL figée, pour ne pas avoir à éditer ce fichier à chaque relance.
+    CSRF_TRUSTED_ORIGINS = [
+        'http://localhost:8000', 'http://127.0.0.1:8000', 'http://192.168.0.106:8000',
+        'https://*.ngrok-free.dev', 'https://*.ngrok-free.app', 'https://*.ngrok.app',
+    ]

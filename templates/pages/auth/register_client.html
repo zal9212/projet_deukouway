@@ -55,9 +55,9 @@
             </button>
         </div>
     </form>
-    
+
     {% include "components/auth/social_login.html" %}
-    
+
     {% url 'login' as login_url %}
     {% include "components/auth/auth_footer.html" with text="Vous avez déjà un compte ?" link_text="Connectez-vous" link_url=login_url %}
 {% endblock %}

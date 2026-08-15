@@ -27,21 +27,22 @@
         </div>
         <ul role="list" class="flex-1 overflow-y-auto divide-y divide-gray-100">
             {% for owner in pending_owners %}
-            <li class="relative px-4 py-4 {% if forloop.first %}bg-blue-50/50 border-l-4 border-blue-600{% else %}hover:bg-gray-50{% endif %} cursor-pointer">
-                <div class="flex justify-between">
-                    <div>
-                        <p class="text-sm font-bold text-gray-900">{{ owner.profile.first_name|default:owner.email }}</p>
-                        <p class="text-xs text-gray-500 mt-1">Soumis le {{ owner.date_joined|date:"d M Y" }}</p>
+            <li>
+                <a href="?id={{ owner.id }}" class="block relative px-4 py-4 {% if active_owner.id == owner.id %}bg-blue-50/50 border-l-4 border-blue-600{% else %}hover:bg-gray-50{% endif %}">
+                    <div class="flex justify-between">
+                        <div>
+                            <p class="text-sm font-bold text-gray-900">{{ owner.profile.first_name|default:owner.email }}</p>
+                            <p class="text-xs text-gray-500 mt-1">Soumis le {{ owner.date_joined|date:"d M Y" }}</p>
+                        </div>
+                        <span class="inline-flex items-center rounded-md bg-yellow-50 px-2 py-1 text-xs font-medium text-yellow-800 ring-1 ring-inset ring-yellow-600/20 h-fit">En attente</span>
                     </div>
-                    <span class="inline-flex items-center rounded-md bg-yellow-50 px-2 py-1 text-xs font-medium text-yellow-800 ring-1 ring-inset ring-yellow-600/20 h-fit">En attente</span>
-                </div>
+                </a>
             </li>
             {% endfor %}
         </ul>
     </div>
 
     <!-- Zone d'Analyse Centrale -->
-    {% with active_owner=pending_owners.0 %}
     <div class="lg:col-span-2">
         <div class="bg-white border border-gray-200 rounded-xl shadow-sm overflow-hidden flex flex-col lg:h-[calc(100vh-16rem)] h-auto">
             
@@ -100,8 +101,19 @@
                             <a href="{% url 'accounts:identity_document_file' identity_doc.id 'recto' %}" target="_blank" rel="noopener"
                                class="flex flex-col items-center justify-center border border-gray-200 rounded-lg p-4 text-center hover:bg-gray-50 transition-colors">
                                 <i data-lucide="file-text" class="w-8 h-8 text-[#8B1E24] mb-2"></i>
-                                <span class="text-xs font-semibold text-gray-900">Voir la pièce d'identité</span>
+                                <span class="text-xs font-semibold text-gray-900">Voir le recto</span>
                             </a>
+                            {% if identity_doc.file_back %}
+                            <a href="{% url 'accounts:identity_document_file' identity_doc.id 'verso' %}" target="_blank" rel="noopener"
+                               class="flex flex-col items-center justify-center border border-gray-200 rounded-lg p-4 text-center hover:bg-gray-50 transition-colors">
+                                <i data-lucide="file-text" class="w-8 h-8 text-[#8B1E24] mb-2"></i>
+                                <span class="text-xs font-semibold text-gray-900">Voir le verso</span>
+                            </a>
+                            {% elif identity_doc.document_type == 'CNI' %}
+                            <div class="flex items-center justify-center border border-red-200 bg-red-50 rounded-lg p-4 text-center">
+                                <span class="text-xs font-semibold text-red-700">Aucun verso fourni</span>
+                            </div>
+                            {% endif %}
                             {% if identity_doc.selfie_file %}
                             <a href="{% url 'accounts:identity_document_file' identity_doc.id 'selfie' %}" target="_blank" rel="noopener"
                                class="block border border-gray-200 rounded-lg overflow-hidden hover:opacity-90 transition-opacity">
@@ -145,7 +157,6 @@
             </div>
         </div>
     </div>
-    {% endwith %}
 </div>
 {% else %}
 <div class="bg-white border border-gray-200 rounded-xl p-12 text-center shadow-sm">

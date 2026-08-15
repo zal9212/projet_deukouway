@@ -6,8 +6,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{% block title %}Dashboard - DEKOUWAY{% endblock %}</title>
     
-    <!-- Tailwind CSS v4 via CDN for development -->
-    <script src="https://unpkg.com/@tailwindcss/browser@4"></script>
+    <!-- Tailwind CSS (compilé localement, voir README pour la commande de build) -->
+    <link rel="stylesheet" href="{% static 'css/tailwind.css' %}">
     
     <!-- Alpine.js -->
     <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
@@ -72,7 +72,7 @@
         <!-- Contenu défilant -->
         <main id="main-content" class="flex-1 overflow-y-auto focus:outline-none">
             
-            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 w-full">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-8 pb-24 w-full">
                 <!-- Breadcrumb (facultatif) -->
                 {% block breadcrumb %}{% endblock %}
                 

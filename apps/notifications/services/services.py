@@ -1,7 +1,7 @@
 from django.db import transaction
 from django.utils import timezone
 from apps.accounts.models import User
-from apps.notifications.models import Notification, NotificationHistory, NotificationPreference
+from apps.notifications.models import Notification, NotificationPreference
 import logging
 
 logger = logging.getLogger(__name__)

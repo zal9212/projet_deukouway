@@ -1,5 +1,5 @@
+from decimal import Decimal
 from django.db import transaction
-from django.utils import timezone
 from apps.accounts.models import User
 from apps.properties.models import Property
 from apps.reservations.models import ReservationRequest, Reservation, ReservationStatusHistory, ReservationHistory
@@ -154,7 +154,7 @@ class ReservationService:
 
     @staticmethod
     @transaction.atomic
-    def confirm_payment(req: ReservationRequest, total_price: float) -> Reservation:
+    def confirm_payment(req: ReservationRequest, total_price: Decimal) -> Reservation:
         if req.status != ReservationStatusChoices.PAYMENT_PENDING:
             raise InvalidWorkflowTransition("La demande doit être au statut PENDING_PAYMENT.")
             

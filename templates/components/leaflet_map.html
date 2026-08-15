@@ -98,9 +98,11 @@
 
                     // Création du Popup
                     const popupContent = popupTemplate
+                        .replace('[[url]]', item.url)
                         .replace('[[title]]', item.title)
                         .replace('[[title]]', item.title)
                         .replace('[[price]]', item.price)
+                        .replace('[[unit]]', item.unit)
                         .replace('[[neighborhood]]', item.neighborhood)
                         .replace('[[rating]]', item.rating)
                         .replace('[[image]]', item.image);
@@ -156,18 +158,21 @@
     }
 </style>
 
+{% load l10n static property_tags %}
 <script id="properties-data" type="application/json">
 [
     {% for property in properties %}
     {
         "id": "{{ property.id }}",
-        "lat": {{ property.latitude|default:14.7167 }},
-        "lng": {{ property.longitude|default:-17.4677 }},
-        "price": "{{ property.price_per_night|default:property.price }} CFA",
+        "url": "{% url 'public:property_detail' property.id %}",
+        "lat": {{ property.latitude|default:14.7167|unlocalize }},
+        "lng": {{ property.longitude|default:-17.4677|unlocalize }},
+        "price": "{{ property.price|floatformat:0 }} CFA",
+        "unit": "{{ property.pricing_period|price_unit }}",
         "title": "{{ property.title|escapejs }}",
         "neighborhood": "{{ property.city|default:'Dakar'|escapejs }}",
-        "rating": "{{ property.rating|default:'4.8' }}",
-        "image": "{% if property.main_image %}{{ property.main_image.url }}{% else %}https://images.unsplash.com/photo-1522708323590-d24dbb6b0267?auto=format&fit=crop&q=80&w=400{% endif %}"
+        "rating": "{{ property.avg_rating|floatformat:1|default:'—' }}",
+        "image": "{% if property.images.all %}{{ property.images.first.image.url }}{% else %}{% placeholder_image property.id %}{% endif %}"
     }{% if not forloop.last %},{% endif %}
     {% endfor %}
 ]

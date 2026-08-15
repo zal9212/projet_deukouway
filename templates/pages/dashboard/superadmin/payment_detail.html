@@ -1,0 +1,129 @@
+{% extends "layouts/dashboard.html" %}
+
+{% block title %}Paiement #{{ payment.id|slice:":8" }} - DEKOUWAY ERP{% endblock %}
+
+{% block page_header %}
+<div class="md:flex md:items-center md:justify-between mb-8 mt-2">
+    <div class="min-w-0 flex-1">
+        <a href="{% url 'dashboard:admin_payments' %}" class="inline-flex items-center text-sm text-gray-500 hover:text-gray-900 mb-2">
+            <i data-lucide="arrow-left" class="w-4 h-4 mr-1"></i> Retour aux paiements
+        </a>
+        <h2 class="text-2xl font-bold leading-7 text-gray-900 sm:truncate sm:text-3xl sm:tracking-tight">
+            Paiement #PAY-{% if payment.gateway_transaction_id %}{{ payment.gateway_transaction_id }}{% else %}{{ payment.id|slice:":8" }}{% endif %}
+        </h2>
+    </div>
+</div>
+{% endblock %}
+
+{% block content %}
+<div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+
+    <div class="lg:col-span-2 space-y-6">
+        <div class="bg-white border border-gray-200 rounded-xl p-6 shadow-sm">
+            <div class="flex items-center justify-between mb-6">
+                <h3 class="text-sm font-semibold text-gray-900">Détails du paiement</h3>
+                {% if payment.status == 'SUCCESS' %}
+                    {% include "components/dashboard/status_badge.html" with status="success" label="Encaissé" %}
+                {% elif payment.status == 'FAILED' %}
+                    {% include "components/dashboard/status_badge.html" with status="error" label="Échec" %}
+                {% else %}
+                    {% include "components/dashboard/status_badge.html" with status="pending" label=payment.get_status_display %}
+                {% endif %}
+            </div>
+            <dl class="grid grid-cols-1 sm:grid-cols-2 gap-6 text-sm">
+                <div>
+                    <dt class="text-gray-500">Montant</dt>
+                    <dd class="mt-1 text-lg font-bold text-gray-900">{{ payment.amount }} {{ payment.currency }}</dd>
+                </div>
+                <div>
+                    <dt class="text-gray-500">Méthode</dt>
+                    <dd class="mt-1 font-medium text-gray-900">{{ payment.get_method_display }}</dd>
+                </div>
+                <div>
+                    <dt class="text-gray-500">Client</dt>
+                    <dd class="mt-1 font-medium text-gray-900">{{ payment.user.email }}</dd>
+                </div>
+                <div>
+                    <dt class="text-gray-500">Date</dt>
+                    <dd class="mt-1 font-medium text-gray-900">{{ payment.created_at|date:"d M Y à H:i" }}</dd>
+                </div>
+                <div>
+                    <dt class="text-gray-500">ID Transaction (Gateway)</dt>
+                    <dd class="mt-1 font-mono text-xs text-gray-700">{{ payment.gateway_transaction_id|default:"—" }}</dd>
+                </div>
+                {% if payment.error_message %}
+                <div class="sm:col-span-2">
+                    <dt class="text-gray-500">Message d'erreur</dt>
+                    <dd class="mt-1 text-red-700 bg-red-50 border border-red-100 rounded-lg p-3">{{ payment.error_message }}</dd>
+                </div>
+                {% endif %}
+            </dl>
+        </div>
+
+        {% if payment.reservation %}
+        <div class="bg-white border border-gray-200 rounded-xl p-6 shadow-sm">
+            <h3 class="text-sm font-semibold text-gray-900 mb-4">Réservation associée</h3>
+            <dl class="grid grid-cols-1 sm:grid-cols-2 gap-6 text-sm">
+                <div>
+                    <dt class="text-gray-500">Référence</dt>
+                    <dd class="mt-1 font-medium text-[#8B1E24]">#RES-{{ payment.reservation.confirmation_code|default:payment.reservation.id|slice:":8" }}</dd>
+                </div>
+                <div>
+                    <dt class="text-gray-500">Logement</dt>
+                    <dd class="mt-1 font-medium text-gray-900">{{ payment.reservation.property.title }}</dd>
+                </div>
+                <div>
+                    <dt class="text-gray-500">Séjour</dt>
+                    <dd class="mt-1 font-medium text-gray-900">{{ payment.reservation.check_in|date:"d M Y" }} — {{ payment.reservation.check_out|date:"d M Y" }}</dd>
+                </div>
+            </dl>
+        </div>
+        {% endif %}
+
+        {% if history %}
+        <div class="bg-white border border-gray-200 rounded-xl p-6 shadow-sm">
+            <h3 class="text-sm font-semibold text-gray-900 mb-4">Historique des statuts</h3>
+            <ul role="list" class="space-y-3">
+                {% for entry in history %}
+                <li class="flex items-center justify-between text-sm border-b border-gray-100 pb-3 last:border-0 last:pb-0">
+                    <span class="text-gray-700">{{ entry.old_status }} → <strong class="text-gray-900">{{ entry.new_status }}</strong></span>
+                    <span class="text-gray-500 text-xs">{{ entry.created_at|date:"d M Y à H:i" }}</span>
+                </li>
+                {% endfor %}
+            </ul>
+        </div>
+        {% endif %}
+    </div>
+
+    <div class="space-y-6">
+        {% if payment.commission %}
+        <div class="bg-white border border-gray-200 rounded-xl p-6 shadow-sm">
+            <h3 class="text-sm font-semibold text-gray-900 mb-4">Commission DEKOUWAY</h3>
+            <dl class="space-y-3 text-sm">
+                <div class="flex justify-between">
+                    <dt class="text-gray-500">Taux appliqué</dt>
+                    <dd class="font-medium text-gray-900">{{ payment.commission.percentage_applied }}%</dd>
+                </div>
+                <div class="flex justify-between">
+                    <dt class="text-gray-500">Montant commission</dt>
+                    <dd class="font-medium text-gray-900">{{ payment.commission.amount }} F</dd>
+                </div>
+                <div class="flex justify-between">
+                    <dt class="text-gray-500">Frais de service</dt>
+                    <dd class="font-medium text-gray-900">{{ payment.commission.service_fee }} F</dd>
+                </div>
+            </dl>
+        </div>
+        {% endif %}
+
+        {% if payment.reservation.payouts.first %}
+        <div class="bg-white border border-gray-200 rounded-xl p-6 shadow-sm">
+            <h3 class="text-sm font-semibold text-gray-900 mb-4">Reversement lié</h3>
+            <a href="{% url 'dashboard:admin_payout_detail' payment.reservation.payouts.first.id %}" class="text-sm font-medium text-[#8B1E24] hover:underline flex items-center">
+                Voir le reversement <i data-lucide="arrow-right" class="w-4 h-4 ml-1"></i>
+            </a>
+        </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

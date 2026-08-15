@@ -1,5 +1,4 @@
 from django.db import transaction
-from django.utils import timezone
 from apps.accounts.models import User
 from apps.support.models import Ticket, TicketMessage, SupportCategory, ContactMessage
 from apps.support.services.exceptions import TicketAlreadyClosed, UnauthorizedTicketAction

@@ -1,6 +1,6 @@
 from django.contrib.auth.mixins import AccessMixin
 from django.core.exceptions import PermissionDenied, ValidationError, ObjectDoesNotExist, SuspiciousOperation
-from django.http import Http404, HttpResponseForbidden
+from django.http import Http404
 from django.shortcuts import redirect, render
 from django.contrib import messages
 import logging

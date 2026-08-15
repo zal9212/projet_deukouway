@@ -17,7 +17,7 @@ from .views.admin import (
     AdminDashboardView, AdminValidateOwnersView, AdminValidatePropertiesView,
     AdminValidateReservationsView,
     AdminClientsView, AdminOwnersView, AdminReservationsView, AdminPropertiesView,
-    AdminPaymentsView, AdminPayoutsView, AdminDocumentsView,
+    AdminPaymentsView, AdminPaymentDetailView, AdminPayoutsView, AdminPayoutDetailView, AdminDocumentsView,
     AdminSupportView, AdminDisputesView, AdminAnalyticsView,
     AdminConfigurationView, AdminLogsView, AdminLogsExportView, AdminProfileView,
     AdminSecurityView, AdminSettingsView, AdminOwnerDetailView
@@ -74,7 +74,9 @@ admin_patterns = [
     path('annonces/', AdminPropertiesView.as_view(), name='admin_properties'),
     path('reservations/', AdminReservationsView.as_view(), name='admin_reservations'),
     path('transactions/', AdminPaymentsView.as_view(), name='admin_payments'),
+    path('transactions/<uuid:pk>/', AdminPaymentDetailView.as_view(), name='admin_payment_detail'),
     path('versements/', AdminPayoutsView.as_view(), name='admin_payouts'),
+    path('versements/<uuid:pk>/', AdminPayoutDetailView.as_view(), name='admin_payout_detail'),
     path('documents/', AdminDocumentsView.as_view(), name='admin_documents'),
     path('tickets/', AdminSupportView.as_view(), name='admin_support'),
     path('litiges/', AdminDisputesView.as_view(), name='admin_disputes'),

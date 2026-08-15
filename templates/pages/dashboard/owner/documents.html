@@ -16,6 +16,52 @@
 {% block content %}
 <div class="space-y-6">
 
+    <!-- Pièces d'identité (KYC) fournies à l'inscription -->
+    <div class="bg-white border border-gray-200 rounded-xl overflow-hidden shadow-sm">
+        <div class="px-4 sm:px-6 pt-4">
+            <h3 class="text-sm font-semibold text-gray-900">Pièce d'identité (vérification du compte)</h3>
+            <p class="text-xs text-gray-500 mt-0.5">Document fourni lors de votre inscription, distinct des documents ci-dessous.</p>
+        </div>
+        <ul role="list" class="divide-y divide-gray-200 mt-3">
+            {% for doc in identity_documents %}
+            <li class="p-4 sm:px-6 hover:bg-gray-50 transition-colors">
+                <div class="flex items-center justify-between">
+                    <div class="flex items-center">
+                        <div class="flex-shrink-0">
+                            <div class="h-10 w-10 bg-blue-50 rounded-lg flex items-center justify-center">
+                                <i data-lucide="badge-check" class="h-6 w-6 text-blue-600"></i>
+                            </div>
+                        </div>
+                        <div class="ml-4">
+                            <p class="text-sm font-medium text-gray-900">{{ doc.document_type }} — {{ doc.document_number }}</p>
+                            <p class="text-sm text-gray-500">{% if doc.is_verified %}Vérifié{% else %}En attente de vérification{% endif %} · {{ doc.created_at|date:"d M Y" }}</p>
+                        </div>
+                    </div>
+                    <div class="ml-4 flex-shrink-0 flex items-center space-x-4">
+                        <a href="{% url 'accounts:identity_document_file' doc.id 'recto' %}" target="_blank" class="text-[#8B1E24] hover:text-[#6F171C] font-medium text-sm flex items-center">
+                            <i data-lucide="file-text" class="w-4 h-4 mr-1"></i> <span class="hidden sm:inline">Recto</span>
+                        </a>
+                        {% if doc.file_back %}
+                        <a href="{% url 'accounts:identity_document_file' doc.id 'verso' %}" target="_blank" class="text-[#8B1E24] hover:text-[#6F171C] font-medium text-sm flex items-center">
+                            <i data-lucide="file-text" class="w-4 h-4 mr-1"></i> <span class="hidden sm:inline">Verso</span>
+                        </a>
+                        {% endif %}
+                        {% if doc.selfie_file %}
+                        <a href="{% url 'accounts:identity_document_file' doc.id 'selfie' %}" target="_blank" class="text-[#8B1E24] hover:text-[#6F171C] font-medium text-sm flex items-center">
+                            <i data-lucide="user-round" class="w-4 h-4 mr-1"></i> <span class="hidden sm:inline">Selfie</span>
+                        </a>
+                        {% endif %}
+                    </div>
+                </div>
+            </li>
+            {% empty %}
+            <li class="p-6">
+                {% include "components/dashboard/empty_state.html" with title="Aucune pièce d'identité enregistrée" description="Ce document est normalement fourni lors de l'inscription en tant que propriétaire." icon="badge-check" %}
+            </li>
+            {% endfor %}
+        </ul>
+    </div>
+
     <!-- Formulaire d'upload -->
     <div class="bg-white border border-gray-200 rounded-xl p-6 shadow-sm">
         <h3 class="text-sm font-semibold text-gray-900 mb-4">Ajouter un document</h3>

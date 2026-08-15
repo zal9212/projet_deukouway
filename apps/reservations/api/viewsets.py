@@ -3,12 +3,10 @@ from rest_framework.decorators import action
 from rest_framework.response import Response
 from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework.filters import OrderingFilter
-from drf_spectacular.utils import extend_schema
 
 from apps.reservations.services.services import ReservationService
 from apps.reservations.services.selectors import ReservationSelector
 from apps.properties.services.selectors import PropertySelector
-from apps.reservations.models import ReservationRequest, Reservation
 from apps.reservations.api.serializers import (
     ReservationRequestSerializer, ReservationRequestCreateSerializer,
     ReservationSerializer, ReservationStatusHistorySerializer

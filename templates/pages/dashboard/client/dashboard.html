@@ -31,7 +31,7 @@
             {% include "components/dashboard/stats_card.html" with title="Réservations actives" value=stats.total_reservations|default:"0" icon="calendar-check" link_text="Voir mes réservations" link_url="dashboard:client_reservations" %}
             {% include "components/dashboard/stats_card.html" with title="Demandes en attente" value=stats.pending_requests|default:"0" icon="clock" link_text="Gérer mes demandes" link_url="dashboard:client_reservations" %}
             {% include "components/dashboard/stats_card.html" with title="Dépenses cumulées" value=stats.total_spent|default:"0"|add:" F" icon="credit-card" link_text="Historique des paiements" link_url="dashboard:client_payments" %}
-            {% include "components/dashboard/stats_card.html" with title="Documents d'identité" value="1" icon="file-text" link_text="Voir mes documents" link_url="dashboard:client_documents" %}
+            {% include "components/dashboard/stats_card.html" with title="Documents d'identité" value=stats.identity_documents_count|default:"0" icon="file-text" link_text="Voir mes documents" link_url="dashboard:client_documents" %}
         </dl>
     </section>
 
@@ -71,7 +71,7 @@
                                 {{ next_res.property.city }}, {{ next_res.property.district }}
                             </p>
                             <p class="text-xs font-medium text-[#8B1E24] mt-1">
-                                {{ next_res.check_in|date:"d M" }} — {{ next_res.check_out|date:"d M Y" }} ({{ next_res.guests }} voyageur(s))
+                                {{ next_res.check_in|date:"d M" }} — {{ next_res.check_out|date:"d M Y" }} ({{ next_res.guests }} personne(s))
                             </p>
                         </div>
                     </div>

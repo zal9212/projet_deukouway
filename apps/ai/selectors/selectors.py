@@ -1,5 +1,5 @@
 from django.db.models import QuerySet
-from apps.ai.models import Conversation, ConversationMessage, AIUsageLog
+from apps.ai.models import Conversation, AIUsageLog
 
 class AIConversationSelector:
     """

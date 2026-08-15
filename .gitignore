@@ -63,6 +63,10 @@ db.sqlite3-journal
 staticfiles/
 media/
 
+# Node / Tailwind CLI (static/css/tailwind.css est le build compilé : il EST commité,
+# voir README pour la commande de rebuild après modification d'un template)
+node_modules/
+
 # Flask stuff:
 instance/
 .webassets-cache

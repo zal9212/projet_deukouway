@@ -2,10 +2,10 @@ from django.test import TestCase
 from django.utils import timezone
 from datetime import timedelta
 from apps.accounts.models import User
-from apps.properties.models import Property, PropertyType, PropertyCategory, PropertyAvailability
+from apps.properties.models import PropertyType, PropertyCategory
 from apps.properties.services.services import PropertyService
 from apps.properties.services.selectors import PropertySelector
-from apps.properties.services.exceptions import UnauthorizedPropertyAction, InvalidPropertyStatus, DatesAlreadyBooked
+from apps.properties.services.exceptions import UnauthorizedPropertyAction, DatesAlreadyBooked
 from apps.properties.choices import PropertyStatusChoices
 
 class PropertyServiceTests(TestCase):

@@ -1,4 +1,3 @@
-import time
 import logging
 from django.http import HttpResponseForbidden
 from django.core.cache import cache
@@ -18,9 +17,25 @@ class SecurityHeadersMiddleware:
         response['X-Frame-Options'] = 'DENY'
         response['X-XSS-Protection'] = '1; mode=block'
         response['Referrer-Policy'] = 'strict-origin-when-cross-origin'
+        # default-src 'self' https: autorisait n'importe quelle origine HTTPS (scripts
+        # compris) : équivalent à pas de CSP contre le XSS. On restreint aux hôtes
+        # réellement utilisés par les templates (CDN unpkg/jsdelivr pour Alpine.js/HTMX/
+        # Leaflet/Lucide, Google Fonts). 'unsafe-inline'/'unsafe-eval' restent nécessaires
+        # tant que les templates embarquent des <script> inline (ex. leaflet_map.html,
+        # chatbot_widget.html) et qu'Alpine.js évalue ses expressions x-data/x-show via
+        # Function() — les retirer casserait ces pages sans une migration vers un système
+        # de nonce, hors périmètre de ce correctif. img-src reste large (risque faible,
+        # ce sont des images) pour couvrir les tuiles CARTO et les visuels de secours.
         response['Content-Security-Policy'] = (
-            "default-src 'self' https: data: 'unsafe-inline' 'unsafe-eval'; "
-            "img-src 'self' https: data: blob:;"
+            "default-src 'self'; "
+            "script-src 'self' 'unsafe-inline' 'unsafe-eval' https://unpkg.com https://cdn.jsdelivr.net; "
+            "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://unpkg.com; "
+            "font-src 'self' https://fonts.gstatic.com data:; "
+            "img-src 'self' https: data: blob:; "
+            "connect-src 'self'; "
+            "object-src 'none'; "
+            "base-uri 'self'; "
+            "frame-ancestors 'none';"
         )
         return response
 

@@ -5,10 +5,10 @@ from django.conf import settings
 import calendar
 import datetime
 
-from apps.dashboard.models import AuditLog, ActivityLog, SystemLog
+from apps.dashboard.models import ActivityLog, SystemLog
 from apps.reservations.models import Reservation, ReservationRequest
-from apps.properties.models import Property, PropertyReview
-from apps.accounts.models import User
+from apps.properties.models import Property, PropertyReview, PropertyStatusHistory
+from apps.accounts.models import User, IdentityDocument
 from apps.payments.models import Payment, Commission, Payout
 
 class DashboardSelector:
@@ -31,10 +31,12 @@ class DashboardSelector:
         total_reservations = Reservation.objects.filter(client_id=user_id, is_deleted=False).count()
         pending_requests = ReservationRequest.objects.filter(client_id=user_id, status='REQUESTED', is_deleted=False).count()
         total_spent = Payment.objects.filter(user_id=user_id, status='SUCCESS', is_deleted=False).aggregate(total=Sum('amount'))['total'] or 0
+        identity_documents_count = IdentityDocument.objects.filter(user_id=user_id).count()
         return {
             'total_reservations': total_reservations,
             'pending_requests': pending_requests,
-            'total_spent': float(total_spent)
+            'total_spent': float(total_spent),
+            'identity_documents_count': identity_documents_count,
         }
 
     @staticmethod
@@ -243,18 +245,74 @@ class DashboardSelector:
         return stats
 
     @staticmethod
-    def get_ai_analytics_and_insights() -> dict:
+    def _monthly_counts(count_for_month, months: int = 6) -> list:
+        """Historique mensuel réel (du plus ancien au plus récent) : `count_for_month(year, month)`
+        doit retourner un total pour ce mois-là."""
         now = timezone.now()
-        stats = DashboardSelector.get_admin_stats()
-        
-        # Prévisions IA basées sur les tendances ORM
-        res_month = stats['reservations_this_month'] or 1
-        volume_month = stats['total_volume'] or 1.0
+        counts = []
+        for i in range(months - 1, -1, -1):
+            month_date = now - datetime.timedelta(days=i * 30)
+            counts.append(count_for_month(month_date.year, month_date.month))
+        return counts
 
-        predicted_reservations = int(res_month * 1.2) + 5
-        predicted_revenue = round(float(volume_month * 0.15) * 1.15, 2)
-        predicted_available_properties = stats['published_properties'] + 3
-        reservations_growth_pct = round((predicted_reservations - res_month) / res_month * 100) if res_month else 0
+    @staticmethod
+    def _linear_projection(monthly_values: list) -> tuple:
+        """
+        Projette le mois suivant par régression linéaire simple (moindres carrés) sur
+        l'historique mensuel fourni. Retourne (valeur_projetée, tendance) où tendance
+        vaut 'up'/'down'/'stable' selon le signe de la pente. Avec moins de 2 points,
+        aucune tendance n'est extrapolable : on reprend simplement la dernière valeur connue.
+        """
+        n = len(monthly_values)
+        if n < 2:
+            last = float(monthly_values[-1]) if monthly_values else 0.0
+            return last, 'stable'
+
+        xs = list(range(n))
+        sum_x, sum_y = sum(xs), sum(monthly_values)
+        sum_xy = sum(x * y for x, y in zip(xs, monthly_values))
+        sum_x2 = sum(x * x for x in xs)
+
+        denom = n * sum_x2 - sum_x ** 2
+        if denom == 0:
+            return float(monthly_values[-1]), 'stable'
+
+        slope = (n * sum_xy - sum_x * sum_y) / denom
+        intercept = (sum_y - slope * sum_x) / n
+        projected = max(0.0, slope * n + intercept)
+        trend = 'up' if slope > 0.01 else 'down' if slope < -0.01 else 'stable'
+        return projected, trend
+
+    @staticmethod
+    def get_ai_analytics_and_insights() -> dict:
+        stats = DashboardSelector.get_admin_stats()
+
+        # Prévisions basées sur une régression linéaire sur l'historique réel des 6
+        # derniers mois (pas un multiplicateur arbitraire) : mêmes données que les
+        # graphiques déjà affichés sur ce dashboard, donc cohérentes avec eux.
+        reservations_history = DashboardSelector._monthly_counts(
+            lambda y, m: Reservation.objects.filter(created_at__year=y, created_at__month=m, is_deleted=False).count()
+        )
+        revenue_history = DashboardSelector.get_monthly_revenue_chart()['data']
+        new_properties_history = DashboardSelector._monthly_counts(
+            lambda y, m: PropertyStatusHistory.objects.filter(
+                new_status='PUBLISHED', created_at__year=y, created_at__month=m, is_deleted=False
+            ).count()
+        )
+
+        last_month_reservations = reservations_history[-1] if reservations_history else 0
+
+        predicted_reservations_raw, reservations_trend = DashboardSelector._linear_projection(reservations_history)
+        predicted_revenue_raw, revenue_trend = DashboardSelector._linear_projection(revenue_history)
+        predicted_new_properties_raw, _ = DashboardSelector._linear_projection(new_properties_history)
+
+        predicted_reservations = round(predicted_reservations_raw)
+        predicted_revenue = round(predicted_revenue_raw, 2)
+        predicted_available_properties = stats['published_properties'] + round(predicted_new_properties_raw)
+        reservations_growth_pct = (
+            round((predicted_reservations - last_month_reservations) / last_month_reservations * 100)
+            if last_month_reservations else 0
+        )
 
         # Détections ORM réelles
         underperforming_properties = Property.objects.filter(is_deleted=False).annotate(res_cnt=Count('reservations')).filter(res_cnt=0)[:5]
@@ -291,7 +349,9 @@ class DashboardSelector:
             'predictions': {
                 'reservations_next_month': predicted_reservations,
                 'reservations_growth_pct': reservations_growth_pct,
+                'reservations_trend': reservations_trend,
                 'revenue_next_month': predicted_revenue,
+                'revenue_trend': revenue_trend,
                 'available_properties_next_month': predicted_available_properties,
             },
             'detections': {

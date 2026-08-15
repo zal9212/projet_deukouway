@@ -5,9 +5,9 @@ from django.contrib.auth.tokens import default_token_generator
 from django import forms
 from django.views.generic import FormView, TemplateView, View
 from django.urls import reverse_lazy
-from django.shortcuts import redirect, render
+from django.shortcuts import redirect
 from django.contrib import messages
-from django.contrib.auth import login, authenticate, get_user_model
+from django.contrib.auth import login, get_user_model
 from django.db import transaction
 from django.utils.http import urlsafe_base64_decode
 from django.utils.encoding import force_str
@@ -47,7 +47,12 @@ class CustomLoginView(ViewExceptionHandlingMixin, LoginView):
     def form_invalid(self, form):
         attempted_email = form.data.get('username', '')
         client_ip = self.request.META.get('REMOTE_ADDR', 'inconnu')
-        logger.warning(f"Échec de connexion pour '{attempted_email}' depuis {client_ip}")
+        # %r (repr) échappe les retours à la ligne au lieu de les insérer tels
+        # quels : sans ça, un champ "username" contenant \r\n permettrait
+        # d'injecter de fausses lignes dans les logs (l'entrée n'est pas
+        # encore validée à ce stade). Tronqué par précaution, la donnée n'étant
+        # pas bornée en longueur avant validation.
+        logger.warning("Échec de connexion pour %r depuis %s", attempted_email[:254], client_ip)
         messages.error(self.request, "Identifiants invalides. Veuillez réessayer.")
         return super().form_invalid(form)
 
@@ -85,7 +90,7 @@ class ClientRegisterView(ViewExceptionHandlingMixin, FormView):
                 first_name=first_name,
                 last_name=last_name
             )
-            login(self.request, user)
+            login(self.request, user, backend='django.contrib.auth.backends.ModelBackend')
             messages.success(self.request, "Votre compte client a été créé avec succès !")
             return redirect(self.get_success_url())
         except UserAlreadyExists as e:
@@ -116,6 +121,7 @@ class OwnerRegisterView(ViewExceptionHandlingMixin, FormView):
                     document_type=form.cleaned_data['document_type'],
                     document_number=form.cleaned_data['document_number'],
                     file=form.cleaned_data['identity_file'],
+                    file_back=form.cleaned_data.get('identity_file_back'),
                     selfie_file=form.cleaned_data['selfie_with_id_file'],
                 )
             messages.info(self.request, "Votre inscription propriétaire est enregistrée. Un administrateur va valider votre dossier.")
@@ -157,8 +163,10 @@ class CustomPasswordResetConfirmView(ViewExceptionHandlingMixin, PasswordResetCo
     success_url = reverse_lazy('accounts:login')
 
     def form_valid(self, form):
-        user = form.save()
-        AccountService.change_password(user, form.cleaned_data['new_password1'])
+        # form.save() (SetPasswordForm) ferait déjà set_password()+save() : on ne
+        # l'appelle pas et on passe directement par le service, seule source de
+        # vérité pour la mutation, plutôt que d'écrire le mot de passe deux fois.
+        AccountService.change_password(form.user, form.cleaned_data['new_password1'])
         messages.success(self.request, "Votre mot de passe a été réinitialisé avec succès. Vous pouvez vous connecter.")
         return redirect(self.success_url)
 

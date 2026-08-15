@@ -3,7 +3,7 @@ from django.conf import settings
 from django.core.validators import MinValueValidator, MaxValueValidator, FileExtensionValidator
 from django.utils.translation import gettext_lazy as _
 from apps.core.models import BaseModel
-from .choices import PropertyStatusChoices
+from .choices import PropertyStatusChoices, PropertyPricingPeriodChoices
 
 
 class PropertyCategory(BaseModel):
@@ -59,16 +59,20 @@ class Property(BaseModel):
     
     # Specs
     price = models.DecimalField(
-        _('Prix par nuit'), 
-        max_digits=12, 
-        decimal_places=2, 
+        _('Prix'),
+        max_digits=12,
+        decimal_places=2,
         db_index=True,
         validators=[MinValueValidator(0.01)]
+    )
+    pricing_period = models.CharField(
+        _('Type de location'), max_length=10,
+        choices=PropertyPricingPeriodChoices.choices, default=PropertyPricingPeriodChoices.NIGHTLY
     )
     surface = models.PositiveIntegerField(_('Surface (m²)'), validators=[MinValueValidator(1)])
     bedrooms = models.PositiveIntegerField(_('Chambres'), validators=[MinValueValidator(0)])
     bathrooms = models.PositiveIntegerField(_('Salles de bain'), validators=[MinValueValidator(0)])
-    max_guests = models.PositiveIntegerField(_('Capacité max (voyageurs)'), validators=[MinValueValidator(1)])
+    max_guests = models.PositiveIntegerField(_('Capacité max (personnes)'), validators=[MinValueValidator(1)])
     
     status = models.CharField(
         _('Statut'),

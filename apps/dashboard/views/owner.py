@@ -5,15 +5,17 @@ from datetime import date as date_cls, timedelta
 from urllib.parse import urlparse
 
 import requests
-from django.views.generic import TemplateView, ListView, DetailView, FormView, CreateView, UpdateView, View
+from django.views.generic import TemplateView, ListView, DetailView, View
 from django.shortcuts import redirect
-from django.urls import reverse_lazy, reverse
+from django.urls import reverse
 from django.contrib import messages
 from django.contrib.auth import update_session_auth_hash
 from django.http import Http404, JsonResponse
 from django.db import transaction
 
 from apps.core.mixins import OwnerRequiredMixin, ViewExceptionHandlingMixin
+from apps.properties.choices import PropertyStatusChoices
+from apps.properties.forms import PropertyForm
 from apps.properties.services.selectors import PropertySelector
 from apps.reservations.services.selectors import ReservationSelector, ACTIVE_RESERVATION_STATUSES
 from apps.reservations.models import Reservation, ReservationRequest
@@ -183,41 +185,23 @@ class OwnerAddPropertyView(OwnerRequiredMixin, ViewExceptionHandlingMixin, Templ
             messages.warning(request, "Votre compte est en attente de vérification par notre équipe. Vous pourrez publier un logement une fois votre dossier validé.")
             return redirect('dashboard:owner_add_property')
 
-        title = request.POST.get('title', '').strip()
-        description = request.POST.get('description', '').strip()
-        property_type_id = request.POST.get('property_type_id')
-        address = request.POST.get('address', '').strip()
-        city = request.POST.get('city', '').strip()
-        district = request.POST.get('district', '').strip()
+        is_draft = request.POST.get('save_action') == 'draft'
         images = request.FILES.getlist('images')
 
-        if not (title and description and property_type_id and address and city and district):
-            messages.error(request, "Veuillez renseigner tous les champs obligatoires avant de soumettre votre logement.")
+        form = PropertyForm(request.POST)
+        if not form.is_valid():
+            messages.error(request, " ".join(str(err) for errs in form.errors.values() for err in errs))
             return redirect('dashboard:owner_add_property')
 
-        if not images:
+        if not is_draft and not images:
             messages.error(request, "Veuillez ajouter au moins une photo de votre logement.")
             return redirect('dashboard:owner_add_property')
 
-        try:
-            price = float(request.POST.get('price', 0))
-            surface = int(request.POST.get('surface', 0))
-            bedrooms = int(request.POST.get('bedrooms', 0))
-            bathrooms = int(request.POST.get('bathrooms', 0))
-            max_guests = int(request.POST.get('max_guests', 0))
-        except (TypeError, ValueError):
-            messages.error(request, "Le prix, la surface et les capacités doivent être des nombres valides.")
-            return redirect('dashboard:owner_add_property')
-
-        latitude, longitude = None, None
-        raw_lat, raw_lng = request.POST.get('latitude', '').strip(), request.POST.get('longitude', '').strip()
-        if raw_lat and raw_lng:
-            try:
-                latitude, longitude = float(raw_lat), float(raw_lng)
-            except ValueError:
-                latitude, longitude = None, None
-
+        data = form.cleaned_data
         amenities = request.POST.getlist('amenities')
+        extra_amenity = request.POST.get('extra_amenity', '').strip()
+        if extra_amenity:
+            amenities.append(extra_amenity)
         rules = request.POST.getlist('rules')
         extra_rule = request.POST.get('extra_rule', '').strip()
         if extra_rule:
@@ -226,26 +210,32 @@ class OwnerAddPropertyView(OwnerRequiredMixin, ViewExceptionHandlingMixin, Templ
         with transaction.atomic():
             prop = PropertyService.create_property(
                 owner=request.user,
-                property_type_id=property_type_id,
-                title=title,
-                description=description,
-                price=price,
-                address=address,
-                city=city,
-                district=district,
-                surface=surface,
-                bedrooms=bedrooms,
-                bathrooms=bathrooms,
-                max_guests=max_guests,
-                latitude=latitude,
-                longitude=longitude
+                property_type_id=data['property_type_id'],
+                title=data['title'],
+                description=data['description'],
+                price=data['price'],
+                pricing_period=data['pricing_period'],
+                address=data['address'],
+                city=data['city'],
+                district=data['district'],
+                surface=data['surface'],
+                bedrooms=data['bedrooms'],
+                bathrooms=data['bathrooms'],
+                max_guests=data['max_guests'],
+                latitude=data['latitude'],
+                longitude=data['longitude'],
             )
-            PropertyService.add_images(prop, images)
+            if images:
+                PropertyService.add_images(prop, images)
             PropertyService.add_amenities(prop, amenities)
             PropertyService.add_rules(prop, rules)
-            PropertyService.submit_for_validation(prop, request.user)
+            if not is_draft:
+                PropertyService.submit_for_validation(prop, request.user)
 
-        messages.success(request, f"Le logement '{prop.title}' a été envoyé pour validation à notre équipe.")
+        if is_draft:
+            messages.success(request, f"Le logement '{prop.title}' a été enregistré comme brouillon. Reprenez-le à tout moment depuis Mes Annonces.")
+        else:
+            messages.success(request, f"Le logement '{prop.title}' a été envoyé pour validation à notre équipe.")
         return redirect('dashboard:owner_properties')
 
 class OwnerEditPropertyView(OwnerRequiredMixin, ViewExceptionHandlingMixin, TemplateView):
@@ -275,6 +265,7 @@ class OwnerEditPropertyView(OwnerRequiredMixin, ViewExceptionHandlingMixin, Temp
             'latitude': float(prop.latitude) if prop.latitude is not None else None,
             'longitude': float(prop.longitude) if prop.longitude is not None else None,
             'price': float(prop.price),
+            'pricing_period': prop.pricing_period,
             'surface': prop.surface,
             'bedrooms': prop.bedrooms,
             'bathrooms': prop.bathrooms,
@@ -295,37 +286,22 @@ class OwnerEditPropertyView(OwnerRequiredMixin, ViewExceptionHandlingMixin, Temp
         if not prop or str(prop.owner.id) != str(self.request.user.id):
             raise Http404("Logement non trouvé.")
 
-        title = request.POST.get('title', '').strip()
-        description = request.POST.get('description', '').strip()
-        property_type_id = request.POST.get('property_type_id')
-        address = request.POST.get('address', '').strip()
-        city = request.POST.get('city', '').strip()
-        district = request.POST.get('district', '').strip()
         images = request.FILES.getlist('images')
+        submit_for_validation = (
+            request.POST.get('save_action') == 'submit'
+            and prop.status == PropertyStatusChoices.DRAFT
+        )
 
-        if not (title and description and property_type_id and address and city and district):
-            messages.error(request, "Veuillez renseigner tous les champs obligatoires.")
+        form = PropertyForm(request.POST)
+        if not form.is_valid():
+            messages.error(request, " ".join(str(err) for errs in form.errors.values() for err in errs))
             return redirect('dashboard:owner_edit_property', pk=prop.id)
 
-        try:
-            price = float(request.POST.get('price', prop.price))
-            surface = int(request.POST.get('surface', prop.surface))
-            bedrooms = int(request.POST.get('bedrooms', prop.bedrooms))
-            bathrooms = int(request.POST.get('bathrooms', prop.bathrooms))
-            max_guests = int(request.POST.get('max_guests', prop.max_guests))
-        except (TypeError, ValueError):
-            messages.error(request, "Le prix, la surface et les capacités doivent être des nombres valides.")
-            return redirect('dashboard:owner_edit_property', pk=prop.id)
-
-        latitude, longitude = prop.latitude, prop.longitude
-        raw_lat, raw_lng = request.POST.get('latitude', '').strip(), request.POST.get('longitude', '').strip()
-        if raw_lat and raw_lng:
-            try:
-                latitude, longitude = float(raw_lat), float(raw_lng)
-            except ValueError:
-                pass
-
+        data = form.cleaned_data
         amenities = request.POST.getlist('amenities')
+        extra_amenity = request.POST.get('extra_amenity', '').strip()
+        if extra_amenity:
+            amenities.append(extra_amenity)
         rules = request.POST.getlist('rules')
         extra_rule = request.POST.get('extra_rule', '').strip()
         if extra_rule:
@@ -334,26 +310,32 @@ class OwnerEditPropertyView(OwnerRequiredMixin, ViewExceptionHandlingMixin, Temp
         with transaction.atomic():
             PropertyService.update_property(
                 prop, request.user,
-                property_type_id=property_type_id,
-                title=title,
-                description=description,
-                address=address,
-                city=city,
-                district=district,
-                latitude=latitude,
-                longitude=longitude,
-                price=price,
-                surface=surface,
-                bedrooms=bedrooms,
-                bathrooms=bathrooms,
-                max_guests=max_guests,
+                property_type_id=data['property_type_id'],
+                title=data['title'],
+                description=data['description'],
+                address=data['address'],
+                city=data['city'],
+                district=data['district'],
+                latitude=data['latitude'],
+                longitude=data['longitude'],
+                price=data['price'],
+                pricing_period=data['pricing_period'],
+                surface=data['surface'],
+                bedrooms=data['bedrooms'],
+                bathrooms=data['bathrooms'],
+                max_guests=data['max_guests'],
             )
             PropertyService.set_amenities(prop, amenities)
             PropertyService.set_rules(prop, rules)
             if images:
                 PropertyService.add_images(prop, images, cover_index=(0 if not prop.images.exists() else -1))
+            if submit_for_validation:
+                PropertyService.submit_for_validation(prop, request.user)
 
-        messages.success(request, "Les modifications du logement ont été enregistrées.")
+        if submit_for_validation:
+            messages.success(request, f"Le logement '{prop.title}' a été envoyé pour validation à notre équipe.")
+        else:
+            messages.success(request, "Les modifications du logement ont été enregistrées.")
         return redirect('dashboard:owner_properties')
 
 PENDING_REQUEST_STATUSES = [
@@ -549,7 +531,11 @@ class OwnerDocumentsView(OwnerRequiredMixin, ViewExceptionHandlingMixin, ListVie
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context['categories'] = DocumentSelector.get_all_categories()
+        # "Pièce d'identité" est déjà géré par le flux KYC dédié (voir identity_documents
+        # ci-dessous) : la garder dans ce sélecteur générique prêterait à confusion avec
+        # le document réel fourni à l'inscription.
+        context['categories'] = DocumentSelector.get_all_categories().exclude(slug='piece-identite')
+        context['identity_documents'] = UserSelector.get_user_identity_documents(str(self.request.user.id))
         return context
 
     def post(self, request, *args, **kwargs):
