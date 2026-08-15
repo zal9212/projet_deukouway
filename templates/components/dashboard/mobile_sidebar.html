@@ -1,29 +1,29 @@
 <!-- Mobile Sidebar (Drawer) pour tous les rôles -->
 <div x-show="sidebarOpen" class="relative z-50 lg:hidden" role="dialog" aria-modal="true" x-cloak>
     <!-- Backdrop flouté -->
-    <div x-show="sidebarOpen" 
-         x-transition:enter="transition-opacity ease-linear duration-300" 
-         x-transition:enter-start="opacity-0" 
-         x-transition:enter-end="opacity-100" 
-         x-transition:leave="transition-opacity ease-linear duration-300" 
-         x-transition:leave-start="opacity-100" 
-         x-transition:leave-end="opacity-0" 
+    <div x-show="sidebarOpen"
+         x-transition:enter="transition-opacity ease-linear duration-300"
+         x-transition:enter-start="opacity-0"
+         x-transition:enter-end="opacity-100"
+         x-transition:leave="transition-opacity ease-linear duration-300"
+         x-transition:leave-start="opacity-100"
+         x-transition:leave-end="opacity-0"
          class="fixed inset-0 bg-gray-900/80 backdrop-blur-xs"
          @click="sidebarOpen = false"></div>
 
     <div class="fixed inset-0 flex">
-        <div x-show="sidebarOpen" 
-             x-transition:enter="transition ease-in-out duration-300 transform" 
-             x-transition:enter-start="-translate-x-full" 
-             x-transition:enter-end="translate-x-0" 
-             x-transition:leave="transition ease-in-out duration-300 transform" 
-             x-transition:leave-start="translate-x-0" 
-             x-transition:leave-end="-translate-x-full" 
-             class="relative flex w-full max-w-xs flex-1 flex-col bg-gray-900 shadow-2xl"
+        <div x-show="sidebarOpen"
+             x-transition:enter="transition ease-in-out duration-300 transform"
+             x-transition:enter-start="-translate-x-full"
+             x-transition:enter-end="translate-x-0"
+             x-transition:leave="transition ease-in-out duration-300 transform"
+             x-transition:leave-start="translate-x-0"
+             x-transition:leave-end="-translate-x-full"
+             class="relative flex w-full max-w-xs flex-1 flex-col bg-white shadow-2xl"
              @click.stop>
-             
+
             <!-- En-tête avec Logo et Bouton de Fermeture intégré (Pas de chevauchement) -->
-            <div class="flex h-16 shrink-0 items-center justify-between border-b border-gray-800 px-6">
+            <div class="flex h-16 shrink-0 items-center justify-between border-b border-gray-100 px-6">
                 <a href="{% url 'public:home' %}" class="flex items-center space-x-3">
                     {% if platform_settings.logo %}
                         <img src="{{ platform_settings.logo.url }}" alt="{{ platform_settings.site_name }}" class="w-10 h-10 rounded-xl object-cover shrink-0 shadow-sm">
@@ -32,10 +32,10 @@
                             <i data-lucide="shield-check" class="text-white w-6 h-6"></i>
                         </div>
                     {% endif %}
-                    <span class="text-xl font-bold tracking-tight text-white">{{ platform_settings.site_name|default:"DEKOUWAY" }}</span>
+                    <span class="text-xl font-bold tracking-tight text-gray-900">{{ platform_settings.site_name|default:"DEKOUWAY" }}</span>
                 </a>
-                <button type="button" 
-                        class="rounded-lg p-2 text-gray-400 hover:text-white hover:bg-gray-800 transition-colors focus:outline-none" 
+                <button type="button"
+                        class="rounded-lg p-2 text-gray-400 hover:text-gray-900 hover:bg-gray-100 transition-colors focus:outline-none"
                         @click="sidebarOpen = false">
                     <span class="sr-only">Fermer la navigation</span>
                     <i data-lucide="x" class="h-6 w-6"></i>
@@ -46,115 +46,115 @@
             <div class="flex grow flex-col gap-y-5 overflow-y-auto px-6 pb-6 pt-4">
                 <nav class="flex flex-1 flex-col">
                     <ul role="list" class="flex flex-1 flex-col gap-y-6">
-                        
+
                         {% if request.user.is_staff or request.user.is_superuser or request.user.is_superadmin %}
                         <!-- ================= SUPER ADMIN MOBILE ================= -->
                         <li>
-                            <a href="{% url 'dashboard:admin_home' %}" 
+                            <a href="{% url 'dashboard:admin_home' %}"
                                @click="sidebarOpen = false"
-                               class="{% if request.resolver_match.url_name == 'admin_home' %}bg-[#8B1E24] text-white{% else %}text-gray-300 hover:text-white hover:bg-gray-800{% endif %} group flex gap-x-3 rounded-md p-2 text-sm leading-6 font-semibold transition-colors">
-                                <i data-lucide="layout-dashboard" class="h-5 w-5 shrink-0 text-white"></i>
+                               class="{% if request.resolver_match.url_name == 'admin_home' %}bg-gray-50 text-[#8B1E24]{% else %}text-gray-700 hover:text-[#8B1E24] hover:bg-gray-50{% endif %} group flex gap-x-3 rounded-md p-2 text-sm leading-6 font-semibold transition-colors">
+                                <i data-lucide="layout-dashboard" class="h-5 w-5 shrink-0 {% if request.resolver_match.url_name == 'admin_home' %}text-[#8B1E24]{% else %}text-gray-400 group-hover:text-[#8B1E24]{% endif %}"></i>
                                 Dashboard Central
                             </a>
                         </li>
                         <li>
-                            <div class="text-xs font-semibold leading-6 text-gray-400 uppercase tracking-wider mb-1">Gestion</div>
+                            <div class="text-xs font-semibold leading-6 text-gray-500 uppercase tracking-wider mb-1">Gestion</div>
                             <ul role="list" class="-mx-2 space-y-1">
                                 <li>
-                                    <a href="{% url 'dashboard:admin_clients' %}" @click="sidebarOpen = false" class="{% if request.resolver_match.url_name == 'admin_clients' %}bg-gray-800 text-white{% else %}text-gray-300 hover:text-white hover:bg-gray-800{% endif %} group flex gap-x-3 rounded-md p-2 text-sm leading-6 font-medium">
-                                        <i data-lucide="users" class="h-5 w-5 shrink-0 text-gray-400 group-hover:text-white"></i>
+                                    <a href="{% url 'dashboard:admin_clients' %}" @click="sidebarOpen = false" class="{% if request.resolver_match.url_name == 'admin_clients' %}bg-gray-50 text-[#8B1E24]{% else %}text-gray-700 hover:text-[#8B1E24] hover:bg-gray-50{% endif %} group flex gap-x-3 rounded-md p-2 text-sm leading-6 font-medium transition-colors">
+                                        <i data-lucide="users" class="h-5 w-5 shrink-0 {% if request.resolver_match.url_name == 'admin_clients' %}text-[#8B1E24]{% else %}text-gray-400 group-hover:text-[#8B1E24]{% endif %}"></i>
                                         Membres
                                     </a>
                                 </li>
                                 <li>
-                                    <a href="{% url 'dashboard:admin_owners' %}" @click="sidebarOpen = false" class="{% if request.resolver_match.url_name == 'admin_owners' %}bg-gray-800 text-white{% else %}text-gray-300 hover:text-white hover:bg-gray-800{% endif %} group flex gap-x-3 rounded-md p-2 text-sm leading-6 font-medium">
-                                        <i data-lucide="building" class="h-5 w-5 shrink-0 text-gray-400 group-hover:text-white"></i>
+                                    <a href="{% url 'dashboard:admin_owners' %}" @click="sidebarOpen = false" class="{% if request.resolver_match.url_name == 'admin_owners' %}bg-gray-50 text-[#8B1E24]{% else %}text-gray-700 hover:text-[#8B1E24] hover:bg-gray-50{% endif %} group flex gap-x-3 rounded-md p-2 text-sm leading-6 font-medium transition-colors">
+                                        <i data-lucide="building" class="h-5 w-5 shrink-0 {% if request.resolver_match.url_name == 'admin_owners' %}text-[#8B1E24]{% else %}text-gray-400 group-hover:text-[#8B1E24]{% endif %}"></i>
                                         Partenaires
                                     </a>
                                 </li>
                                 <li>
-                                    <a href="{% url 'dashboard:admin_validate_owners' %}" @click="sidebarOpen = false" class="{% if request.resolver_match.url_name == 'admin_validate_owners' %}bg-gray-800 text-white{% else %}text-gray-300 hover:text-white hover:bg-gray-800{% endif %} group flex gap-x-3 rounded-md p-2 text-sm leading-6 font-medium justify-between">
+                                    <a href="{% url 'dashboard:admin_validate_owners' %}" @click="sidebarOpen = false" class="{% if request.resolver_match.url_name == 'admin_validate_owners' %}bg-gray-50 text-[#8B1E24]{% else %}text-gray-700 hover:text-[#8B1E24] hover:bg-gray-50{% endif %} group flex gap-x-3 rounded-md p-2 text-sm leading-6 font-medium transition-colors justify-between">
                                         <div class="flex items-center gap-x-3">
-                                            <i data-lucide="user-check" class="h-5 w-5 shrink-0 text-gray-400 group-hover:text-white"></i>
+                                            <i data-lucide="user-check" class="h-5 w-5 shrink-0 {% if request.resolver_match.url_name == 'admin_validate_owners' %}text-[#8B1E24]{% else %}text-gray-400 group-hover:text-[#8B1E24]{% endif %}"></i>
                                             Validation Hôtes
                                         </div>
                                         {% if stats.pending_owners > 0 %}
-                                        <span class="rounded-full bg-red-900 px-2 py-0.5 text-[10px] font-bold text-red-200">{{ stats.pending_owners }}</span>
+                                        <span class="rounded-full bg-red-100 px-2 py-0.5 text-[10px] font-bold text-red-700">{{ stats.pending_owners }}</span>
                                         {% endif %}
                                     </a>
                                 </li>
                                 <li>
-                                    <a href="{% url 'dashboard:admin_validate_properties' %}" @click="sidebarOpen = false" class="{% if request.resolver_match.url_name == 'admin_validate_properties' %}bg-gray-800 text-white{% else %}text-gray-300 hover:text-white hover:bg-gray-800{% endif %} group flex gap-x-3 rounded-md p-2 text-sm leading-6 font-medium justify-between">
+                                    <a href="{% url 'dashboard:admin_validate_properties' %}" @click="sidebarOpen = false" class="{% if request.resolver_match.url_name == 'admin_validate_properties' %}bg-gray-50 text-[#8B1E24]{% else %}text-gray-700 hover:text-[#8B1E24] hover:bg-gray-50{% endif %} group flex gap-x-3 rounded-md p-2 text-sm leading-6 font-medium transition-colors justify-between">
                                         <div class="flex items-center gap-x-3">
-                                            <i data-lucide="search-check" class="h-5 w-5 shrink-0 text-gray-400 group-hover:text-white"></i>
+                                            <i data-lucide="search-check" class="h-5 w-5 shrink-0 {% if request.resolver_match.url_name == 'admin_validate_properties' %}text-[#8B1E24]{% else %}text-gray-400 group-hover:text-[#8B1E24]{% endif %}"></i>
                                             Validation Annonces
                                         </div>
                                         {% if stats.pending_properties > 0 %}
-                                        <span class="rounded-full bg-amber-900 px-2 py-0.5 text-[10px] font-bold text-amber-200">{{ stats.pending_properties }}</span>
+                                        <span class="rounded-full bg-yellow-100 px-2 py-0.5 text-[10px] font-bold text-yellow-800">{{ stats.pending_properties }}</span>
                                         {% endif %}
                                     </a>
                                 </li>
                                 <li>
-                                    <a href="{% url 'dashboard:admin_validate_reservations' %}" @click="sidebarOpen = false" class="{% if request.resolver_match.url_name == 'admin_validate_reservations' %}bg-gray-800 text-white{% else %}text-gray-300 hover:text-white hover:bg-gray-800{% endif %} group flex gap-x-3 rounded-md p-2 text-sm leading-6 font-medium">
-                                        <i data-lucide="calendar-check" class="h-5 w-5 shrink-0 text-gray-400 group-hover:text-white"></i>
+                                    <a href="{% url 'dashboard:admin_validate_reservations' %}" @click="sidebarOpen = false" class="{% if request.resolver_match.url_name == 'admin_validate_reservations' %}bg-gray-50 text-[#8B1E24]{% else %}text-gray-700 hover:text-[#8B1E24] hover:bg-gray-50{% endif %} group flex gap-x-3 rounded-md p-2 text-sm leading-6 font-medium transition-colors">
+                                        <i data-lucide="calendar-check" class="h-5 w-5 shrink-0 {% if request.resolver_match.url_name == 'admin_validate_reservations' %}text-[#8B1E24]{% else %}text-gray-400 group-hover:text-[#8B1E24]{% endif %}"></i>
                                         Validation Réservations
                                     </a>
                                 </li>
                             </ul>
                         </li>
                         <li>
-                            <div class="text-xs font-semibold leading-6 text-gray-400 uppercase tracking-wider mb-1">Opérations</div>
+                            <div class="text-xs font-semibold leading-6 text-gray-500 uppercase tracking-wider mb-1">Opérations</div>
                             <ul role="list" class="-mx-2 space-y-1">
                                 <li>
-                                    <a href="{% url 'dashboard:admin_reservations' %}" @click="sidebarOpen = false" class="text-gray-300 hover:text-white hover:bg-gray-800 group flex gap-x-3 rounded-md p-2 text-sm font-medium">
-                                        <i data-lucide="calendar" class="h-5 w-5 shrink-0 text-gray-400 group-hover:text-white"></i>
+                                    <a href="{% url 'dashboard:admin_reservations' %}" @click="sidebarOpen = false" class="{% if request.resolver_match.url_name == 'admin_reservations' %}bg-gray-50 text-[#8B1E24]{% else %}text-gray-700 hover:text-[#8B1E24] hover:bg-gray-50{% endif %} group flex gap-x-3 rounded-md p-2 text-sm leading-6 font-medium transition-colors">
+                                        <i data-lucide="calendar" class="h-5 w-5 shrink-0 {% if request.resolver_match.url_name == 'admin_reservations' %}text-[#8B1E24]{% else %}text-gray-400 group-hover:text-[#8B1E24]{% endif %}"></i>
                                         Réservations
                                     </a>
                                 </li>
                                 <li>
-                                    <a href="{% url 'dashboard:admin_payments' %}" @click="sidebarOpen = false" class="text-gray-300 hover:text-white hover:bg-gray-800 group flex gap-x-3 rounded-md p-2 text-sm font-medium">
-                                        <i data-lucide="credit-card" class="h-5 w-5 shrink-0 text-gray-400 group-hover:text-white"></i>
+                                    <a href="{% url 'dashboard:admin_payments' %}" @click="sidebarOpen = false" class="{% if request.resolver_match.url_name == 'admin_payments' %}bg-gray-50 text-[#8B1E24]{% else %}text-gray-700 hover:text-[#8B1E24] hover:bg-gray-50{% endif %} group flex gap-x-3 rounded-md p-2 text-sm leading-6 font-medium transition-colors">
+                                        <i data-lucide="credit-card" class="h-5 w-5 shrink-0 {% if request.resolver_match.url_name == 'admin_payments' %}text-[#8B1E24]{% else %}text-gray-400 group-hover:text-[#8B1E24]{% endif %}"></i>
                                         Transactions
                                     </a>
                                 </li>
                                 <li>
-                                    <a href="{% url 'dashboard:admin_payouts' %}" @click="sidebarOpen = false" class="text-gray-300 hover:text-white hover:bg-gray-800 group flex gap-x-3 rounded-md p-2 text-sm font-medium">
-                                        <i data-lucide="banknote" class="h-5 w-5 shrink-0 text-gray-400 group-hover:text-white"></i>
+                                    <a href="{% url 'dashboard:admin_payouts' %}" @click="sidebarOpen = false" class="{% if request.resolver_match.url_name == 'admin_payouts' %}bg-gray-50 text-[#8B1E24]{% else %}text-gray-700 hover:text-[#8B1E24] hover:bg-gray-50{% endif %} group flex gap-x-3 rounded-md p-2 text-sm leading-6 font-medium transition-colors">
+                                        <i data-lucide="banknote" class="h-5 w-5 shrink-0 {% if request.resolver_match.url_name == 'admin_payouts' %}text-[#8B1E24]{% else %}text-gray-400 group-hover:text-[#8B1E24]{% endif %}"></i>
                                         Reversements
                                     </a>
                                 </li>
                             </ul>
                         </li>
                         <li>
-                            <div class="text-xs font-semibold leading-6 text-gray-400 uppercase tracking-wider mb-1">Support & Système</div>
+                            <div class="text-xs font-semibold leading-6 text-gray-500 uppercase tracking-wider mb-1">Support & Système</div>
                             <ul role="list" class="-mx-2 space-y-1">
                                 <li>
-                                    <a href="{% url 'dashboard:admin_support' %}" @click="sidebarOpen = false" class="text-gray-300 hover:text-white hover:bg-gray-800 group flex gap-x-3 rounded-md p-2 text-sm font-medium">
-                                        <i data-lucide="life-buoy" class="h-5 w-5 shrink-0 text-gray-400 group-hover:text-white"></i>
+                                    <a href="{% url 'dashboard:admin_support' %}" @click="sidebarOpen = false" class="{% if request.resolver_match.url_name == 'admin_support' %}bg-gray-50 text-[#8B1E24]{% else %}text-gray-700 hover:text-[#8B1E24] hover:bg-gray-50{% endif %} group flex gap-x-3 rounded-md p-2 text-sm leading-6 font-medium transition-colors">
+                                        <i data-lucide="life-buoy" class="h-5 w-5 shrink-0 {% if request.resolver_match.url_name == 'admin_support' %}text-[#8B1E24]{% else %}text-gray-400 group-hover:text-[#8B1E24]{% endif %}"></i>
                                         Tickets Support
                                     </a>
                                 </li>
                                 <li>
-                                    <a href="{% url 'dashboard:admin_disputes' %}" @click="sidebarOpen = false" class="text-gray-300 hover:text-white hover:bg-gray-800 group flex gap-x-3 rounded-md p-2 text-sm font-medium">
-                                        <i data-lucide="scale" class="h-5 w-5 shrink-0 text-gray-400 group-hover:text-white"></i>
+                                    <a href="{% url 'dashboard:admin_disputes' %}" @click="sidebarOpen = false" class="{% if request.resolver_match.url_name == 'admin_disputes' %}bg-gray-50 text-[#8B1E24]{% else %}text-gray-700 hover:text-[#8B1E24] hover:bg-gray-50{% endif %} group flex gap-x-3 rounded-md p-2 text-sm leading-6 font-medium transition-colors">
+                                        <i data-lucide="scale" class="h-5 w-5 shrink-0 {% if request.resolver_match.url_name == 'admin_disputes' %}text-[#8B1E24]{% else %}text-gray-400 group-hover:text-[#8B1E24]{% endif %}"></i>
                                         Litiges
                                     </a>
                                 </li>
                                 <li>
-                                    <a href="{% url 'dashboard:admin_analytics' %}" @click="sidebarOpen = false" class="text-gray-300 hover:text-white hover:bg-gray-800 group flex gap-x-3 rounded-md p-2 text-sm font-medium">
-                                        <i data-lucide="bar-chart-2" class="h-5 w-5 shrink-0 text-gray-400 group-hover:text-white"></i>
+                                    <a href="{% url 'dashboard:admin_analytics' %}" @click="sidebarOpen = false" class="{% if request.resolver_match.url_name == 'admin_analytics' %}bg-gray-50 text-[#8B1E24]{% else %}text-gray-700 hover:text-[#8B1E24] hover:bg-gray-50{% endif %} group flex gap-x-3 rounded-md p-2 text-sm leading-6 font-medium transition-colors">
+                                        <i data-lucide="bar-chart-2" class="h-5 w-5 shrink-0 {% if request.resolver_match.url_name == 'admin_analytics' %}text-[#8B1E24]{% else %}text-gray-400 group-hover:text-[#8B1E24]{% endif %}"></i>
                                         Analytics & IA
                                     </a>
                                 </li>
                                 <li>
-                                    <a href="{% url 'dashboard:admin_config' %}" @click="sidebarOpen = false" class="text-gray-300 hover:text-white hover:bg-gray-800 group flex gap-x-3 rounded-md p-2 text-sm font-medium">
-                                        <i data-lucide="sliders-horizontal" class="h-5 w-5 shrink-0 text-gray-400 group-hover:text-white"></i>
+                                    <a href="{% url 'dashboard:admin_config' %}" @click="sidebarOpen = false" class="{% if request.resolver_match.url_name == 'admin_config' %}bg-gray-50 text-[#8B1E24]{% else %}text-gray-700 hover:text-[#8B1E24] hover:bg-gray-50{% endif %} group flex gap-x-3 rounded-md p-2 text-sm leading-6 font-medium transition-colors">
+                                        <i data-lucide="sliders-horizontal" class="h-5 w-5 shrink-0 {% if request.resolver_match.url_name == 'admin_config' %}text-[#8B1E24]{% else %}text-gray-400 group-hover:text-[#8B1E24]{% endif %}"></i>
                                         Configuration
                                     </a>
                                 </li>
                                 <li>
-                                    <a href="{% url 'dashboard:admin_settings' %}" @click="sidebarOpen = false" class="text-gray-300 hover:text-white hover:bg-gray-800 group flex gap-x-3 rounded-md p-2 text-sm font-medium">
-                                        <i data-lucide="settings" class="h-5 w-5 shrink-0 text-gray-400 group-hover:text-white"></i>
+                                    <a href="{% url 'dashboard:admin_settings' %}" @click="sidebarOpen = false" class="{% if request.resolver_match.url_name == 'admin_settings' %}bg-gray-50 text-[#8B1E24]{% else %}text-gray-700 hover:text-[#8B1E24] hover:bg-gray-50{% endif %} group flex gap-x-3 rounded-md p-2 text-sm leading-6 font-medium transition-colors">
+                                        <i data-lucide="settings" class="h-5 w-5 shrink-0 {% if request.resolver_match.url_name == 'admin_settings' %}text-[#8B1E24]{% else %}text-gray-400 group-hover:text-[#8B1E24]{% endif %}"></i>
                                         Préférences
                                     </a>
                                 </li>
@@ -164,30 +164,70 @@
                         {% elif request.user.is_owner %}
                         <!-- ================= OWNER MOBILE ================= -->
                         <li>
-                            <a href="{% url 'dashboard:owner_home' %}" @click="sidebarOpen = false" class="bg-[#8B1E24] text-white group flex gap-x-3 rounded-md p-2 text-sm font-semibold">
-                                <i data-lucide="layout-dashboard" class="h-5 w-5 shrink-0 text-white"></i>
+                            <a href="{% url 'dashboard:owner_home' %}" @click="sidebarOpen = false" class="{% if request.resolver_match.url_name == 'owner_home' %}bg-gray-50 text-[#8B1E24]{% else %}text-gray-700 hover:text-[#8B1E24] hover:bg-gray-50{% endif %} group flex gap-x-3 rounded-md p-2 text-sm leading-6 font-semibold transition-colors">
+                                <i data-lucide="layout-dashboard" class="h-5 w-5 shrink-0 {% if request.resolver_match.url_name == 'owner_home' %}text-[#8B1E24]{% else %}text-gray-400 group-hover:text-[#8B1E24]{% endif %}"></i>
                                 Tableau de bord
                             </a>
                         </li>
                         <li>
-                            <div class="text-xs font-semibold leading-6 text-gray-400 uppercase tracking-wider mb-1">Activité</div>
+                            <div class="text-xs font-semibold leading-6 text-gray-500 uppercase tracking-wider mb-1">Activité</div>
                             <ul role="list" class="-mx-2 space-y-1">
                                 <li>
-                                    <a href="{% url 'dashboard:owner_properties' %}" @click="sidebarOpen = false" class="text-gray-300 hover:text-white hover:bg-gray-800 group flex gap-x-3 rounded-md p-2 text-sm font-medium">
-                                        <i data-lucide="home" class="h-5 w-5 shrink-0 text-gray-400"></i>
+                                    <a href="{% url 'dashboard:owner_properties' %}" @click="sidebarOpen = false" class="{% if request.resolver_match.url_name == 'owner_properties' %}bg-gray-50 text-[#8B1E24]{% else %}text-gray-700 hover:text-[#8B1E24] hover:bg-gray-50{% endif %} group flex gap-x-3 rounded-md p-2 text-sm leading-6 font-medium transition-colors">
+                                        <i data-lucide="home" class="h-5 w-5 shrink-0 {% if request.resolver_match.url_name == 'owner_properties' %}text-[#8B1E24]{% else %}text-gray-400 group-hover:text-[#8B1E24]{% endif %}"></i>
                                         Mes Annonces
                                     </a>
                                 </li>
                                 <li>
-                                    <a href="{% url 'dashboard:owner_requests' %}" @click="sidebarOpen = false" class="text-gray-300 hover:text-white hover:bg-gray-800 group flex gap-x-3 rounded-md p-2 text-sm font-medium">
-                                        <i data-lucide="inbox" class="h-5 w-5 shrink-0 text-gray-400"></i>
+                                    <a href="{% url 'dashboard:owner_requests' %}" @click="sidebarOpen = false" class="{% if request.resolver_match.url_name == 'owner_requests' %}bg-gray-50 text-[#8B1E24]{% else %}text-gray-700 hover:text-[#8B1E24] hover:bg-gray-50{% endif %} group flex gap-x-3 rounded-md p-2 text-sm leading-6 font-medium transition-colors">
+                                        <i data-lucide="inbox" class="h-5 w-5 shrink-0 {% if request.resolver_match.url_name == 'owner_requests' %}text-[#8B1E24]{% else %}text-gray-400 group-hover:text-[#8B1E24]{% endif %}"></i>
                                         Demandes
                                     </a>
                                 </li>
                                 <li>
-                                    <a href="{% url 'dashboard:owner_payouts' %}" @click="sidebarOpen = false" class="text-gray-300 hover:text-white hover:bg-gray-800 group flex gap-x-3 rounded-md p-2 text-sm font-medium">
-                                        <i data-lucide="banknote" class="h-5 w-5 shrink-0 text-gray-400"></i>
+                                    <a href="{% url 'dashboard:owner_calendar' %}" @click="sidebarOpen = false" class="{% if request.resolver_match.url_name == 'owner_calendar' %}bg-gray-50 text-[#8B1E24]{% else %}text-gray-700 hover:text-[#8B1E24] hover:bg-gray-50{% endif %} group flex gap-x-3 rounded-md p-2 text-sm leading-6 font-medium transition-colors">
+                                        <i data-lucide="calendar" class="h-5 w-5 shrink-0 {% if request.resolver_match.url_name == 'owner_calendar' %}text-[#8B1E24]{% else %}text-gray-400 group-hover:text-[#8B1E24]{% endif %}"></i>
+                                        Planning
+                                    </a>
+                                </li>
+                            </ul>
+                        </li>
+                        <li>
+                            <div class="text-xs font-semibold leading-6 text-gray-500 uppercase tracking-wider mb-1">Finance</div>
+                            <ul role="list" class="-mx-2 space-y-1">
+                                <li>
+                                    <a href="{% url 'dashboard:owner_payouts' %}" @click="sidebarOpen = false" class="{% if request.resolver_match.url_name == 'owner_payouts' %}bg-gray-50 text-[#8B1E24]{% else %}text-gray-700 hover:text-[#8B1E24] hover:bg-gray-50{% endif %} group flex gap-x-3 rounded-md p-2 text-sm leading-6 font-medium transition-colors">
+                                        <i data-lucide="banknote" class="h-5 w-5 shrink-0 {% if request.resolver_match.url_name == 'owner_payouts' %}text-[#8B1E24]{% else %}text-gray-400 group-hover:text-[#8B1E24]{% endif %}"></i>
                                         Revenus
+                                    </a>
+                                </li>
+                                <li>
+                                    <a href="{% url 'dashboard:owner_stats' %}" @click="sidebarOpen = false" class="{% if request.resolver_match.url_name == 'owner_stats' %}bg-gray-50 text-[#8B1E24]{% else %}text-gray-700 hover:text-[#8B1E24] hover:bg-gray-50{% endif %} group flex gap-x-3 rounded-md p-2 text-sm leading-6 font-medium transition-colors">
+                                        <i data-lucide="pie-chart" class="h-5 w-5 shrink-0 {% if request.resolver_match.url_name == 'owner_stats' %}text-[#8B1E24]{% else %}text-gray-400 group-hover:text-[#8B1E24]{% endif %}"></i>
+                                        Statistiques
+                                    </a>
+                                </li>
+                            </ul>
+                        </li>
+                        <li>
+                            <div class="text-xs font-semibold leading-6 text-gray-500 uppercase tracking-wider mb-1">Mon Compte</div>
+                            <ul role="list" class="-mx-2 space-y-1">
+                                <li>
+                                    <a href="{% url 'dashboard:owner_documents' %}" @click="sidebarOpen = false" class="{% if request.resolver_match.url_name == 'owner_documents' %}bg-gray-50 text-[#8B1E24]{% else %}text-gray-700 hover:text-[#8B1E24] hover:bg-gray-50{% endif %} group flex gap-x-3 rounded-md p-2 text-sm leading-6 font-medium transition-colors">
+                                        <i data-lucide="file-text" class="h-5 w-5 shrink-0 {% if request.resolver_match.url_name == 'owner_documents' %}text-[#8B1E24]{% else %}text-gray-400 group-hover:text-[#8B1E24]{% endif %}"></i>
+                                        Documents
+                                    </a>
+                                </li>
+                                <li>
+                                    <a href="{% url 'dashboard:owner_support' %}" @click="sidebarOpen = false" class="{% if request.resolver_match.url_name == 'owner_support' %}bg-gray-50 text-[#8B1E24]{% else %}text-gray-700 hover:text-[#8B1E24] hover:bg-gray-50{% endif %} group flex gap-x-3 rounded-md p-2 text-sm leading-6 font-medium transition-colors">
+                                        <i data-lucide="life-buoy" class="h-5 w-5 shrink-0 {% if request.resolver_match.url_name == 'owner_support' %}text-[#8B1E24]{% else %}text-gray-400 group-hover:text-[#8B1E24]{% endif %}"></i>
+                                        Assistance
+                                    </a>
+                                </li>
+                                <li>
+                                    <a href="{% url 'dashboard:owner_settings' %}" @click="sidebarOpen = false" class="{% if request.resolver_match.url_name == 'owner_settings' %}bg-gray-50 text-[#8B1E24]{% else %}text-gray-700 hover:text-[#8B1E24] hover:bg-gray-50{% endif %} group flex gap-x-3 rounded-md p-2 text-sm leading-6 font-medium transition-colors">
+                                        <i data-lucide="settings" class="h-5 w-5 shrink-0 {% if request.resolver_match.url_name == 'owner_settings' %}text-[#8B1E24]{% else %}text-gray-400 group-hover:text-[#8B1E24]{% endif %}"></i>
+                                        Paramètres
                                     </a>
                                 </li>
                             </ul>
@@ -196,35 +236,74 @@
                         {% else %}
                         <!-- ================= CLIENT MOBILE ================= -->
                         <li>
-                            <a href="{% url 'dashboard:client_home' %}" @click="sidebarOpen = false" class="bg-[#8B1E24] text-white group flex gap-x-3 rounded-md p-2 text-sm font-semibold">
-                                <i data-lucide="layout-dashboard" class="h-5 w-5 shrink-0 text-white"></i>
-                                Mon Espace
-                            </a>
-                        </li>
-                        <li>
-                            <div class="text-xs font-semibold leading-6 text-gray-400 uppercase tracking-wider mb-1">Mes Réservations</div>
                             <ul role="list" class="-mx-2 space-y-1">
                                 <li>
-                                    <a href="{% url 'dashboard:client_reservations' %}" @click="sidebarOpen = false" class="text-gray-300 hover:text-white hover:bg-gray-800 group flex gap-x-3 rounded-md p-2 text-sm font-medium justify-between">
+                                    <a href="{% url 'dashboard:client_home' %}" @click="sidebarOpen = false" class="{% if request.resolver_match.url_name == 'client_home' %}bg-gray-50 text-[#8B1E24]{% else %}text-gray-700 hover:text-[#8B1E24] hover:bg-gray-50{% endif %} group flex gap-x-3 rounded-md p-2 text-sm leading-6 font-semibold transition-colors">
+                                        <i data-lucide="layout-dashboard" class="h-5 w-5 shrink-0 {% if request.resolver_match.url_name == 'client_home' %}text-[#8B1E24]{% else %}text-gray-400 group-hover:text-[#8B1E24]{% endif %}"></i>
+                                        Mon Espace
+                                    </a>
+                                </li>
+                                <li>
+                                    <a href="{% url 'public:properties_list' %}" @click="sidebarOpen = false" class="text-gray-700 hover:text-[#8B1E24] hover:bg-gray-50 group flex gap-x-3 rounded-md p-2 text-sm leading-6 font-medium transition-colors">
+                                        <i data-lucide="search" class="h-5 w-5 shrink-0 text-gray-400 group-hover:text-[#8B1E24]"></i>
+                                        Rechercher un logement
+                                    </a>
+                                </li>
+                            </ul>
+                        </li>
+                        <li>
+                            <div class="text-xs font-semibold leading-6 text-gray-500 uppercase tracking-wider mb-1">Mes Réservations</div>
+                            <ul role="list" class="-mx-2 space-y-1">
+                                <li>
+                                    <a href="{% url 'dashboard:client_reservations' %}" @click="sidebarOpen = false" class="{% if request.resolver_match.url_name == 'client_reservations' %}bg-gray-50 text-[#8B1E24]{% else %}text-gray-700 hover:text-[#8B1E24] hover:bg-gray-50{% endif %} group flex gap-x-3 rounded-md p-2 text-sm leading-6 font-medium transition-colors justify-between">
                                         <div class="flex items-center gap-x-3">
-                                            <i data-lucide="suitcase" class="h-5 w-5 shrink-0 text-gray-400"></i>
+                                            <i data-lucide="suitcase" class="h-5 w-5 shrink-0 {% if request.resolver_match.url_name == 'client_reservations' %}text-[#8B1E24]{% else %}text-gray-400 group-hover:text-[#8B1E24]{% endif %}"></i>
                                             Mes Réservations
                                         </div>
                                         {% if stats.total_reservations > 0 %}
-                                        <span class="rounded-full bg-gray-700 px-2 py-0.5 text-[10px] font-bold text-gray-200">{{ stats.total_reservations }}</span>
+                                        <span class="rounded-full bg-gray-100 px-2 py-0.5 text-[10px] font-bold text-gray-700">{{ stats.total_reservations }}</span>
                                         {% endif %}
                                     </a>
                                 </li>
                                 <li>
-                                    <a href="{% url 'dashboard:client_favorites' %}" @click="sidebarOpen = false" class="text-gray-300 hover:text-white hover:bg-gray-800 group flex gap-x-3 rounded-md p-2 text-sm font-medium">
-                                        <i data-lucide="heart" class="h-5 w-5 shrink-0 text-gray-400"></i>
+                                    <a href="{% url 'dashboard:client_favorites' %}" @click="sidebarOpen = false" class="{% if request.resolver_match.url_name == 'client_favorites' %}bg-gray-50 text-[#8B1E24]{% else %}text-gray-700 hover:text-[#8B1E24] hover:bg-gray-50{% endif %} group flex gap-x-3 rounded-md p-2 text-sm leading-6 font-medium transition-colors">
+                                        <i data-lucide="heart" class="h-5 w-5 shrink-0 {% if request.resolver_match.url_name == 'client_favorites' %}text-[#8B1E24]{% else %}text-gray-400 group-hover:text-[#8B1E24]{% endif %}"></i>
                                         Favoris
                                     </a>
                                 </li>
                                 <li>
-                                    <a href="{% url 'dashboard:client_payments' %}" @click="sidebarOpen = false" class="text-gray-300 hover:text-white hover:bg-gray-800 group flex gap-x-3 rounded-md p-2 text-sm font-medium">
-                                        <i data-lucide="credit-card" class="h-5 w-5 shrink-0 text-gray-400"></i>
-                                        Paiements & Factures
+                                    <a href="{% url 'dashboard:client_history' %}" @click="sidebarOpen = false" class="{% if request.resolver_match.url_name == 'client_history' %}bg-gray-50 text-[#8B1E24]{% else %}text-gray-700 hover:text-[#8B1E24] hover:bg-gray-50{% endif %} group flex gap-x-3 rounded-md p-2 text-sm leading-6 font-medium transition-colors">
+                                        <i data-lucide="clock" class="h-5 w-5 shrink-0 {% if request.resolver_match.url_name == 'client_history' %}text-[#8B1E24]{% else %}text-gray-400 group-hover:text-[#8B1E24]{% endif %}"></i>
+                                        Historique
+                                    </a>
+                                </li>
+                            </ul>
+                        </li>
+                        <li>
+                            <div class="text-xs font-semibold leading-6 text-gray-500 uppercase tracking-wider mb-1">Mon Compte</div>
+                            <ul role="list" class="-mx-2 space-y-1">
+                                <li>
+                                    <a href="{% url 'dashboard:client_payments' %}" @click="sidebarOpen = false" class="{% if request.resolver_match.url_name == 'client_payments' %}bg-gray-50 text-[#8B1E24]{% else %}text-gray-700 hover:text-[#8B1E24] hover:bg-gray-50{% endif %} group flex gap-x-3 rounded-md p-2 text-sm leading-6 font-medium transition-colors">
+                                        <i data-lucide="credit-card" class="h-5 w-5 shrink-0 {% if request.resolver_match.url_name == 'client_payments' %}text-[#8B1E24]{% else %}text-gray-400 group-hover:text-[#8B1E24]{% endif %}"></i>
+                                        Paiements
+                                    </a>
+                                </li>
+                                <li>
+                                    <a href="{% url 'dashboard:client_invoices' %}" @click="sidebarOpen = false" class="{% if request.resolver_match.url_name == 'client_invoices' %}bg-gray-50 text-[#8B1E24]{% else %}text-gray-700 hover:text-[#8B1E24] hover:bg-gray-50{% endif %} group flex gap-x-3 rounded-md p-2 text-sm leading-6 font-medium transition-colors">
+                                        <i data-lucide="file-text" class="h-5 w-5 shrink-0 {% if request.resolver_match.url_name == 'client_invoices' %}text-[#8B1E24]{% else %}text-gray-400 group-hover:text-[#8B1E24]{% endif %}"></i>
+                                        Factures
+                                    </a>
+                                </li>
+                                <li>
+                                    <a href="{% url 'dashboard:client_support' %}" @click="sidebarOpen = false" class="{% if request.resolver_match.url_name == 'client_support' %}bg-gray-50 text-[#8B1E24]{% else %}text-gray-700 hover:text-[#8B1E24] hover:bg-gray-50{% endif %} group flex gap-x-3 rounded-md p-2 text-sm leading-6 font-medium transition-colors">
+                                        <i data-lucide="life-buoy" class="h-5 w-5 shrink-0 {% if request.resolver_match.url_name == 'client_support' %}text-[#8B1E24]{% else %}text-gray-400 group-hover:text-[#8B1E24]{% endif %}"></i>
+                                        Assistance
+                                    </a>
+                                </li>
+                                <li>
+                                    <a href="{% url 'dashboard:client_settings' %}" @click="sidebarOpen = false" class="{% if request.resolver_match.url_name == 'client_settings' %}bg-gray-50 text-[#8B1E24]{% else %}text-gray-700 hover:text-[#8B1E24] hover:bg-gray-50{% endif %} group flex gap-x-3 rounded-md p-2 text-sm leading-6 font-medium transition-colors">
+                                        <i data-lucide="settings" class="h-5 w-5 shrink-0 {% if request.resolver_match.url_name == 'client_settings' %}text-[#8B1E24]{% else %}text-gray-400 group-hover:text-[#8B1E24]{% endif %}"></i>
+                                        Paramètres
                                     </a>
                                 </li>
                             </ul>
@@ -235,10 +314,10 @@
                 </nav>
 
                 <!-- Déconnexion au bas de la sidebar mobile -->
-                <div class="border-t border-gray-800 pt-4 mt-auto">
+                <div class="border-t border-gray-100 pt-4 mt-auto">
                     <form action="{% url 'accounts:logout' %}" method="post">
                         {% csrf_token %}
-                        <button type="submit" class="w-full text-left flex items-center gap-x-3 rounded-md p-2 text-sm font-semibold text-red-400 hover:bg-gray-800 hover:text-red-300 transition-colors cursor-pointer">
+                        <button type="submit" class="w-full text-left flex items-center gap-x-3 rounded-md p-2 text-sm font-semibold text-red-600 hover:bg-red-50 transition-colors cursor-pointer">
                             <i data-lucide="log-out" class="h-5 w-5 shrink-0"></i>
                             Se déconnecter
                         </button>

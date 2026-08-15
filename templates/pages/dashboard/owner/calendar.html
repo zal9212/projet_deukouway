@@ -95,7 +95,7 @@
     {% else %}
     <!-- Grille Calendrier -->
     <div class="lg:flex lg:h-full lg:flex-col">
-        <div class="grid grid-cols-7 gap-px border-b border-gray-200 bg-gray-200 text-center text-xs font-semibold leading-6 text-gray-700 lg:flex-none">
+        <div class="hidden grid-cols-7 gap-px border-b border-gray-200 bg-gray-200 text-center text-xs font-semibold leading-6 text-gray-700 lg:grid lg:flex-none">
             <div class="bg-white py-2">Lun</div>
             <div class="bg-white py-2">Mar</div>
             <div class="bg-white py-2">Mer</div>
@@ -124,8 +124,34 @@
             </div>
 
             <!-- Mobile View (Liste) -->
-            <div class="isolate grid w-full grid-cols-1 gap-px lg:hidden">
-                <p class="text-sm text-center p-4">La vue calendrier est optimisée pour les écrans larges.</p>
+            <div class="w-full divide-y divide-gray-200 bg-white lg:hidden">
+                {% for week in weeks %}
+                    {% for day in week %}
+                        {% if day.is_current_month %}
+                        <div class="flex items-center justify-between px-4 py-3">
+                            <div class="flex items-center gap-x-3">
+                                <span class="text-sm font-semibold text-gray-900 w-6 text-right">{{ day.day }}</span>
+                                <span class="text-xs text-gray-500 capitalize">{{ day.date|date:"D" }}</span>
+                            </div>
+                            {% if day.status == 'confirmed' %}
+                            <span class="inline-flex items-center gap-x-1.5 rounded-full bg-green-100 px-2.5 py-1 text-xs font-medium text-green-700">
+                                <span class="w-1.5 h-1.5 rounded-full bg-green-500"></span>Confirmé
+                            </span>
+                            {% elif day.status == 'pending' %}
+                            <span class="inline-flex items-center gap-x-1.5 rounded-full bg-yellow-100 px-2.5 py-1 text-xs font-medium text-yellow-800">
+                                <span class="w-1.5 h-1.5 rounded-full bg-yellow-400"></span>Demande
+                            </span>
+                            {% elif day.status == 'blocked' %}
+                            <span class="inline-flex items-center gap-x-1.5 rounded-full bg-gray-100 px-2.5 py-1 text-xs font-medium text-gray-600">
+                                <span class="w-1.5 h-1.5 rounded-full bg-gray-400"></span>Bloqué
+                            </span>
+                            {% else %}
+                            <span class="text-xs text-gray-400">Disponible</span>
+                            {% endif %}
+                        </div>
+                        {% endif %}
+                    {% endfor %}
+                {% endfor %}
             </div>
         </div>
     </div>
