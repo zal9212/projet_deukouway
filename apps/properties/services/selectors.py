@@ -62,7 +62,9 @@ class PropertySelector:
         return Property.objects.filter(
             status=PropertyStatusChoices.PENDING,
             is_deleted=False
-        ).select_related('owner', 'property_type').order_by('-created_at')
+        ).select_related('owner', 'property_type', 'property_type__category').prefetch_related(
+            'images', 'amenities', 'rules'
+        ).order_by('-created_at')
 
     @staticmethod
     def get_all_properties(search_query: str = None, status: str = None) -> QuerySet[Property]:

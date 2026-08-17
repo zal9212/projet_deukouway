@@ -57,21 +57,58 @@
             </div>
 
             <div class="flex-1 overflow-y-auto p-6 space-y-8 bg-gray-50">
+                <!-- Photos soumises -->
+                <div class="bg-white p-6 border border-gray-200 rounded-xl shadow-sm">
+                    <h4 class="text-sm font-semibold text-gray-900 mb-4 border-b border-gray-100 pb-2">
+                        Photos ({{ active_prop.images.all|length }})
+                    </h4>
+                    {% if active_prop.images.all %}
+                    <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3">
+                        {% for image in active_prop.images.all %}
+                        <a href="{{ image.image.url }}" target="_blank" rel="noopener"
+                           class="relative block aspect-square rounded-lg overflow-hidden bg-gray-100 ring-1 ring-gray-200 hover:ring-2 hover:ring-blue-500 transition-all">
+                            <img src="{{ image.image.url }}" alt="Photo soumise du logement" class="w-full h-full object-cover" loading="lazy">
+                            {% if image.is_cover %}
+                            <span class="absolute top-1.5 left-1.5 rounded-full bg-blue-600 px-2 py-0.5 text-[10px] font-bold text-white">Couverture</span>
+                            {% endif %}
+                        </a>
+                        {% endfor %}
+                    </div>
+                    {% else %}
+                    <p class="text-sm text-red-600 flex items-center">
+                        <i data-lucide="alert-triangle" class="w-4 h-4 mr-1.5 shrink-0"></i>
+                        Aucune photo n'a été téléversée pour cette annonce.
+                    </p>
+                    {% endif %}
+                </div>
+
                 <!-- Checklist ERP -->
                 <div class="bg-white p-6 border border-gray-200 rounded-xl shadow-sm">
                     <h4 class="text-sm font-semibold text-gray-900 mb-4 border-b border-gray-100 pb-2">Détails de l'Annonce</h4>
                     <div class="grid grid-cols-1 md:grid-cols-3 gap-4 text-sm">
                         <div>
+                            <span class="text-gray-500">Type de bien :</span>
+                            <span class="font-semibold text-gray-900 block mt-0.5">{{ active_prop.property_type.category.name }} - {{ active_prop.property_type.name }}</span>
+                        </div>
+                        <div>
                             <span class="text-gray-500">Prix {{ active_prop.pricing_period|price_unit }} :</span>
                             <span class="font-semibold text-gray-900 block mt-0.5">{{ active_prop.price }} CFA</span>
                         </div>
                         <div>
+                            <span class="text-gray-500">Adresse :</span>
+                            <span class="font-semibold text-gray-900 block mt-0.5">{{ active_prop.address }}</span>
+                        </div>
+                        <div>
                             <span class="text-gray-500">Ville / Quartier :</span>
-                            <span class="font-semibold text-gray-900 block mt-0.5">{{ active_prop.city|default:"Dakar" }}</span>
+                            <span class="font-semibold text-gray-900 block mt-0.5">{{ active_prop.district }}, {{ active_prop.city }}</span>
                         </div>
                         <div>
                             <span class="text-gray-500">Chambres / SDB :</span>
                             <span class="font-semibold text-gray-900 block mt-0.5">{{ active_prop.bedrooms }} ch. / {{ active_prop.bathrooms }} sdb.</span>
+                        </div>
+                        <div>
+                            <span class="text-gray-500">Surface / Capacité :</span>
+                            <span class="font-semibold text-gray-900 block mt-0.5">{{ active_prop.surface }} m² / {{ active_prop.max_guests }} pers. max</span>
                         </div>
                     </div>
                 </div>
@@ -80,6 +117,37 @@
                 <div class="bg-white p-6 border border-gray-200 rounded-xl shadow-sm">
                     <h4 class="text-sm font-semibold text-gray-900 mb-4 border-b border-gray-100 pb-2">Description</h4>
                     <p class="text-sm text-gray-700 leading-relaxed">{{ active_prop.description }}</p>
+                </div>
+
+                <!-- Équipements -->
+                <div class="bg-white p-6 border border-gray-200 rounded-xl shadow-sm">
+                    <h4 class="text-sm font-semibold text-gray-900 mb-4 border-b border-gray-100 pb-2">Équipements</h4>
+                    {% if active_prop.amenities.all %}
+                    <div class="flex flex-wrap gap-2">
+                        {% for amenity in active_prop.amenities.all %}
+                        <span class="inline-flex items-center rounded-full bg-gray-100 px-3 py-1 text-xs font-medium text-gray-700">{{ amenity.name }}</span>
+                        {% endfor %}
+                    </div>
+                    {% else %}
+                    <p class="text-sm text-gray-500">Aucun équipement renseigné.</p>
+                    {% endif %}
+                </div>
+
+                <!-- Règles -->
+                <div class="bg-white p-6 border border-gray-200 rounded-xl shadow-sm">
+                    <h4 class="text-sm font-semibold text-gray-900 mb-4 border-b border-gray-100 pb-2">Règles du logement</h4>
+                    {% if active_prop.rules.all %}
+                    <ul class="space-y-2 text-sm text-gray-700">
+                        {% for rule in active_prop.rules.all %}
+                        <li class="flex items-center">
+                            <i data-lucide="check" class="w-4 h-4 mr-2 text-gray-500 shrink-0"></i>
+                            {{ rule.rule }}
+                        </li>
+                        {% endfor %}
+                    </ul>
+                    {% else %}
+                    <p class="text-sm text-gray-500">Aucune règle spécifique renseignée.</p>
+                    {% endif %}
                 </div>
             </div>
 
