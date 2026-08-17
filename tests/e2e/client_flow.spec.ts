@@ -9,15 +9,15 @@ test.describe('Parcours E2E Client - DEKOUWAY', () => {
   });
 
   test('Recherche de logements et filtres', async ({ page }) => {
-    // La recherche par ville se fait depuis la barre héro de l'accueil (le
-    // panneau de filtres de /annonces/ n'a pas de champ ville) ; `.last()`
-    // cible le formulaire desktop visible (le formulaire mobile équivalent
-    // est présent dans le DOM mais masqué en `md:hidden` à cette largeur).
+    // La recherche par ville/quartier se fait depuis la barre héro de l'accueil
+    // (le panneau de filtres de /annonces/ n'a pas ce champ) ; `.last()` cible
+    // le formulaire desktop visible (le formulaire mobile équivalent est
+    // présent dans le DOM mais masqué en `md:hidden` à cette largeur).
     await page.goto('/');
-    const cityInput = page.locator('input[name="city"]').last();
-    await cityInput.fill('Dakar');
-    await cityInput.press('Enter');
-    await expect(page).toHaveURL(/city=Dakar/);
+    const locationInput = page.locator('input[name="location"]').last();
+    await locationInput.fill('Dakar');
+    await locationInput.press('Enter');
+    await expect(page).toHaveURL(/location=Dakar/);
   });
 
   test('Interaction avec le Chatbot IA Groq', async ({ page }) => {

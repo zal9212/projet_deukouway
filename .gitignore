@@ -67,6 +67,11 @@ media/
 # voir README pour la commande de rebuild après modification d'un template)
 node_modules/
 
+# Playwright (artefacts de test locaux : captures, vidéos, traces, rapport HTML)
+test-results/
+tests/e2e/reports/
+playwright-report/
+
 # Flask stuff:
 instance/
 .webassets-cache

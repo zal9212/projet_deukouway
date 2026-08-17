@@ -88,9 +88,35 @@
                     </select>
                 </div>
 
-                {% include "components/forms/input_text.html" with id="owner_document_number" name="document_number" label="Numéro du document" required=True %}
+                <div class="mb-4">
+                    <label for="owner_document_number" class="block text-sm font-medium text-gray-700 mb-1" x-text="{
+                        CNI: 'Numéro de la Carte Nationale d\'Identité',
+                        PASSEPORT: 'Numéro de passeport',
+                        TITRE_SEJOUR: 'Numéro du titre de séjour'
+                    }[documentType]">Numéro du document</label>
+                    <div class="relative rounded-md shadow-sm">
+                        <input type="text" name="document_number" id="owner_document_number"
+                               :placeholder="{
+                                   CNI: '1 2345 6789 0123',
+                                   PASSEPORT: '12AB34567',
+                                   TITRE_SEJOUR: '1234567890123'
+                               }[documentType]"
+                               required
+                               class="block w-full rounded-lg border-0 py-2.5 px-3.5 text-gray-900 ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-[#8B1E24] sm:text-sm sm:leading-6 transition-shadow">
+                    </div>
+                </div>
 
-                {% include "components/auth/upload_identity.html" with field_name="identity_file" input_id="identity-upload" label="Photo de la pièce d'identité (recto)" help_text="Le document doit être entier, net et parfaitement lisible." accept=".jpg,.jpeg,.png,.pdf" formats="PNG, JPG, PDF jusqu'à 5MB" %}
+                {% include "components/auth/upload_identity.html" with field_name="identity_file" input_id="identity-upload" label="Photo de la pièce d'identité (recto)" label_expr="documentType === 'CNI' ? 'Photo du document (recto)' : 'Photo du document'" help_text="Le document doit être entier, net et parfaitement lisible." accept=".jpg,.jpeg,.png,.pdf" formats="PNG, JPG, PDF jusqu'à 5MB" %}
+
+                <div x-show="documentType === 'CNI'" x-cloak class="mb-6">
+                    <label for="identity-upload-back" class="block text-sm font-medium text-gray-700 mb-2">Photo de la pièce d'identité (verso)</label>
+                    <p class="text-xs text-gray-500 mb-2">La carte nationale d'identité doit être photographiée des deux côtés.</p>
+                    <input id="identity-upload-back" name="identity_file_back" type="file"
+                           :required="documentType === 'CNI'"
+                           accept=".jpg,.jpeg,.png,.pdf"
+                           class="block w-full text-sm text-gray-600 file:mr-4 file:rounded-md file:border-0 file:bg-[#8B1E24]/10 file:px-4 file:py-2 file:text-sm file:font-semibold file:text-[#8B1E24] hover:file:bg-[#8B1E24]/20">
+                    <p class="text-xs leading-5 text-gray-500 mt-2">PNG, JPG, PDF jusqu'à 5MB</p>
+                </div>
 
                 <div x-show="documentType === 'CNI'" x-cloak class="mb-6">
                     <label for="identity-upload-back" class="block text-sm font-medium text-gray-700 mb-2">Photo de la pièce d'identité (verso)</label>

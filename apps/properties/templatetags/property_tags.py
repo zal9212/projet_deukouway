@@ -23,7 +23,9 @@ def placeholder_image(property_id):
     Rotation circulaire sur les 6 images disponibles. Les ID étant des UUID (non
     convertibles en int), on dérive un index stable via un hash MD5.
     """
-    digest = hashlib.md5(str(property_id).encode()).hexdigest()
+    # usedforsecurity=False : usage non cryptographique (répartition déterministe
+    # sur 6 images), pas une empreinte de sécurité — évite le faux positif bandit B324.
+    digest = hashlib.md5(str(property_id).encode(), usedforsecurity=False).hexdigest()
     index = int(digest, 16) % len(PLACEHOLDER_IMAGES)
     return static(PLACEHOLDER_IMAGES[index])
 

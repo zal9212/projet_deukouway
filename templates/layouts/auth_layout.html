@@ -30,8 +30,9 @@
     <!-- Messages flash (succès / erreur / info) -->
     {% include "components/messages.html" %}
 
-    <div class="flex min-h-full">
+    <div class="flex h-screen overflow-hidden">
         <!-- Colonne Gauche : Illustration (Visible uniquement sur Desktop lg) -->
+        <!-- Fixe : ne scrolle jamais, seule la colonne droite défile (voir overflow-y-auto ci-dessous). -->
         <div class="hidden lg:flex lg:w-1/2 lg:flex-col lg:justify-between bg-gray-50 border-r border-gray-200 relative overflow-hidden">
             <!-- Pattern de fond subtil -->
             <div class="absolute inset-0 opacity-10 bg-[url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjAiIGhlaWdodD0iMjAiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+PGNpcmNsZSBjeD0iMiIgY3k9IjIiIHI9IjIiIGZpbGw9IiM4QjFFMjQiLz48L3N2Zz4=')]"></div>
@@ -66,8 +67,8 @@
             </div>
         </div>
 
-        <!-- Colonne Droite : Formulaire -->
-        <div class="flex w-full flex-col justify-center px-4 py-12 sm:px-6 lg:w-1/2 lg:flex-none xl:px-24">
+        <!-- Colonne Droite : Formulaire (défile indépendamment de la colonne gauche) -->
+        <div class="flex w-full flex-col justify-center overflow-y-auto px-4 py-12 sm:px-6 lg:w-1/2 lg:flex-none xl:px-24">
             <div class="mx-auto w-full max-w-sm sm:max-w-md lg:max-w-sm xl:max-w-md">
                 
                 <!-- Logo (Mobile uniquement) -->

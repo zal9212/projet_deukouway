@@ -16,9 +16,9 @@
         <!-- Contenu centré -->
         <div class="relative z-10 w-full px-6 flex flex-col items-center space-y-6">
             <div class="space-y-2">
-                <h1 class="text-3xl font-extrabold tracking-tight text-white leading-tight drop-shadow-sm">
+                <h2 class="text-3xl font-extrabold tracking-tight text-white leading-tight drop-shadow-sm">
                     Trouvez votre logement<br>au Sénégal
-                </h1>
+                </h2>
                 <p class="text-white/75 text-sm font-medium">Villas, appartements, studios — vérifiés et disponibles.</p>
             </div>
 
@@ -29,12 +29,6 @@
                     <i data-lucide="search" class="w-4 h-4 text-[#9CA3AF] flex-shrink-0"></i>
                     <input type="text" name="search"
                            placeholder="Où souhaitez-vous loger ?"
-                           class="w-full bg-transparent border-none text-sm focus:ring-0 focus:outline-none placeholder-[#9CA3AF] text-[#1F2937] ml-2">
-                </div>
-                <div class="flex items-center px-4 py-3 border-b border-[#E5E7EB]">
-                    <i data-lucide="map-pin" class="w-4 h-4 text-[#9CA3AF] flex-shrink-0"></i>
-                    <input type="text" name="city"
-                           placeholder="Ville (Dakar, Saly…)"
                            class="w-full bg-transparent border-none text-sm focus:ring-0 focus:outline-none placeholder-[#9CA3AF] text-[#1F2937] ml-2">
                 </div>
                 <div class="flex items-center px-4 py-3">
@@ -155,9 +149,9 @@
         
         <!-- Texts content -->
         <div class="relative z-10 max-w-4xl mx-auto px-4 space-y-6">
-            <h2 class="text-4xl sm:text-6xl font-extrabold tracking-tight text-white leading-tight drop-shadow-sm font-sans">
+            <h1 class="text-4xl sm:text-6xl font-extrabold tracking-tight text-white leading-tight drop-shadow-sm font-sans">
                 Trouvez des Maisons, Appartements<br>& Locations en toute Simplicité
-            </h2>
+            </h1>
             <div class="pt-2">
                 <a href="{% url 'properties_list' %}" 
                    aria-label="Explorer tous les logements disponibles"
@@ -181,26 +175,16 @@
                     </div>
                 </div>
 
-                <!-- Field: Ville -->
+                <!-- Field: Ville / Quartier (combiné) -->
                 <div class="flex-grow flex items-center space-x-3 px-5 py-2 border-r border-[#E5E7EB] min-w-0">
                     <i data-lucide="map-pin" class="w-4 h-4 text-[#8B1E24] flex-shrink-0"></i>
                     <div class="w-full text-left">
-                        <span class="block text-[8px] uppercase font-bold text-[#6B7280] tracking-wider select-none">Ville</span>
-                        <input type="text" name="city" placeholder="Dakar, Saly..." 
+                        <span class="block text-[8px] uppercase font-bold text-[#6B7280] tracking-wider select-none">Ville / Quartier</span>
+                        <input type="text" name="location" placeholder="Dakar, Ngor, Almadies..."
                                class="w-full bg-transparent border-none p-0 text-xs focus:ring-0 placeholder-[#9CA3AF] focus:outline-none text-[#1F2937] font-semibold">
                     </div>
                 </div>
-                
-                <!-- Field: Quartier -->
-                <div class="flex-grow flex items-center space-x-3 px-5 py-2 border-r border-[#E5E7EB] min-w-0">
-                    <i data-lucide="navigation" class="w-4 h-4 text-[#8B1E24] flex-shrink-0"></i>
-                    <div class="w-full text-left">
-                        <span class="block text-[8px] uppercase font-bold text-[#6B7280] tracking-wider select-none">Quartier</span>
-                        <input type="text" name="neighborhood" placeholder="Ngor, Almadies..." 
-                               class="w-full bg-transparent border-none p-0 text-xs focus:ring-0 placeholder-[#9CA3AF] focus:outline-none text-[#1F2937] font-semibold">
-                    </div>
-                </div>
-                
+
                 <!-- Field: Budget -->
                 <div class="flex-grow flex items-center space-x-3 px-5 py-2 border-r border-[#E5E7EB] min-w-0">
                     <i data-lucide="wallet" class="w-4 h-4 text-[#8B1E24] flex-shrink-0"></i>

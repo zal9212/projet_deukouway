@@ -25,7 +25,7 @@
         }, 200);
     }
 }">
-    <label class="block text-sm font-medium text-gray-700 mb-2">{{ label|default:"Pièce d'identité (CNI ou Passeport)" }}</label>
+    <label class="block text-sm font-medium text-gray-700 mb-2"{% if label_expr %} x-text="{{ label_expr }}"{% endif %}>{{ label|default:"Pièce d'identité (CNI ou Passeport)" }}</label>
     {% if help_text %}<p class="text-xs text-gray-500 mb-2">{{ help_text }}</p>{% endif %}
 
     <!-- Zone de Drag & Drop -->

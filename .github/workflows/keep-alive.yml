@@ -1,0 +1,30 @@
+name: Keep Render Instance Awake
+
+# Ping /health/ pour empêcher le plan gratuit Render de s'endormir après 15 min
+# d'inactivité (le "cold start" suivant peut prendre 50s+). Purement pour du
+# confort de test : n'affecte ni le code ni le CI.
+#
+# ATTENTION : le scheduler GitHub Actions est "best effort" et ne respecte pas
+# fiablement un cron toutes les 5 min (délais de 15-40 min courants, cf. doc
+# GitHub officielle + retours communauté) — largement au-dessus des 15 min de
+# tolérance de Render, donc ce ping seul NE SUFFIT PAS à garder le service
+# éveillé. Le ping fiable toutes les 5 min est fait en externe via cron-job.org
+# (non versionné ici, configuré directement sur leur site) ; ce workflow ne
+# sert plus que de filet de sécurité redondant.
+#
+# Restreint à 7h-22h UTC (= heure de Dakar, UTC+0 toute l'année) pour rester
+# large sous le plafond gratuit Render de 750h d'instance/mois : un service
+# éveillé 24/7 consommerait ~744h sur un mois de 31 jours, ne laissant quasi
+# aucune marge avant suspension du service jusqu'au mois suivant.
+on:
+  schedule:
+    - cron: '*/5 7-22 * * *'
+  workflow_dispatch: {}
+
+jobs:
+  ping:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Ping health endpoint
+        run: |
+          curl -sf --max-time 60 https://dekouway.onrender.com/health/ || echo "Ping échoué (le service était peut-être déjà en train de redémarrer) — pas grave, réessai au prochain cycle."

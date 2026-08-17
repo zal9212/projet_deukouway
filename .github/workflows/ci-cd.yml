@@ -27,6 +27,17 @@ jobs:
         ports:
           - 6379:6379
 
+    env:
+      # DEBUG=True ici (comme le job e2e-tests et comme en local) : avec False,
+      # SECURE_SSL_REDIRECT bascule à True par défaut et renvoie du 301 sur
+      # chaque requête HTTP interne du client de test, cassant des dizaines
+      # de tests (context à None, .data absent sur une redirection, etc.).
+      DEBUG: 'True'
+      SECRET_KEY: ci-lint-and-test-throwaway-key
+      ALLOWED_HOSTS: 127.0.0.1,localhost
+      DATABASE_URL: postgres://dekouway_user:securepassword123@localhost:5432/dekouway_test_db
+      GROQ_API_KEY: mock-key
+
     steps:
       - uses: actions/checkout@v4
 
@@ -54,26 +65,92 @@ jobs:
           python -m pip_audit -r requirements.txt
 
       - name: Run Migrations Check
-        env:
-          POSTGRES_DB: dekouway_test_db
-          POSTGRES_USER: dekouway_user
-          POSTGRES_PASSWORD: securepassword123
-          POSTGRES_HOST: localhost
-          POSTGRES_PORT: 5432
         run: |
           python manage.py makemigrations --check --dry-run
 
       - name: Run Test Suite Under Coverage
+        run: |
+          python -m coverage run manage.py test apps.accounts.tests apps.properties.tests apps.reservations.tests apps.payments.tests apps.notifications.tests apps.documents.tests apps.support.tests apps.dashboard.tests apps.ai.tests apps.core.tests
+          python -m coverage report --fail-under=80
+
+  e2e-tests:
+    name: Playwright E2E Tests
+    needs: lint-and-test
+    runs-on: ubuntu-latest
+
+    services:
+      postgres:
+        image: postgres:16-alpine
         env:
           POSTGRES_DB: dekouway_test_db
           POSTGRES_USER: dekouway_user
           POSTGRES_PASSWORD: securepassword123
-          POSTGRES_HOST: localhost
-          POSTGRES_PORT: 5432
-          GROQ_API_KEY: mock-key
+        ports:
+          - 5432:5432
+        options: --health-cmd pg_isready --health-interval 10s --health-timeout 5s --health-retries 5
+
+      redis:
+        image: redis:7-alpine
+        ports:
+          - 6379:6379
+
+    env:
+      DEBUG: 'True'
+      SECRET_KEY: ci-e2e-throwaway-key
+      ALLOWED_HOSTS: 127.0.0.1,localhost
+      DATABASE_URL: postgres://dekouway_user:securepassword123@localhost:5432/dekouway_test_db
+      GROQ_API_KEY: mock-key
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python 3.12
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+          cache: 'pip'
+
+      - name: Install Python Dependencies
         run: |
-          python -m coverage run manage.py test apps.accounts.tests apps.properties.tests apps.reservations.tests apps.payments.tests apps.notifications.tests apps.documents.tests apps.support.tests apps.dashboard.tests apps.ai.tests apps.core.tests
-          python -m coverage report --fail-under=80
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+
+      - name: Set up Node 20
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+
+      - name: Install Node Dependencies
+        run: npm ci
+
+      - name: Install Playwright Browsers
+        run: npx playwright install --with-deps chromium firefox webkit
+
+      - name: Apply Migrations
+        run: python manage.py migrate --noinput
+
+      - name: Build Tailwind CSS
+        run: npm run build:css
+
+      - name: Collect Static Files
+        run: python manage.py collectstatic --noinput
+
+      - name: Start Django Server
+        run: |
+          python manage.py runserver 127.0.0.1:8000 &
+          timeout 30 bash -c 'until curl -sf http://127.0.0.1:8000/health/ >/dev/null; do sleep 1; done'
+
+      - name: Run Playwright Tests
+        run: npx playwright test
+
+      - name: Upload Playwright Report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: playwright-report
+          path: tests/e2e/reports/
+          retention-days: 7
 
   e2e-tests:
     name: Playwright E2E Tests

@@ -16,6 +16,15 @@ class PrivateFileSystemStorage(FileSystemStorage):
             "Ce fichier est privé : utilisez la vue de service authentifiée, jamais .url directement."
         )
 
+    def deconstruct(self):
+        # Sans ceci, Django sérialise les migrations avec `location=` résolu en
+        # chemin absolu de LA machine où `makemigrations` a tourné (ex. un chemin
+        # Windows en dur) — cassant `makemigrations --check` (et la storage
+        # elle-même) sur toute autre machine (CI, prod, autre poste). En pointant
+        # vers l'instance module-level, le chemin est recalculé à l'exécution,
+        # sur chaque machine, via `settings.MEDIA_ROOT`.
+        return ('apps.core.storage.private_storage', [], {})
+
 
 # Stockage privé : les fichiers atterrissent physiquement sous MEDIA_ROOT/private/,
 # un chemin que nginx bloque explicitement (voir nginx.conf) et que Django ne sert

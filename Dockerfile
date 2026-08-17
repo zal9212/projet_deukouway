@@ -33,12 +33,17 @@ ENV PATH=/home/appuser/.local/bin:$PATH
 
 COPY --chown=appuser:appgroup . .
 
-# Collectstatic
-RUN python manage.py collectstatic --noinput || true
+# /app lui-même appartient encore à root (créé par WORKDIR avant ce point) :
+# sans ce chown, appuser ne peut pas y créer staticfiles/ ou media/ au runtime.
+RUN mkdir -p staticfiles media && chown -R appuser:appgroup /app && chmod +x entrypoint.sh
 
 # Dropping privileges to non-root user
 USER appuser
 
 EXPOSE 8000
 
-CMD ["gunicorn", "--config", "gunicorn.conf.py", "dekouway.wsgi:application"]
+# collectstatic + migrations au démarrage (pas au build : SECRET_KEY/DATABASE_URL
+# n'existent qu'au runtime sur les plateformes PaaS comme Render, jamais pendant
+# `docker build` — les lancer ici au lieu d'un `RUN` évite un manifest statique
+# vide ou périmé silencieusement généré par un collectstatic qui a échoué au build).
+CMD ["./entrypoint.sh"]
