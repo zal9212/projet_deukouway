@@ -16,6 +16,8 @@
             </h2>
             {% if reservation_request.status == 'SENT_TO_OWNER' %}
                 {% include "components/dashboard/status_badge.html" with status="pending" label="En attente de votre réponse" %}
+            {% elif reservation_request.status == 'OWNER_CONTACTED' %}
+                {% include "components/dashboard/status_badge.html" with status="success" label="Paiement confirmé - client à contacter" %}
             {% else %}
                 {% include "components/dashboard/status_badge.html" with status="info" label=reservation_request.get_status_display %}
             {% endif %}
@@ -67,6 +69,24 @@
                     <div>
                         <p class="text-sm text-gray-500">Client</p>
                         <p class="font-semibold text-gray-900">{{ reservation_request.client.email }}</p>
+                        {% if reservation_request.status == 'OWNER_CONTACTED' %}
+                        <div class="mt-3 text-sm space-y-1">
+                            <p class="flex items-center text-gray-600">
+                                <i data-lucide="mail" class="w-3.5 h-3.5 mr-1.5"></i>
+                                <a href="mailto:{{ reservation_request.client.email }}" class="text-[#8B1E24] hover:text-[#6F171C]">{{ reservation_request.client.email }}</a>
+                            </p>
+                            {% with profile=reservation_request.client.profile %}
+                            {% if profile.phone %}
+                            <p class="flex items-center text-gray-600">
+                                <i data-lucide="phone" class="w-3.5 h-3.5 mr-1.5"></i>
+                                <span>{{ profile.phone }}</span>
+                            </p>
+                            {% endif %}
+                            {% endwith %}
+                        </div>
+                        {% else %}
+                        <p class="text-xs text-gray-500 mt-1">Les coordonnées du client seront communiquées après le paiement.</p>
+                        {% endif %}
                     </div>
                 </div>
             </div>

@@ -66,6 +66,24 @@
                             </div>
                             <div>
                                 <p class="font-semibold text-gray-900">{{ reservation.property.owner.get_full_name|default:reservation.property.owner.email }}</p>
+                                {% if reservation.request.status == 'OWNER_CONTACTED' %}
+                                <div class="mt-2 text-sm space-y-1">
+                                    <p class="flex items-center text-gray-600">
+                                        <i data-lucide="mail" class="w-4 h-4 mr-2"></i>
+                                        <a href="mailto:{{ reservation.property.owner.email }}" class="text-[#8B1E24] hover:text-[#6F171C]">{{ reservation.property.owner.email }}</a>
+                                    </p>
+                                    {% with profile=reservation.property.owner.profile %}
+                                    {% if profile.phone %}
+                                    <p class="flex items-center text-gray-600">
+                                        <i data-lucide="phone" class="w-4 h-4 mr-2"></i>
+                                        <span>{{ profile.phone }}</span>
+                                    </p>
+                                    {% endif %}
+                                    {% endwith %}
+                                </div>
+                                {% else %}
+                                <p class="text-xs text-gray-500 mt-1">Les coordonnées de l'hôte seront communiquées dès la validation de votre séjour.</p>
+                                {% endif %}
                             </div>
                         </div>
                     </div>

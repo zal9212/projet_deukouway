@@ -28,7 +28,7 @@ class PaymentCheckoutView(LoginRequiredMixin, View):
             messages.error(request, "Demande de réservation introuvable.")
             return redirect('bookings_list')
 
-        if req.status != ReservationStatusChoices.PAYMENT_PENDING:
+        if req.status not in [ReservationStatusChoices.PAYMENT_PENDING, ReservationStatusChoices.PAYMENT_LINK_SENT]:
             messages.error(request, "Cette réservation n'est pas encore prête pour le paiement.")
             return redirect('bookings_list')
 
@@ -53,7 +53,7 @@ class PaymentProcessView(LoginRequiredMixin, View):
             messages.error(request, "Demande de réservation introuvable.")
             return redirect('bookings_list')
 
-        if req.status != ReservationStatusChoices.PAYMENT_PENDING:
+        if req.status not in [ReservationStatusChoices.PAYMENT_PENDING, ReservationStatusChoices.PAYMENT_LINK_SENT]:
             messages.error(request, "Statut de réservation invalide pour le paiement.")
             return redirect('bookings_list')
 
@@ -78,7 +78,8 @@ class PaymentProcessView(LoginRequiredMixin, View):
 
         messages.success(
             request,
-            f"Paiement de {amount_charged} FCFA reçu avec succès ! Votre réservation est confirmée."
+            f"Paiement de {amount_charged} FCFA reçu avec succès ! Votre réservation est enregistrée. "
+            f"Un membre de l'équipe DEKOUWAY va vous mettre en contact avec l'hôte pour l'organisation de votre séjour."
         )
         return redirect('payment_receipt', booking_id=reservation.id)
 

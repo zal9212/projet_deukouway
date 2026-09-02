@@ -74,3 +74,23 @@ class ReservationServiceTests(TestCase):
         other_client = User.objects.create_user(email="other_client3@test.com", password="password", is_client=True)
         new_req = ReservationService.create_request(other_client, self.prop, self.check_in, self.check_out, 1)
         self.assertEqual(new_req.status, ReservationStatusChoices.REQUESTED)
+
+    def test_payment_link_then_contact_owner_flow(self):
+        req = ReservationService.create_request(self.client, self.prop, self.check_in, self.check_out, 2)
+
+        admin_send = ReservationService.admin_send_payment_link(req, self.admin)
+        self.assertEqual(admin_send.status, ReservationStatusChoices.PAYMENT_LINK_SENT)
+
+        res = ReservationService.confirm_payment(admin_send, total_price=300.00)
+        self.assertEqual(req.status, ReservationStatusChoices.CONFIRMED)
+        self.assertEqual(res.status, ReservationStatusChoices.CONFIRMED)
+
+        contact_res = ReservationService.contact_owner(req, self.admin)
+        self.assertEqual(req.status, ReservationStatusChoices.OWNER_CONTACTED)
+        self.assertEqual(contact_res.id, res.id)
+
+    def test_send_payment_link_only_after_requested(self):
+        req = ReservationService.create_request(self.client, self.prop, self.check_in, self.check_out, 2)
+        ReservationService.admin_validate(req, self.admin)
+        with self.assertRaises(InvalidWorkflowTransition):
+            ReservationService.admin_send_payment_link(req, self.admin)

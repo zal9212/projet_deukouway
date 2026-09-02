@@ -19,6 +19,7 @@ from apps.accounts.services.services import AccountService
 from apps.accounts.services.exceptions import UserAlreadyExists
 from apps.properties.services.services import PropertyService
 from apps.reservations.services.services import ReservationService
+from apps.reservations.services.exceptions import InvalidWorkflowTransition
 from apps.payments.services.services import PaymentService
 from apps.support.services.services import SupportService
 
@@ -226,6 +227,12 @@ class AdminValidateReservationsView(AdminRequiredMixin, ViewExceptionHandlingMix
         if action == 'approve':
             ReservationService.admin_validate(req, admin_user=request.user)
             messages.success(request, f"La demande de {req.client.email} a été transmise au propriétaire.")
+        elif action == 'send_payment_link':
+            try:
+                ReservationService.admin_send_payment_link(req, admin_user=request.user)
+                messages.success(request, f"Le lien de paiement a été envoyé à {req.client.email}.")
+            except InvalidWorkflowTransition as exc:
+                messages.error(request, str(exc))
         elif action == 'reject':
             ReservationService.admin_reject(req, admin_user=request.user, reason=reason)
             messages.warning(request, f"La demande de {req.client.email} a été rejetée.")
@@ -245,6 +252,27 @@ class AdminReservationsView(AdminRequiredMixin, ViewExceptionHandlingMixin, List
         context = super().get_context_data(**kwargs)
         context['stats'] = DashboardSelector.get_admin_stats()
         return context
+
+    def post(self, request, *args, **kwargs):
+        reservation_id = request.POST.get('reservation_id')
+        request_id = request.POST.get('request_id')
+        action = request.POST.get('action')
+
+        if action == 'contact_owner':
+            req = ReservationSelector.get_request_by_id(request_id)
+            if not req:
+                raise Http404("Demande de réservation non trouvée.")
+            try:
+                reservation = ReservationService.contact_owner(req, admin_user=request.user)
+                messages.success(
+                    request,
+                    f"Le client {req.client.email} et le propriétaire {req.property.owner.email} ont été mis en contact. "
+                    f"Réservation {reservation.confirmation_code} confirmée."
+                )
+            except InvalidWorkflowTransition as exc:
+                messages.error(request, str(exc))
+
+        return redirect('dashboard:admin_reservations')
 
 class AdminPropertiesView(AdminRequiredMixin, ViewExceptionHandlingMixin, ListView):
     template_name = 'pages/dashboard/superadmin/properties.html'

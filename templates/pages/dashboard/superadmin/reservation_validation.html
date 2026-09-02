@@ -11,7 +11,7 @@
                 {{ pending_requests.count|default:0 }} demande(s) en attente
             </span>
         </h2>
-        <p class="mt-1 text-sm text-gray-500">Vérifiez chaque demande avant transmission au propriétaire.</p>
+        <p class="mt-1 text-sm text-gray-500">Vérifiez la disponibilité de chaque demande puis transmettez au client son lien de paiement.</p>
     </div>
 </div>
 {% endblock %}
@@ -101,9 +101,9 @@
                 <form method="POST" class="inline">
                     {% csrf_token %}
                     <input type="hidden" name="request_id" value="{{ active_req.id }}">
-                    <input type="hidden" name="action" value="approve">
+                    <input type="hidden" name="action" value="send_payment_link">
                     <button type="submit" class="rounded-md bg-green-600 px-4 py-2 text-sm font-semibold text-white shadow-sm hover:bg-green-500 flex items-center">
-                        <i data-lucide="check-circle-2" class="w-4 h-4 mr-1.5"></i> Valider et transmettre au propriétaire
+                        <i data-lucide="link" class="w-4 h-4 mr-1.5"></i> Envoyer le lien de paiement au client
                     </button>
                 </form>
             </div>

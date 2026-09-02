@@ -59,6 +59,7 @@
                             <th scope="col" class="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">Acteurs (Client ↔ Proprio)</th>
                             <th scope="col" class="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">Logement</th>
                             <th scope="col" class="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">Statut</th>
+                            <th scope="col" class="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">Action</th>
                         </tr>
                     </thead>
                     <tbody class="divide-y divide-gray-200 bg-white">
@@ -76,8 +77,10 @@
                                 <div class="text-gray-900 font-medium">{{ reservation.property.title }}</div>
                             </td>
                             <td class="whitespace-nowrap px-3 py-5 text-sm text-gray-500">
-                                {% if reservation.status == 'CONFIRMED' %}
-                                    {% include "components/dashboard/status_badge.html" with status="success" label="Confirmée" %}
+                                {% if reservation.request.status == 'CONFIRMED' %}
+                                    {% include "components/dashboard/status_badge.html" with status="success" label="Payée - à valider" %}
+                                {% elif reservation.status == 'CONFIRMED' %}
+                                    {% include "components/dashboard/status_badge.html" with status="info" label="Confirmée" %}
                                 {% elif reservation.status == 'COMPLETED' %}
                                     {% include "components/dashboard/status_badge.html" with status="info" label="Terminée" %}
                                 {% elif reservation.status == 'CANCELLED' %}
@@ -86,10 +89,22 @@
                                     {% include "components/dashboard/status_badge.html" with status="pending" label=reservation.get_status_display %}
                                 {% endif %}
                             </td>
+                            <td class="whitespace-nowrap px-3 py-5 text-sm">
+                                {% if reservation.request.status == 'CONFIRMED' %}
+                                <form method="POST" class="inline">
+                                    {% csrf_token %}
+                                    <input type="hidden" name="request_id" value="{{ reservation.request.id }}">
+                                    <input type="hidden" name="action" value="contact_owner">
+                                    <button type="submit" class="inline-flex items-center rounded-md bg-green-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-green-500">
+                                        <i data-lucide="handshake" class="w-4 h-4 mr-1.5"></i> Mettre en contact
+                                    </button>
+                                </form>
+                                {% endif %}
+                            </td>
                         </tr>
                         {% empty %}
                         <tr>
-                            <td colspan="4" class="py-8 text-center text-gray-500">
+                            <td colspan="5" class="py-8 text-center text-gray-500">
                                 Aucune réservation trouvée.
                             </td>
                         </tr>
