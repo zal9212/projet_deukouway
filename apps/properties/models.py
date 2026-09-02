@@ -82,6 +82,13 @@ class Property(BaseModel):
         db_index=True
     )
 
+    commission_percentage_override = models.DecimalField(
+        _('Pourcentage commission (personnalisé)'),
+        max_digits=5, decimal_places=2, null=True, blank=True,
+        validators=[MinValueValidator(0.00), MaxValueValidator(100.00)],
+        help_text=_("Pourcentage retenu par DEKOUWAY sur ce logement. Laissez vide pour utiliser le pourcentage par défaut de la plateforme.")
+    )
+
     class Meta(BaseModel.Meta):
         verbose_name = _('Propriété')
         verbose_name_plural = _('Propriétés')

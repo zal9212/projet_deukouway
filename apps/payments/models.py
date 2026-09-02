@@ -156,7 +156,7 @@ class PlatformSettings(BaseModel):
     """
     commission_percentage = models.DecimalField(
         _('Commission Propriétaire (%)'),
-        max_digits=5, decimal_places=2, default=Decimal('15.00'),
+        max_digits=5, decimal_places=2, default=Decimal('10.00'),
         validators=[MinValueValidator(Decimal('0.00')), MaxValueValidator(Decimal('100.00'))]
     )
     client_service_fee = models.DecimalField(

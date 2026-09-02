@@ -72,7 +72,12 @@ class PaymentService:
     @transaction.atomic
     def create_commission(payment: Payment, percentage: Decimal = None) -> Commission:
         if percentage is None:
-            percentage = PlatformSettings.load().commission_percentage
+            # Priorité : pourcentage personnalisé du logement, sinon défaut plateforme.
+            override = payment.reservation.property.commission_percentage_override
+            if override is not None:
+                percentage = override
+            else:
+                percentage = PlatformSettings.load().commission_percentage
         # Le tarif de la réservation (hors frais de service client) sert de base à la commission.
         base_amount = payment.reservation.total_price
         amount = PaymentService.calculate_commission(base_amount, percentage)

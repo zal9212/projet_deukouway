@@ -254,7 +254,6 @@ class AdminReservationsView(AdminRequiredMixin, ViewExceptionHandlingMixin, List
         return context
 
     def post(self, request, *args, **kwargs):
-        reservation_id = request.POST.get('reservation_id')
         request_id = request.POST.get('request_id')
         action = request.POST.get('action')
 
