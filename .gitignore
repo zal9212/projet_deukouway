@@ -169,3 +169,12 @@ Thumbs.db
 # Project Custom Agents Configuration
 .agents/
 
+# Documentation et fichiers projets (gardés hors versionnement pour des push propres)
+docs/
+reports/
+presentation_projet.md
+devis_kyi_immobilier.md
+
+# Script de seed contenant les identifiants d'administration
+seed_db.py
+
