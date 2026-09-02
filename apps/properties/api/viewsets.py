@@ -9,7 +9,8 @@ from apps.properties.services.services import PropertyService
 from apps.properties.models import PropertyCategory, PropertyType, PropertyFavorite
 from apps.properties.api.serializers import (
     PropertyListSerializer, PropertyDetailSerializer, PropertyCreateUpdateSerializer,
-    PropertyCategorySerializer, PropertyTypeSerializer, PropertyFavoriteSerializer
+    PropertyCategorySerializer, PropertyTypeSerializer, PropertyFavoriteSerializer,
+    PropertyReviewSerializer, PropertyReviewCreateSerializer
 )
 from apps.properties.api.filters import PropertyFilter
 from apps.core.api.permissions import IsVerifiedOwner, IsSuperAdmin
@@ -91,6 +92,21 @@ class PropertyViewSet(viewsets.ModelViewSet):
         prop = PropertyService.submit_for_validation(prop, owner=request.user)
         return Response({'detail': "Propriété soumise pour validation.", 'property': PropertyDetailSerializer(prop).data})
 
+    @action(detail=True, methods=['post'], url_path='images')
+    def add_images(self, request, pk=None):
+        prop = self.get_object()
+        files = request.FILES.getlist('images') or ([request.FILES['image']] if 'image' in request.FILES else [])
+        if not files:
+            return Response({'images': ["Aucune photo fournie."]}, status=status.HTTP_400_BAD_REQUEST)
+
+        from apps.properties.api.serializers import PropertyImageSerializer
+        cover_index = 0 if not prop.images.exists() else -1
+        image_objs = PropertyService.add_images(prop, files, cover_index=cover_index)
+        return Response({
+            'detail': f"{len(files)} photo(s) ajoutée(s).",
+            'images': PropertyImageSerializer(image_objs, many=True).data,
+        }, status=status.HTTP_201_CREATED)
+
     @action(detail=True, methods=['post'], url_path='approve')
     def approve(self, request, pk=None):
         prop = self.get_object()
@@ -104,6 +120,35 @@ class PropertyViewSet(viewsets.ModelViewSet):
         reason = request.data.get('reason', 'Refusé par l\'administrateur')
         prop = PropertyService.reject_property(prop, admin_user=request.user, reason=reason)
         return Response({'detail': "Propriété rejetée.", 'property': PropertyDetailSerializer(prop).data})
+
+    @action(detail=True, methods=['delete'], url_path=r'images/(?P<image_id>[^/.]+)')
+    def delete_image(self, request, pk=None, image_id=None):
+        prop = self.get_object()
+        PropertyService.delete_image(image_id=image_id, owner=request.user, prop=prop)
+        return Response({'detail': "Photo supprimée avec succès."}, status=status.HTTP_200_OK)
+
+    @action(detail=True, methods=['get', 'post'], url_path='reviews')
+    def reviews(self, request, pk=None):
+        prop = self.get_object()
+        if request.method == 'GET':
+            reviews = prop.reviews.filter(is_deleted=False).select_related('user')
+            return Response(PropertyReviewSerializer(reviews, many=True).data)
+
+        if not request.user or not request.user.is_authenticated:
+            return Response({'detail': "Authentification requise pour déposer un avis."}, status=status.HTTP_401_UNAUTHORIZED)
+
+        serializer = PropertyReviewCreateSerializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        data = serializer.validated_data
+
+        review = PropertyService.create_review(
+            user=request.user,
+            property_id=str(prop.id),
+            rating=data['rating'],
+            comment=data.get('comment', ''),
+            reservation_id=str(data['reservation_id']) if data.get('reservation_id') else None
+        )
+        return Response(PropertyReviewSerializer(review).data, status=status.HTTP_201_CREATED)
 
 
 class PropertyCategoryViewSet(viewsets.ReadOnlyModelViewSet):

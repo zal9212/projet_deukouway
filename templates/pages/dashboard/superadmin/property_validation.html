@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 {% extends "layouts/dashboard.html" %}
 
 {% load property_tags %}
@@ -112,3 +113,199 @@
 </div>
 {% endif %}
 {% endblock %}
+=======
+{% extends "layouts/dashboard.html" %}
+
+{% load property_tags %}
+{% block title %}Validation Logement - KYI IMMOBILIER ERP{% endblock %}
+
+{% block page_header %}
+<div class="md:flex md:items-center md:justify-between mb-8 mt-2">
+    <div class="min-w-0 flex-1">
+        <h2 class="text-2xl font-bold leading-7 text-gray-900 sm:truncate sm:text-3xl sm:tracking-tight flex items-center">
+            Validation des Logements
+            <span class="ml-3 inline-flex items-center rounded-full bg-yellow-100 px-3 py-1 text-sm font-medium text-yellow-800">
+                {{ pending_total|default:0 }} annonce(s) en attente
+            </span>
+        </h2>
+        <p class="mt-1 text-sm text-gray-500">Vérifiez la conformité des annonces soumises par les partenaires avant leur publication sur le catalogue client.</p>
+    </div>
+</div>
+{% endblock %}
+
+{% block content %}
+{% if pending_properties %}
+<div class="grid grid-cols-1 xl:grid-cols-4 gap-8">
+    
+    <!-- File d'attente (Sidebar gauche) -->
+    <div class="xl:col-span-1 border border-gray-200 bg-white rounded-xl shadow-sm overflow-hidden xl:h-[calc(100vh-16rem)] h-auto flex flex-col">
+        <div class="px-4 py-4 border-b border-gray-200 bg-gray-50">
+            <h3 class="font-semibold text-gray-900 text-sm">Annonces à contrôler</h3>
+        </div>
+        <ul role="list" class="flex-1 overflow-y-auto divide-y divide-gray-100">
+            {% for prop in pending_properties %}
+            <li>
+                <a href="?id={{ prop.id }}" class="flex items-start gap-3 px-4 py-4 {% if active_prop.id == prop.id %}bg-blue-50/50 border-l-4 border-blue-600{% else %}hover:bg-gray-50{% endif %}">
+                    {% with prop.images.all|first as cover %}
+                    <div class="relative w-16 h-16 rounded-lg overflow-hidden bg-gray-100 ring-1 ring-gray-200 shrink-0">
+                        {% if cover %}
+                        <img src="{{ cover.image.url }}" alt="Photo du logement" class="w-full h-full object-cover" loading="lazy">
+                        {% if cover.is_cover %}
+                        <span class="absolute top-0.5 left-0.5 rounded-full bg-blue-600 px-1.5 py-0.5 text-[9px] font-bold text-white">Couverture</span>
+                        {% endif %}
+                        {% else %}
+                        <span class="flex items-center justify-center h-full text-gray-400">
+                            <i data-lucide="image" class="w-6 h-6"></i>
+                        </span>
+                        {% endif %}
+                    </div>
+                    <div class="min-w-0 flex-1">
+                        <p class="text-sm font-bold text-gray-900 truncate">{{ prop.title }}</p>
+                        <p class="text-xs text-gray-500 mt-1 truncate">Soumis par {{ prop.owner.email }}</p>
+                    </div>
+                    {% endwith %}
+                </a>
+            </li>
+            {% endfor %}
+        </ul>
+    </div>
+
+    <!-- Zone d'Analyse Centrale -->
+    <div class="xl:col-span-3">
+        <div class="bg-white border border-gray-200 rounded-xl shadow-sm overflow-hidden flex flex-col xl:h-[calc(100vh-16rem)] h-auto">
+            
+            <div class="border-b border-gray-200 px-6 py-5 flex items-center justify-between bg-white">
+                <div class="flex items-center">
+                    <h3 class="text-xl font-bold leading-6 text-gray-900">{{ active_prop.title }}</h3>
+                    <span class="ml-3 inline-flex items-center rounded-md bg-yellow-50 px-2 py-1 text-xs font-medium text-yellow-800 ring-1 ring-inset ring-yellow-600/20">En attente</span>
+                </div>
+                <div class="text-sm text-gray-500">
+                    Propriétaire : <span class="font-semibold text-gray-900">{{ active_prop.owner.email }}</span>
+                </div>
+            </div>
+
+            <div class="flex-1 overflow-y-auto p-6 space-y-8 bg-gray-50">
+                <!-- Photos soumises -->
+                <div class="bg-white p-6 border border-gray-200 rounded-xl shadow-sm">
+                    <h4 class="text-sm font-semibold text-gray-900 mb-4 border-b border-gray-100 pb-2">
+                        Photos ({{ active_prop.images.all|length }})
+                    </h4>
+                    {% if active_prop.images.all %}
+                    <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3">
+                        {% for image in active_prop.images.all %}
+                        <a href="{{ image.image.url }}" target="_blank" rel="noopener"
+                           class="relative block aspect-square rounded-lg overflow-hidden bg-gray-100 ring-1 ring-gray-200 hover:ring-2 hover:ring-blue-500 transition-all">
+                            <img src="{{ image.image.url }}" alt="Photo soumise du logement" class="w-full h-full object-cover" loading="lazy">
+                            {% if image.is_cover %}
+                            <span class="absolute top-1.5 left-1.5 rounded-full bg-blue-600 px-2 py-0.5 text-[10px] font-bold text-white">Couverture</span>
+                            {% endif %}
+                        </a>
+                        {% endfor %}
+                    </div>
+                    {% else %}
+                    <p class="text-sm text-red-600 flex items-center">
+                        <i data-lucide="alert-triangle" class="w-4 h-4 mr-1.5 shrink-0"></i>
+                        Aucune photo n'a été téléversée pour cette annonce.
+                    </p>
+                    {% endif %}
+                </div>
+
+                <!-- Checklist ERP -->
+                <div class="bg-white p-6 border border-gray-200 rounded-xl shadow-sm">
+                    <h4 class="text-sm font-semibold text-gray-900 mb-4 border-b border-gray-100 pb-2">Détails de l'Annonce</h4>
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-4 text-sm">
+                        <div>
+                            <span class="text-gray-500">Type de bien :</span>
+                            <span class="font-semibold text-gray-900 block mt-0.5">{{ active_prop.property_type.category.name }} - {{ active_prop.property_type.name }}</span>
+                        </div>
+                        <div>
+                            <span class="text-gray-500">Prix {{ active_prop.pricing_period|price_unit }} :</span>
+                            <span class="font-semibold text-gray-900 block mt-0.5">{{ active_prop.price }} CFA</span>
+                        </div>
+                        <div>
+                            <span class="text-gray-500">Adresse :</span>
+                            <span class="font-semibold text-gray-900 block mt-0.5">{{ active_prop.address }}</span>
+                        </div>
+                        <div>
+                            <span class="text-gray-500">Ville / Quartier :</span>
+                            <span class="font-semibold text-gray-900 block mt-0.5">{{ active_prop.district }}, {{ active_prop.city }}</span>
+                        </div>
+                        <div>
+                            <span class="text-gray-500">Chambres / SDB :</span>
+                            <span class="font-semibold text-gray-900 block mt-0.5">{{ active_prop.bedrooms }} ch. / {{ active_prop.bathrooms }} sdb.</span>
+                        </div>
+                        <div>
+                            <span class="text-gray-500">Surface / Capacité :</span>
+                            <span class="font-semibold text-gray-900 block mt-0.5">{{ active_prop.surface }} m² / {{ active_prop.max_guests }} pers. max</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Description soumise -->
+                <div class="bg-white p-6 border border-gray-200 rounded-xl shadow-sm">
+                    <h4 class="text-sm font-semibold text-gray-900 mb-4 border-b border-gray-100 pb-2">Description</h4>
+                    <p class="text-sm text-gray-700 leading-relaxed">{{ active_prop.description }}</p>
+                </div>
+
+                <!-- Équipements -->
+                <div class="bg-white p-6 border border-gray-200 rounded-xl shadow-sm">
+                    <h4 class="text-sm font-semibold text-gray-900 mb-4 border-b border-gray-100 pb-2">Équipements</h4>
+                    {% if active_prop.amenities.all %}
+                    <div class="flex flex-wrap gap-2">
+                        {% for amenity in active_prop.amenities.all %}
+                        <span class="inline-flex items-center rounded-full bg-gray-100 px-3 py-1 text-xs font-medium text-gray-700">{{ amenity.name }}</span>
+                        {% endfor %}
+                    </div>
+                    {% else %}
+                    <p class="text-sm text-gray-500">Aucun équipement renseigné.</p>
+                    {% endif %}
+                </div>
+
+                <!-- Règles -->
+                <div class="bg-white p-6 border border-gray-200 rounded-xl shadow-sm">
+                    <h4 class="text-sm font-semibold text-gray-900 mb-4 border-b border-gray-100 pb-2">Règles du logement</h4>
+                    {% if active_prop.rules.all %}
+                    <ul class="space-y-2 text-sm text-gray-700">
+                        {% for rule in active_prop.rules.all %}
+                        <li class="flex items-center">
+                            <i data-lucide="check" class="w-4 h-4 mr-2 text-gray-500 shrink-0"></i>
+                            {{ rule.rule }}
+                        </li>
+                        {% endfor %}
+                    </ul>
+                    {% else %}
+                    <p class="text-sm text-gray-500">Aucune règle spécifique renseignée.</p>
+                    {% endif %}
+                </div>
+            </div>
+
+            <!-- Barre de décision ERP -->
+            <div class="border-t border-gray-200 px-6 py-4 bg-white flex justify-between items-center">
+                <form method="POST" class="inline">
+                    {% csrf_token %}
+                    <input type="hidden" name="property_id" value="{{ active_prop.id }}">
+                    <input type="hidden" name="action" value="reject">
+                    <button type="submit" class="text-red-600 hover:text-red-800 text-sm font-semibold flex items-center">
+                        <i data-lucide="ban" class="w-4 h-4 mr-1.5"></i> Rejeter l'annonce
+                    </button>
+                </form>
+                
+                <form method="POST" class="inline">
+                    {% csrf_token %}
+                    <input type="hidden" name="property_id" value="{{ active_prop.id }}">
+                    <input type="hidden" name="action" value="approve">
+                    <button type="submit" class="rounded-md bg-green-600 px-4 py-2 text-sm font-semibold text-white shadow-sm hover:bg-green-500 flex items-center">
+                        <i data-lucide="check-circle-2" class="w-4 h-4 mr-1.5"></i> Publier l'annonce
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% else %}
+<div class="bg-white border border-gray-200 rounded-xl p-12 text-center shadow-sm">
+    {% include "components/empty_state.html" with title="Aucune annonce en attente" description="Toutes les annonces soumises par les hôtes ont été contrôlées et validées." icon="home" %}
+</div>
+{% endif %}
+{% endblock %}
+>>>>>>> 792df57 (feat: photos des annonces visibles lors de la validation SuperAdmin + upload API)

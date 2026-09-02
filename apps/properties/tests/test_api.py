@@ -123,6 +123,40 @@ class PropertiesAPITestCase(APITestCase):
         approve_res = self.client.post(f'/api/v1/properties/{pending_prop.id}/approve/')
         self.assertEqual(approve_res.status_code, status.HTTP_200_OK)
 
+    def test_owner_uploads_images_via_api(self):
+        import base64
+        from django.core.files.uploadedfile import SimpleUploadedFile
+
+        draft_prop = Property.objects.create(
+            owner=self.owner,
+            property_type=self.property_type,
+            title='Villa Photos API',
+            description='Test upload API',
+            price=100000,
+            address='Fann',
+            city='Dakar',
+            district='Fann',
+            surface=100,
+            bedrooms=2,
+            bathrooms=1,
+            max_guests=4,
+            status='DRAFT'
+        )
+        png = base64.b64decode(
+            b"iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNk+A8AAQUBAScY42YAAAAASUVORK5CYII="
+        )
+        image = SimpleUploadedFile('villa.png', png, content_type='image/png')
+
+        self.client.force_authenticate(user=self.owner)
+        response = self.client.post(
+            f'/api/v1/properties/{draft_prop.id}/images/',
+            {'images': [image]},
+            format='multipart',
+        )
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+        self.assertEqual(draft_prop.images.count(), 1)
+        self.assertTrue(draft_prop.images.first().is_cover)
+
     def test_toggle_favorite_api(self):
         self.client.force_authenticate(user=self.client_user)
         response = self.client.post('/api/v1/properties/favorites/toggle/', {

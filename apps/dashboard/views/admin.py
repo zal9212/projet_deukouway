@@ -80,6 +80,7 @@ class AdminValidatePropertiesView(AdminRequiredMixin, ViewExceptionHandlingMixin
         if not active_prop and context['pending_properties']:
             active_prop = context['pending_properties'][0]
         context['active_prop'] = active_prop
+        context['pending_total'] = self.get_queryset().count()
         return context
 
     def post(self, request, *args, **kwargs):
@@ -391,6 +392,35 @@ class AdminDisputesView(AdminRequiredMixin, ViewExceptionHandlingMixin, ListView
         context['open_disputes_count'] = TicketSelector.get_disputes(status='open').count()
         context['resolved_disputes_count'] = TicketSelector.get_disputes(status='resolved').count()
         return context
+
+
+class AdminResolveDisputeView(AdminRequiredMixin, ViewExceptionHandlingMixin, View):
+    """Permet au SuperAdmin d'arbitrer et de trancher un litige financier ou contractuel."""
+    def post(self, request, pk, *args, **kwargs):
+        from apps.support.models import Dispute
+        from django.shortcuts import get_object_or_404
+
+        dispute = get_object_or_404(Dispute, id=pk)
+        decision = request.POST.get('decision')
+        notes = request.POST.get('resolution_notes', '').strip()
+
+        if not decision:
+            messages.error(request, "Veuillez sélectionner une décision arbitrale.")
+            return redirect('dashboard:admin_disputes')
+
+        try:
+            SupportService.resolve_dispute(
+                dispute=dispute,
+                decision=decision,
+                notes=notes,
+                admin_user=request.user
+            )
+            messages.success(request, f"Le litige a été résolu avec succès ({dispute.get_status_display()}).")
+        except Exception as err:
+            messages.error(request, f"Erreur lors de la résolution du litige : {err}")
+
+        return redirect('dashboard:admin_disputes')
+
 
 class AdminAnalyticsView(AdminRequiredMixin, ViewExceptionHandlingMixin, TemplateView):
     template_name = 'pages/dashboard/superadmin/analytics.html'
