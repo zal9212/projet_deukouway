@@ -270,7 +270,7 @@ class OwnerRegisterForm(TailwindFormMixin, forms.Form):
         if file_obj:
             validate_allowed_file_extensions(file_obj, ('pdf', 'png', 'jpg', 'jpeg'))
             validate_file_content_type(file_obj, ('pdf', 'png', 'jpg', 'jpeg'))
-            validate_max_file_size(file_obj, max_size_mb=5.0)
+            validate_max_file_size(file_obj, max_size_mb=15.0)
         return file_obj
 
     def clean_identity_file_back(self) -> Any:
@@ -278,14 +278,14 @@ class OwnerRegisterForm(TailwindFormMixin, forms.Form):
         if file_obj:
             validate_allowed_file_extensions(file_obj, ('pdf', 'png', 'jpg', 'jpeg'))
             validate_file_content_type(file_obj, ('pdf', 'png', 'jpg', 'jpeg'))
-            validate_max_file_size(file_obj, max_size_mb=5.0)
+            validate_max_file_size(file_obj, max_size_mb=15.0)
         return file_obj
 
     def clean_selfie_with_id_file(self) -> Any:
         file_obj = self.cleaned_data.get('selfie_with_id_file')
         if file_obj:
             validate_allowed_file_extensions(file_obj, ('png', 'jpg', 'jpeg'))
-            validate_max_file_size(file_obj, max_size_mb=5.0)
+            validate_max_file_size(file_obj, max_size_mb=15.0)
         return file_obj
 
     def clean(self) -> Dict[str, Any]:
@@ -383,7 +383,7 @@ class ProfileForm(TailwindFormMixin, forms.Form):
         avatar = self.cleaned_data.get('avatar')
         if avatar:
             validate_allowed_file_extensions(avatar, ('png', 'jpg', 'jpeg', 'webp'))
-            validate_max_file_size(avatar, max_size_mb=5.0)
+            validate_max_file_size(avatar, max_size_mb=15.0)
         return avatar
 
 

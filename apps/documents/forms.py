@@ -44,5 +44,5 @@ class DocumentUploadForm(TailwindFormMixin, forms.Form):
         if not file_obj:
             raise ValidationError("Veuillez sélectionner un fichier.")
         validate_allowed_file_extensions(file_obj, ('pdf', 'png', 'jpg', 'jpeg'))
-        validate_max_file_size(file_obj, max_size_mb=5.0)
+        validate_max_file_size(file_obj, max_size_mb=15.0)
         return file_obj

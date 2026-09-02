@@ -6,9 +6,11 @@
                 <div class="absolute inset-0 flex items-center" aria-hidden="true">
                     <div class="h-0.5 w-full transition-colors" :class="step > 1 ? 'bg-[#8B1E24]' : 'bg-gray-200'"></div>
                 </div>
-                <div class="relative flex h-8 w-8 items-center justify-center rounded-full transition-colors" :class="step >= 1 ? 'bg-[#8B1E24]' : 'bg-gray-200'">
+                <div class="relative flex h-8 w-8 items-center justify-center rounded-full transition-colors"
+                     :class="step >= 1 ? (errors.first_name || errors.last_name || errors.email || errors.phone || errors.city || errors.address || errors.password1 || errors.password2) && step === 1 ? 'bg-red-500' : 'bg-[#8B1E24]' : 'bg-gray-200'">
                     <i data-lucide="check" class="h-5 w-5 text-white" x-show="step > 1"></i>
-                    <span class="font-bold text-sm" :class="step >= 1 ? 'text-white' : 'text-gray-500'" x-show="step <= 1">1</span>
+                    <i data-lucide="x" class="h-5 w-5 text-white" x-show="step === 1 && (errors.first_name || errors.last_name || errors.email || errors.phone || errors.city || errors.address || errors.password1 || errors.password2)"></i>
+                    <span class="font-bold text-sm" :class="step >= 1 ? 'text-white' : 'text-gray-500'" x-show="step <= 1 && !(step === 1 && (errors.first_name || errors.last_name || errors.email || errors.phone || errors.city || errors.address || errors.password1 || errors.password2))">1</span>
                 </div>
             </li>
 
@@ -17,16 +19,20 @@
                 <div class="absolute inset-0 flex items-center" aria-hidden="true">
                     <div class="h-0.5 w-full transition-colors" :class="step > 2 ? 'bg-[#8B1E24]' : 'bg-gray-200'"></div>
                 </div>
-                <div class="relative flex h-8 w-8 items-center justify-center rounded-full transition-colors" :class="step >= 2 ? 'bg-[#8B1E24]' : 'bg-gray-200'">
+                <div class="relative flex h-8 w-8 items-center justify-center rounded-full transition-colors"
+                     :class="step >= 2 ? (errors.document_type || errors.document_number || errors.identity_file || errors.identity_file_back) && step === 2 ? 'bg-red-500' : 'bg-[#8B1E24]' : 'bg-gray-200'">
                     <i data-lucide="check" class="h-5 w-5 text-white" x-show="step > 2"></i>
-                    <span class="font-bold text-sm" :class="step >= 2 ? 'text-white' : 'text-gray-500'" x-show="step <= 2">2</span>
+                    <i data-lucide="x" class="h-5 w-5 text-white" x-show="step === 2 && (errors.document_type || errors.document_number || errors.identity_file || errors.identity_file_back)"></i>
+                    <span class="font-bold text-sm" :class="step >= 2 ? 'text-white' : 'text-gray-500'" x-show="step <= 2 && !(step === 2 && (errors.document_type || errors.document_number || errors.identity_file || errors.identity_file_back))">2</span>
                 </div>
             </li>
 
             <!-- Etape 3 : Selfie de vérification -->
             <li class="relative">
-                <div class="relative flex h-8 w-8 items-center justify-center rounded-full transition-colors" :class="step >= 3 ? 'bg-[#8B1E24]' : 'bg-gray-200'">
-                    <span class="font-bold text-sm" :class="step >= 3 ? 'text-white' : 'text-gray-500'">3</span>
+                <div class="relative flex h-8 w-8 items-center justify-center rounded-full transition-colors"
+                     :class="step >= 3 ? (errors.selfie_with_id_file || errors.accept_terms) && step === 3 ? 'bg-red-500' : 'bg-[#8B1E24]' : 'bg-gray-200'">
+                    <i data-lucide="x" class="h-5 w-5 text-white" x-show="step === 3 && (errors.selfie_with_id_file || errors.accept_terms)"></i>
+                    <span class="font-bold text-sm" :class="step >= 3 ? 'text-white' : 'text-gray-500'" x-show="!(step === 3 && (errors.selfie_with_id_file || errors.accept_terms))">3</span>
                 </div>
             </li>
         </ol>

@@ -336,7 +336,7 @@
                     <label for="property-images" class="flex flex-col items-center justify-center gap-2 rounded-xl border-2 border-dashed border-gray-300 p-8 cursor-pointer hover:border-[#8B1E24] transition-colors">
                         <i data-lucide="image-plus" class="w-8 h-8 text-gray-400"></i>
                         <span class="text-sm font-semibold text-gray-900">{% if property %}Cliquez pour ajouter d'autres photos{% else %}Cliquez pour ajouter des photos{% endif %}</span>
-                        <span class="text-xs text-gray-500">JPG, PNG, WEBP — 8 Mo max par photo.{% if not property %} La première photo sera la couverture. Optionnel si vous enregistrez comme brouillon.{% endif %}</span>
+                        <span class="text-xs text-gray-500">JPG, PNG, WEBP — 5 Mo max par photo.{% if not property %} La première photo sera la couverture. Optionnel si vous enregistrez comme brouillon.{% endif %}</span>
                         <input id="property-images" type="file" name="images" multiple accept=".jpg,.jpeg,.png,.webp"
                                class="sr-only" @change="onImagesChange($event)">
                     </label>

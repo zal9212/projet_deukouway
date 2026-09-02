@@ -21,7 +21,7 @@ class DocumentService:
         # rejeté avant tout enregistrement, quel que soit l'appelant.
         validate_allowed_file_extensions(file, ALLOWED_DOCUMENT_EXTENSIONS)
         validate_file_content_type(file, ALLOWED_DOCUMENT_EXTENSIONS)
-        validate_max_file_size(file, max_size_mb=10.0)
+        validate_max_file_size(file, max_size_mb=15.0)
 
         doc = Document.objects.create(
             user=user,

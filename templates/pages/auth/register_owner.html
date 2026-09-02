@@ -13,21 +13,60 @@
     {% include "components/auth/auth_header.html" with title="Devenez Hôte" subtitle="Publiez vos annonces et gagnez des revenus en toute sécurité." %}
     
     <div x-data="{
-        step: {% if form.selfie_with_id_file.errors or form.accept_terms.errors %}3{% elif form.document_type.errors or form.document_number.errors or form.identity_file.errors or form.identity_file_back.errors %}2{% else %}1{% endif %},
+        step: 1,
         documentType: '{{ form.document_type.value|default:'CNI' }}',
+        errors: {},
         goToStep(current, next) {
-            const stepEl = document.getElementById('owner-step-' + current);
-            const invalidField = stepEl.querySelector(':invalid');
-            if (invalidField) {
-                invalidField.reportValidity();
-                return;
+            if (next < current) { this.step = next; return; }
+            this.validateStep(current);
+            if (Object.keys(this.errors).length === 0) this.step = next;
+        },
+        validateStep(num) {
+            this.errors = {};
+            if (num === 1) this.validateStep1();
+            else if (num === 2) this.validateStep2();
+            else if (num === 3) this.validateStep3();
+        },
+        validateStep1() {
+            const f = n => document.querySelector('[name=\"'+n+'\"]');
+            const r = (n,v,m) => { if (!v || !v.trim()) this.errors[n] = m; };
+            const e = (n,v,m) => { r(n,v,m); if (v && v.trim() && !/^[^\\s@]+@[^\\s@]+\\.[^\\s@]+$/.test(v.trim())) this.errors[n] = 'Adresse email invalide.'; };
+            const p = (n,v,m,l) => { r(n,v,m); if (v && v.trim().length < l) this.errors[n] = 'Minimum ' + l + ' caractères.'; };
+            const fn = f('first_name'); r('first_name', fn?.value, 'Le prénom est requis.');
+            const ln = f('last_name'); r('last_name', ln?.value, 'Le nom est requis.');
+            const em = f('email'); e('email', em?.value, 'L\\'adresse email est requise.');
+            const ph = f('phone'); r('phone', ph?.value, 'Le numéro de téléphone est requis.');
+            const ct = f('city'); r('city', ct?.value, 'La ville est requise.');
+            const ad = f('address'); r('address', ad?.value, 'L\\'adresse est requise.');
+            const pw = f('password1'); p('password1', pw?.value, 'Le mot de passe est requis.', 8);
+            const pw2 = f('password2'); p('password2', pw2?.value, 'La confirmation est requise.', 8);
+            if (!this.errors.password1 && !this.errors.password2 && pw?.value && pw2?.value && pw.value !== pw2.value) this.errors.password2 = 'Les mots de passe ne correspondent pas.';
+        },
+        validateStep2() {
+            const f = n => document.querySelector('[name=\"'+n+'\"]');
+            const r = (n,v,m) => { if (!v || !v.trim()) this.errors[n] = m; };
+            const dt = f('document_type'); r('document_type', dt?.value, 'Veuillez choisir un type de document.');
+            const dn = f('document_number'); r('document_number', dn?.value, 'Le numéro du document est requis.');
+            const idf = f('identity_file'); if (!idf?.files?.length) this.errors.identity_file = 'La photo du document est requise.';
+            if (this.documentType === 'CNI') {
+                const idb = f('identity_file_back'); if (!idb?.files?.length) this.errors.identity_file_back = 'Le verso du document est requis pour la CNI.';
             }
-            this.step = next;
-        }
+        },
+        validateStep3() {
+            const f = n => document.querySelector('[name=\"'+n+'\"]');
+            const sf = f('selfie_with_id_file'); if (!sf?.files?.length) this.errors.selfie_with_id_file = 'Le selfie est requis.';
+            const at = f('accept_terms'); if (!at?.checked) this.errors.accept_terms = 'Vous devez accepter les conditions.';
+        },
+        clearErr(n) { delete this.errors[n]; },
+        clearStep(n) { this.errors = {}; },
+        get isStep1Valid() { const e={}; const f=n=>document.querySelector('[name=\"'+n+'\"]'); const fn=f('first_name'); if(!fn?.value?.trim()) e.first_name=1; const ln=f('last_name'); if(!ln?.value?.trim()) e.last_name=1; const em=f('email'); if(!em?.value?.trim()||!/^[^\\s@]+@[^\\s@]+\\.[^\\s@]+$/.test(em.value.trim())) e.email=1; const ph=f('phone'); if(!ph?.value?.trim()) e.phone=1; const ct=f('city'); if(!ct?.value?.trim()) e.city=1; const ad=f('address'); if(!ad?.value?.trim()) e.address=1; const pw=f('password1'); if(!pw?.value||pw.value.length<8) e.password1=1; const pw2=f('password2'); if(!pw2?.value||pw2.value.length<8) e.password2=1; if(!e.password1&&!e.password2&&pw?.value&&pw2?.value&&pw.value!==pw2.value) e.password2=1; return Object.keys(e).length===0; },
+        get isStep2Valid() { const e={}; const f=n=>document.querySelector('[name=\"'+n+'\"]'); const dt=f('document_type'); if(!dt?.value) e.document_type=1; const dn=f('document_number'); if(!dn?.value?.trim()) e.document_number=1; const idf=f('identity_file'); if(!idf?.files?.length) e.identity_file=1; if(this.documentType==='CNI'){const idb=f('identity_file_back'); if(!idb?.files?.length) e.identity_file_back=1;} return Object.keys(e).length===0; },
+        get isStep3Valid() { const e={}; const f=n=>document.querySelector('[name=\"'+n+'\"]'); const sf=f('selfie_with_id_file'); if(!sf?.files?.length) e.selfie_with_id_file=1; const at=f('accept_terms'); if(!at?.checked) e.accept_terms=1; return Object.keys(e).length===0; },
+        get canSubmit() { return this.isStep1Valid && this.isStep2Valid && this.isStep3Valid; }
     }">
         {% include "components/auth/progress_steps.html" %}
 
-        <form method="POST" enctype="multipart/form-data" class="mt-8">
+        <form method="POST" enctype="multipart/form-data" class="mt-8" @submit.prevent="validateStep(3); if(Object.keys(errors).length===0) $el.submit()">
             {% csrf_token %}
 
             {% if form.errors %}
@@ -35,11 +74,11 @@
                 <p class="font-semibold mb-1">Veuillez corriger les erreurs suivantes :</p>
                 {% for field in form %}
                     {% for error in field.errors %}
-                        <p>• {{ field.label }} : {{ error }}</p>
+                        <p>&bull; {{ field.label }} : {{ error }}</p>
                     {% endfor %}
                 {% endfor %}
                 {% for error in form.non_field_errors %}
-                    <p>• {{ error }}</p>
+                    <p>&bull; {{ error }}</p>
                 {% endfor %}
             </div>
             {% endif %}
@@ -47,26 +86,112 @@
             <!-- ETAPE 1 : Informations personnelles -->
             <div id="owner-step-1" x-show="step === 1" x-transition.opacity>
                 <div class="grid grid-cols-2 gap-4">
-                    {% include "components/forms/input_text.html" with id="owner_first_name" name="first_name" label="Prénom" autocomplete="given-name" required=True %}
-                    {% include "components/forms/input_text.html" with id="owner_last_name" name="last_name" label="Nom" autocomplete="family-name" required=True %}
+                    <div class="mb-4">
+                        <label for="owner_first_name" class="block text-sm font-medium text-gray-700 mb-1">Prénom</label>
+                        <input type="text" name="first_name" id="owner_first_name" autocomplete="given-name" required
+                               :class="errors.first_name ? 'ring-red-500 focus:ring-red-500' : 'ring-gray-300 focus:ring-[#8B1E24]'"
+                               @input="clearErr('first_name')"
+                               class="block w-full rounded-lg border-0 py-2.5 px-3.5 text-gray-900 ring-1 ring-inset placeholder:text-gray-400 focus:ring-2 focus:ring-inset sm:text-sm sm:leading-6 transition-shadow">
+                        <p x-show="errors.first_name" x-cloak class="mt-1 text-xs text-red-600" x-text="errors.first_name"></p>
+                    </div>
+                    <div class="mb-4">
+                        <label for="owner_last_name" class="block text-sm font-medium text-gray-700 mb-1">Nom</label>
+                        <input type="text" name="last_name" id="owner_last_name" autocomplete="family-name" required
+                               :class="errors.last_name ? 'ring-red-500 focus:ring-red-500' : 'ring-gray-300 focus:ring-[#8B1E24]'"
+                               @input="clearErr('last_name')"
+                               class="block w-full rounded-lg border-0 py-2.5 px-3.5 text-gray-900 ring-1 ring-inset placeholder:text-gray-400 focus:ring-2 focus:ring-inset sm:text-sm sm:leading-6 transition-shadow">
+                        <p x-show="errors.last_name" x-cloak class="mt-1 text-xs text-red-600" x-text="errors.last_name"></p>
+                    </div>
                 </div>
 
-                {% include "components/forms/input_text.html" with id="owner_email" name="email" type="email" label="Adresse email professionnelle" autocomplete="email" required=True %}
-                {% include "components/forms/input_phone.html" with id="owner_phone" name="phone" label="Numéro de téléphone" required=True %}
+                <div class="mb-4">
+                    <label for="owner_email" class="block text-sm font-medium text-gray-700 mb-1">Adresse email professionnelle</label>
+                    <input type="email" name="email" id="owner_email" autocomplete="email" required
+                           :class="errors.email ? 'ring-red-500 focus:ring-red-500' : 'ring-gray-300 focus:ring-[#8B1E24]'"
+                           @input="clearErr('email')"
+                           class="block w-full rounded-lg border-0 py-2.5 px-3.5 text-gray-900 ring-1 ring-inset placeholder:text-gray-400 focus:ring-2 focus:ring-inset sm:text-sm sm:leading-6 transition-shadow">
+                    <p x-show="errors.email" x-cloak class="mt-1 text-xs text-red-600" x-text="errors.email"></p>
+                </div>
+
+                <div class="mb-4" x-data="{
+                    country_code: '+221',
+                    phone_number: '{{ form.phone.value|default:'' }}',
+                    get full_phone() {
+                        let code = this.country_code.trim();
+                        let num = this.phone_number.trim();
+                        if (!code) return num;
+                        if (num.startsWith('+')) return num;
+                        if (!code.startsWith('+') && code.length > 0) code = '+' + code;
+                        return code + ' ' + num;
+                    }
+                }">
+                    <label for="owner_phone" class="block text-sm font-medium text-slate-700 mb-1">Numéro de téléphone</label>
+                    <div class="flex rounded-lg shadow-xs">
+                        <input type="text" x-model="country_code" placeholder="+221" aria-label="Indicatif du pays"
+                               class="w-24 shrink-0 rounded-l-lg border border-r-0 border-slate-300 bg-slate-50 px-3 py-2.5 text-center text-sm font-semibold text-slate-900 focus:ring-2 focus:ring-[#8B1E24] focus:border-[#8B1E24] outline-none">
+                        <input type="tel" id="owner_phone" x-model="phone_number" placeholder="77 123 45 67" autocomplete="tel" required
+                               @input="clearErr('phone')"
+                               :class="errors.phone ? 'border-red-500 ring-red-500' : 'border-slate-300'"
+                               class="block w-full rounded-r-lg border py-2.5 pl-3.5 pr-3 text-slate-900 placeholder:text-slate-400 focus:ring-2 focus:ring-inset focus:ring-[#8B1E24] sm:text-sm sm:leading-6 transition-shadow">
+                    </div>
+                    <input type="hidden" name="phone" :value="full_phone">
+                    <p x-show="errors.phone" x-cloak class="mt-1 text-xs text-red-600" x-text="errors.phone"></p>
+                </div>
 
                 <div class="grid grid-cols-2 gap-4">
-                    {% include "components/forms/input_text.html" with id="owner_city" name="city" label="Ville" required=True %}
-                    {% include "components/forms/input_text.html" with id="owner_address" name="address" label="Adresse" required=True %}
+                    <div class="mb-4">
+                        <label for="owner_city" class="block text-sm font-medium text-gray-700 mb-1">Ville</label>
+                        <input type="text" name="city" id="owner_city" required
+                               :class="errors.city ? 'ring-red-500 focus:ring-red-500' : 'ring-gray-300 focus:ring-[#8B1E24]'"
+                               @input="clearErr('city')"
+                               class="block w-full rounded-lg border-0 py-2.5 px-3.5 text-gray-900 ring-1 ring-inset placeholder:text-gray-400 focus:ring-2 focus:ring-inset sm:text-sm sm:leading-6 transition-shadow">
+                        <p x-show="errors.city" x-cloak class="mt-1 text-xs text-red-600" x-text="errors.city"></p>
+                    </div>
+                    <div class="mb-4">
+                        <label for="owner_address" class="block text-sm font-medium text-gray-700 mb-1">Adresse</label>
+                        <input type="text" name="address" id="owner_address" required
+                               :class="errors.address ? 'ring-red-500 focus:ring-red-500' : 'ring-gray-300 focus:ring-[#8B1E24]'"
+                               @input="clearErr('address')"
+                               class="block w-full rounded-lg border-0 py-2.5 px-3.5 text-gray-900 ring-1 ring-inset placeholder:text-gray-400 focus:ring-2 focus:ring-inset sm:text-sm sm:leading-6 transition-shadow">
+                        <p x-show="errors.address" x-cloak class="mt-1 text-xs text-red-600" x-text="errors.address"></p>
+                    </div>
                 </div>
 
-                <div x-data="{ password: '' }">
-                    {% include "components/forms/input_password.html" with id="owner_password1" name="password1" label="Mot de passe" minlength=8 required=True %}
-                    {% include "components/auth/password_strength.html" %}
+                <div x-data="{ show: false }">
+                    <div class="mb-4">
+                        <label for="owner_password1" class="block text-sm font-medium text-gray-700 mb-1">Mot de passe</label>
+                        <div class="relative rounded-md shadow-sm">
+                            <input :type="show ? 'text' : 'password'" name="password1" id="owner_password1" minlength="8" required
+                                   @input="clearErr('password1')"
+                                   :class="errors.password1 ? 'ring-red-500 focus:ring-red-500' : 'ring-gray-300 focus:ring-[#8B1E24]'"
+                                   class="block w-full rounded-lg border-0 py-2.5 pl-3.5 pr-10 text-gray-900 ring-1 ring-inset placeholder:text-gray-400 focus:ring-2 focus:ring-inset sm:text-sm sm:leading-6 transition-shadow">
+                            <button type="button" @click="show = !show" class="absolute inset-y-0 right-0 flex items-center pr-3 text-gray-400 hover:text-gray-600 focus:outline-none" :aria-label="show ? 'Masquer le mot de passe' : 'Afficher le mot de passe'">
+                                <i data-lucide="eye-off" class="h-5 w-5" x-show="show" x-cloak></i>
+                                <i data-lucide="eye" class="h-5 w-5" x-show="!show"></i>
+                            </button>
+                        </div>
+                        <p x-show="errors.password1" x-cloak class="mt-1 text-xs text-red-600" x-text="errors.password1"></p>
+                    </div>
                 </div>
-                {% include "components/forms/input_password.html" with id="owner_password2" name="password2" label="Confirmez le mot de passe" minlength=8 required=True %}
+                <div x-data="{ show: false }">
+                    <div class="mb-4">
+                        <label for="owner_password2" class="block text-sm font-medium text-gray-700 mb-1">Confirmez le mot de passe</label>
+                        <div class="relative rounded-md shadow-sm">
+                            <input :type="show ? 'text' : 'password'" name="password2" id="owner_password2" minlength="8" required
+                                   @input="clearErr('password2')"
+                                   :class="errors.password2 ? 'ring-red-500 focus:ring-red-500' : 'ring-gray-300 focus:ring-[#8B1E24]'"
+                                   class="block w-full rounded-lg border-0 py-2.5 pl-3.5 pr-10 text-gray-900 ring-1 ring-inset placeholder:text-gray-400 focus:ring-2 focus:ring-inset sm:text-sm sm:leading-6 transition-shadow">
+                            <button type="button" @click="show = !show" class="absolute inset-y-0 right-0 flex items-center pr-3 text-gray-400 hover:text-gray-600 focus:outline-none" :aria-label="show ? 'Masquer le mot de passe' : 'Afficher le mot de passe'">
+                                <i data-lucide="eye-off" class="h-5 w-5" x-show="show" x-cloak></i>
+                                <i data-lucide="eye" class="h-5 w-5" x-show="!show"></i>
+                            </button>
+                        </div>
+                        <p x-show="errors.password2" x-cloak class="mt-1 text-xs text-red-600" x-text="errors.password2"></p>
+                    </div>
+                </div>
 
                 <div class="mt-8">
-                    <button type="button" @click="goToStep(1, 2)" class="w-full flex w-full justify-center rounded-lg bg-[#8B1E24] px-3 py-3 text-sm font-semibold leading-6 text-white shadow-sm hover:bg-[#6F171C] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#8B1E24] transition-colors">
+                    <button type="button" @click="goToStep(1, 2)" class="w-full flex justify-center rounded-lg bg-[#8B1E24] px-3 py-3 text-sm font-semibold leading-6 text-white shadow-sm hover:bg-[#6F171C] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#8B1E24] transition-colors">
                         Continuer
                     </button>
                 </div>
@@ -81,11 +206,15 @@
 
                 <div class="mb-4">
                     <label for="document_type" class="block text-sm font-medium text-gray-700 mb-1">Type de pièce d'identité</label>
-                    <select id="document_type" name="document_type" x-model="documentType" required class="block w-full rounded-lg border-0 py-2.5 px-3.5 text-gray-900 ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-[#8B1E24] sm:text-sm sm:leading-6">
+                    <select id="document_type" name="document_type" x-model="documentType" required
+                            @change="clearErr('document_type')"
+                            :class="errors.document_type ? 'ring-red-500 focus:ring-red-500' : 'ring-gray-300 focus:ring-[#8B1E24]'"
+                            class="block w-full rounded-lg border-0 py-2.5 px-3.5 text-gray-900 ring-1 ring-inset focus:ring-2 focus:ring-inset sm:text-sm sm:leading-6">
                         <option value="CNI">Carte Nationale d'Identité</option>
                         <option value="PASSEPORT">Passeport</option>
                         <option value="TITRE_SEJOUR">Titre de séjour</option>
                     </select>
+                    <p x-show="errors.document_type" x-cloak class="mt-1 text-xs text-red-600" x-text="errors.document_type"></p>
                 </div>
 
                 <div class="mb-4">
@@ -102,20 +231,153 @@
                                    TITRE_SEJOUR: '1234567890123'
                                }[documentType]"
                                required
-                               class="block w-full rounded-lg border-0 py-2.5 px-3.5 text-gray-900 ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-[#8B1E24] sm:text-sm sm:leading-6 transition-shadow">
+                               @input="clearErr('document_number')"
+                               :class="errors.document_number ? 'ring-red-500 focus:ring-red-500' : 'ring-gray-300 focus:ring-[#8B1E24]'"
+                               class="block w-full rounded-lg border-0 py-2.5 px-3.5 text-gray-900 ring-1 ring-inset placeholder:text-gray-400 focus:ring-2 focus:ring-inset sm:text-sm sm:leading-6 transition-shadow">
                     </div>
+                    <p x-show="errors.document_number" x-cloak class="mt-1 text-xs text-red-600" x-text="errors.document_number"></p>
                 </div>
 
-                {% include "components/auth/upload_identity.html" with field_name="identity_file" input_id="identity-upload" label="Photo de la pièce d'identité (recto)" label_expr="documentType === 'CNI' ? 'Photo du document (recto)' : 'Photo du document'" help_text="Le document doit être entier, net et parfaitement lisible." accept=".jpg,.jpeg,.png,.pdf" formats="PNG, JPG, PDF jusqu'à 5MB" %}
+                <!-- Upload identité recto -->
+                <div class="mb-6" x-data="{
+                    isDragging: false,
+                    fileSelected: false,
+                    fileName: '',
+                    fileSize: '',
+                    progress: 0,
+                    simulateUpload(e) {
+                        let file = e.target.files ? e.target.files[0] : (e.dataTransfer ? e.dataTransfer.files[0] : null);
+                        if (!file) return;
+                        if (e.dataTransfer) {
+                            let dt = new DataTransfer();
+                            dt.items.add(file);
+                            $refs.fileInputIdentity.files = dt.files;
+                        }
+                        this.fileSelected = true;
+                        this.fileName = file.name;
+                        this.fileSize = (file.size / 1024 / 1024).toFixed(2) + ' MB';
+                        this.progress = 0;
+                        clearErr('identity_file');
+                        let interval = setInterval(() => {
+                            this.progress += 10;
+                            if(this.progress >= 100) { this.progress = 100; clearInterval(interval); }
+                        }, 200);
+                    }
+                }">
+                    <label class="block text-sm font-medium text-gray-700 mb-2" x-text="documentType === 'CNI' ? 'Photo du document (recto)' : 'Photo du document'">Photo de la pièce d'identité</label>
+                    <p class="text-xs text-gray-500 mb-2">Le document doit être entier, net et parfaitement lisible.</p>
+                    <div class="mt-2 flex justify-center rounded-xl border border-dashed px-6 py-10 transition-colors"
+                         :class="isDragging ? 'border-[#8B1E24] bg-red-50' : ($root.errors && $root.errors.identity_file ? 'border-red-400 bg-red-50' : 'border-gray-900/25 bg-white')"
+                         @dragover.prevent="isDragging = true"
+                         @dragleave.prevent="isDragging = false"
+                         @drop.prevent="isDragging = false; simulateUpload($event)"
+                         x-show="!fileSelected">
+                        <div class="text-center">
+                            <div class="mx-auto flex h-12 w-12 items-center justify-center rounded-full bg-gray-100 mb-4">
+                                <i data-lucide="upload-cloud" class="h-6 w-6 text-gray-600"></i>
+                            </div>
+                            <div class="mt-4 flex text-sm leading-6 text-gray-600 justify-center">
+                                <label for="identity-upload" class="relative cursor-pointer rounded-md bg-white font-semibold text-[#8B1E24] focus-within:outline-none focus-within:ring-2 focus-within:ring-[#8B1E24] focus-within:ring-offset-2 hover:text-[#6F171C]">
+                                    <span>Téléverser un fichier</span>
+                                    <input x-ref="fileInputIdentity" id="identity-upload" name="identity_file" type="file" required class="sr-only" accept=".jpg,.jpeg,.png,.pdf" @change="simulateUpload">
+                                </label>
+                                <p class="pl-1">ou glisser-déposer</p>
+                            </div>
+                            <p class="text-xs leading-5 text-gray-500 mt-2">PNG, JPG, PDF jusqu'à 5 Mo</p>
+                        </div>
+                    </div>
+                    <div x-show="fileSelected" x-cloak class="rounded-xl border border-gray-200 p-4 bg-gray-50 flex items-center justify-between">
+                        <div class="flex items-center space-x-3 truncate">
+                            <div class="h-10 w-10 rounded bg-white border border-gray-200 flex items-center justify-center shrink-0">
+                                <i data-lucide="file-text" class="h-5 w-5 text-[#8B1E24]"></i>
+                            </div>
+                            <div class="truncate">
+                                <p class="text-sm font-medium text-gray-900 truncate" x-text="fileName"></p>
+                                <p class="text-xs text-gray-500" x-text="fileSize"></p>
+                            </div>
+                        </div>
+                        <div class="w-24 shrink-0 flex flex-col items-end" x-show="progress < 100">
+                            <span class="text-xs text-gray-500 mb-1" x-text="progress + '%'"></span>
+                            <div class="w-full bg-gray-200 rounded-full h-1.5">
+                                <div class="bg-[#8B1E24] h-1.5 rounded-full transition-all duration-200" :style="`width: ${progress}%`"></div>
+                            </div>
+                        </div>
+                        <button type="button" x-show="progress === 100" @click="fileSelected = false; $refs.fileInputIdentity.value = ''" class="text-gray-400 hover:text-red-600 transition-colors p-1" aria-label="Supprimer le fichier">
+                            <i data-lucide="trash-2" class="h-5 w-5"></i>
+                        </button>
+                    </div>
+                    <p x-show="$root.errors && $root.errors.identity_file" x-cloak class="mt-1 text-xs text-red-600" x-text="$root.errors.identity_file"></p>
+                </div>
 
-                <div x-show="documentType === 'CNI'" x-cloak class="mb-6">
+                <!-- Upload identité verso (CNI uniquement) -->
+                <div x-show="documentType === 'CNI'" x-cloak class="mb-6" x-data="{
+                    isDragging: false,
+                    fileSelected: false,
+                    fileName: '',
+                    fileSize: '',
+                    progress: 0,
+                    simulateUpload(e) {
+                        let file = e.target.files ? e.target.files[0] : (e.dataTransfer ? e.dataTransfer.files[0] : null);
+                        if (!file) return;
+                        if (e.dataTransfer) {
+                            let dt = new DataTransfer();
+                            dt.items.add(file);
+                            $refs.fileInputBack.files = dt.files;
+                        }
+                        this.fileSelected = true;
+                        this.fileName = file.name;
+                        this.fileSize = (file.size / 1024 / 1024).toFixed(2) + ' MB';
+                        this.progress = 0;
+                        clearErr('identity_file_back');
+                        let interval = setInterval(() => {
+                            this.progress += 10;
+                            if(this.progress >= 100) { this.progress = 100; clearInterval(interval); }
+                        }, 200);
+                    }
+                }">
                     <label for="identity-upload-back" class="block text-sm font-medium text-gray-700 mb-2">Photo de la pièce d'identité (verso)</label>
                     <p class="text-xs text-gray-500 mb-2">La carte nationale d'identité doit être photographiée des deux côtés.</p>
-                    <input id="identity-upload-back" name="identity_file_back" type="file"
-                           :required="documentType === 'CNI'"
-                           accept=".jpg,.jpeg,.png,.pdf"
-                           class="block w-full text-sm text-gray-600 file:mr-4 file:rounded-md file:border-0 file:bg-[#8B1E24]/10 file:px-4 file:py-2 file:text-sm file:font-semibold file:text-[#8B1E24] hover:file:bg-[#8B1E24]/20">
-                    <p class="text-xs leading-5 text-gray-500 mt-2">PNG, JPG, PDF jusqu'à 5MB</p>
+                    <div class="mt-2 flex justify-center rounded-xl border border-dashed px-6 py-10 transition-colors"
+                         :class="isDragging ? 'border-[#8B1E24] bg-red-50' : ($root.errors && $root.errors.identity_file_back ? 'border-red-400 bg-red-50' : 'border-gray-900/25 bg-white')"
+                         @dragover.prevent="isDragging = true"
+                         @dragleave.prevent="isDragging = false"
+                         @drop.prevent="isDragging = false; simulateUpload($event)"
+                         x-show="!fileSelected">
+                        <div class="text-center">
+                            <div class="mx-auto flex h-12 w-12 items-center justify-center rounded-full bg-gray-100 mb-4">
+                                <i data-lucide="upload-cloud" class="h-6 w-6 text-gray-600"></i>
+                            </div>
+                            <div class="mt-4 flex text-sm leading-6 text-gray-600 justify-center">
+                                <label for="identity-upload-back" class="relative cursor-pointer rounded-md bg-white font-semibold text-[#8B1E24] focus-within:outline-none focus-within:ring-2 focus-within:ring-[#8B1E24] focus-within:ring-offset-2 hover:text-[#6F171C]">
+                                    <span>Téléverser un fichier</span>
+                                    <input x-ref="fileInputBack" id="identity-upload-back" name="identity_file_back" type="file" accept=".jpg,.jpeg,.png,.pdf" class="sr-only" @change="simulateUpload">
+                                </label>
+                                <p class="pl-1">ou glisser-déposer</p>
+                            </div>
+                            <p class="text-xs leading-5 text-gray-500 mt-2">PNG, JPG, PDF jusqu'à 5 Mo</p>
+                        </div>
+                    </div>
+                    <div x-show="fileSelected" x-cloak class="rounded-xl border border-gray-200 p-4 bg-gray-50 flex items-center justify-between">
+                        <div class="flex items-center space-x-3 truncate">
+                            <div class="h-10 w-10 rounded bg-white border border-gray-200 flex items-center justify-center shrink-0">
+                                <i data-lucide="file-text" class="h-5 w-5 text-[#8B1E24]"></i>
+                            </div>
+                            <div class="truncate">
+                                <p class="text-sm font-medium text-gray-900 truncate" x-text="fileName"></p>
+                                <p class="text-xs text-gray-500" x-text="fileSize"></p>
+                            </div>
+                        </div>
+                        <div class="w-24 shrink-0 flex flex-col items-end" x-show="progress < 100">
+                            <span class="text-xs text-gray-500 mb-1" x-text="progress + '%'"></span>
+                            <div class="w-full bg-gray-200 rounded-full h-1.5">
+                                <div class="bg-[#8B1E24] h-1.5 rounded-full transition-all duration-200" :style="`width: ${progress}%`"></div>
+                            </div>
+                        </div>
+                        <button type="button" x-show="progress === 100" @click="fileSelected = false; $refs.fileInputBack.value = ''" class="text-gray-400 hover:text-red-600 transition-colors p-1" aria-label="Supprimer le fichier">
+                            <i data-lucide="trash-2" class="h-5 w-5"></i>
+                        </button>
+                    </div>
+                    <p x-show="$root.errors && $root.errors.identity_file_back" x-cloak class="mt-1 text-xs text-red-600" x-text="$root.errors.identity_file_back"></p>
                 </div>
 
                 <div class="mt-8 flex gap-4">
@@ -152,17 +414,98 @@
                     </div>
                 </div>
 
-                {% include "components/auth/upload_identity.html" with field_name="selfie_with_id_file" input_id="selfie-upload" label="Selfie avec votre pièce d'identité" help_text="Photo de vous tenant le même document que ci-dessus." accept=".jpg,.jpeg,.png" formats="PNG, JPG jusqu'à 5MB" icon="camera" %}
-
-                <div class="mt-6">
-                    {% include "components/forms/checkbox.html" with id="owner_accept_terms" name="accept_terms" label="J'accepte les <a href='#' class='text-[#8B1E24] hover:underline'>Conditions de l'Hôte</a> et confirme l'exactitude des documents fournis." required=True %}
+                <!-- Upload selfie -->
+                <div class="mb-6" x-data="{
+                    isDragging: false,
+                    fileSelected: false,
+                    fileName: '',
+                    fileSize: '',
+                    progress: 0,
+                    simulateUpload(e) {
+                        let file = e.target.files ? e.target.files[0] : (e.dataTransfer ? e.dataTransfer.files[0] : null);
+                        if (!file) return;
+                        if (e.dataTransfer) {
+                            let dt = new DataTransfer();
+                            dt.items.add(file);
+                            $refs.fileInputSelfie.files = dt.files;
+                        }
+                        this.fileSelected = true;
+                        this.fileName = file.name;
+                        this.fileSize = (file.size / 1024 / 1024).toFixed(2) + ' MB';
+                        this.progress = 0;
+                        clearErr('selfie_with_id_file');
+                        let interval = setInterval(() => {
+                            this.progress += 10;
+                            if(this.progress >= 100) { this.progress = 100; clearInterval(interval); }
+                        }, 200);
+                    }
+                }">
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Selfie avec votre pièce d'identité</label>
+                    <p class="text-xs text-gray-500 mb-2">Photo de vous tenant le même document que ci-dessus.</p>
+                    <div class="mt-2 flex justify-center rounded-xl border border-dashed px-6 py-10 transition-colors"
+                         :class="isDragging ? 'border-[#8B1E24] bg-red-50' : ($root.errors && $root.errors.selfie_with_id_file ? 'border-red-400 bg-red-50' : 'border-gray-900/25 bg-white')"
+                         @dragover.prevent="isDragging = true"
+                         @dragleave.prevent="isDragging = false"
+                         @drop.prevent="isDragging = false; simulateUpload($event)"
+                         x-show="!fileSelected">
+                        <div class="text-center">
+                            <div class="mx-auto flex h-12 w-12 items-center justify-center rounded-full bg-gray-100 mb-4">
+                                <i data-lucide="camera" class="h-6 w-6 text-gray-600"></i>
+                            </div>
+                            <div class="mt-4 flex text-sm leading-6 text-gray-600 justify-center">
+                                <label for="selfie-upload" class="relative cursor-pointer rounded-md bg-white font-semibold text-[#8B1E24] focus-within:outline-none focus-within:ring-2 focus-within:ring-[#8B1E24] focus-within:ring-offset-2 hover:text-[#6F171C]">
+                                    <span>Téléverser un fichier</span>
+                                    <input x-ref="fileInputSelfie" id="selfie-upload" name="selfie_with_id_file" type="file" required class="sr-only" accept=".jpg,.jpeg,.png" @change="simulateUpload">
+                                </label>
+                                <p class="pl-1">ou glisser-déposer</p>
+                            </div>
+                            <p class="text-xs leading-5 text-gray-500 mt-2">PNG, JPG jusqu'à 5 Mo</p>
+                        </div>
+                    </div>
+                    <div x-show="fileSelected" x-cloak class="rounded-xl border border-gray-200 p-4 bg-gray-50 flex items-center justify-between">
+                        <div class="flex items-center space-x-3 truncate">
+                            <div class="h-10 w-10 rounded bg-white border border-gray-200 flex items-center justify-center shrink-0">
+                                <i data-lucide="file-text" class="h-5 w-5 text-[#8B1E24]"></i>
+                            </div>
+                            <div class="truncate">
+                                <p class="text-sm font-medium text-gray-900 truncate" x-text="fileName"></p>
+                                <p class="text-xs text-gray-500" x-text="fileSize"></p>
+                            </div>
+                        </div>
+                        <div class="w-24 shrink-0 flex flex-col items-end" x-show="progress < 100">
+                            <span class="text-xs text-gray-500 mb-1" x-text="progress + '%'"></span>
+                            <div class="w-full bg-gray-200 rounded-full h-1.5">
+                                <div class="bg-[#8B1E24] h-1.5 rounded-full transition-all duration-200" :style="`width: ${progress}%`"></div>
+                            </div>
+                        </div>
+                        <button type="button" x-show="progress === 100" @click="fileSelected = false; $refs.fileInputSelfie.value = ''" class="text-gray-400 hover:text-red-600 transition-colors p-1" aria-label="Supprimer le fichier">
+                            <i data-lucide="trash-2" class="h-5 w-5"></i>
+                        </button>
+                    </div>
+                    <p x-show="$root.errors && $root.errors.selfie_with_id_file" x-cloak class="mt-1 text-xs text-red-600" x-text="$root.errors.selfie_with_id_file"></p>
                 </div>
+
+                <!-- Checkbox conditions -->
+                <div class="flex items-start mb-4">
+                    <div class="flex h-6 items-center">
+                        <input id="owner_accept_terms" name="accept_terms" type="checkbox" required
+                               @change="clearErr('accept_terms')"
+                               :class="errors.accept_terms ? 'border-red-500' : 'border-gray-300'"
+                               class="h-4 w-4 rounded text-[#8B1E24] focus:ring-[#8B1E24]">
+                    </div>
+                    <div class="ml-3 text-sm leading-6">
+                        <label for="owner_accept_terms" class="text-gray-600 font-medium">J'accepte les <a href='#' class='text-[#8B1E24] hover:underline'>Conditions de l'Hôte</a> et confirme l'exactitude des documents fournis.</label>
+                    </div>
+                </div>
+                <p x-show="errors.accept_terms" x-cloak class="mt-1 text-xs text-red-600 ml-7" x-text="errors.accept_terms"></p>
 
                 <div class="mt-8 flex gap-4">
                     <button type="button" @click="step = 2" class="w-1/3 flex justify-center rounded-lg bg-white px-3 py-3 text-sm font-semibold leading-6 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50 transition-colors">
                         Retour
                     </button>
-                    <button type="submit" class="w-2/3 flex justify-center rounded-lg bg-[#8B1E24] px-3 py-3 text-sm font-semibold leading-6 text-white shadow-sm hover:bg-[#6F171C] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#8B1E24] transition-colors">
+                    <button type="submit" :disabled="!canSubmit"
+                            :class="canSubmit ? 'bg-[#8B1E24] hover:bg-[#6F171C] cursor-pointer' : 'bg-gray-300 cursor-not-allowed'"
+                            class="w-2/3 flex justify-center rounded-lg px-3 py-3 text-sm font-semibold leading-6 text-white shadow-sm focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#8B1E24] transition-colors">
                         Soumettre ma demande
                     </button>
                 </div>

@@ -204,7 +204,7 @@ class PaymentService:
         if hero_image is not None:
             validate_allowed_file_extensions(hero_image, ('png', 'jpg', 'jpeg'))
             validate_file_content_type(hero_image, ('png', 'jpg', 'jpeg'))
-            validate_max_file_size(hero_image, max_size_mb=5.0)
+            validate_max_file_size(hero_image, max_size_mb=15.0)
             settings_obj.hero_image = hero_image
             update_fields.append('hero_image')
 
