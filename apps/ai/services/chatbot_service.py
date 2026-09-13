@@ -9,7 +9,7 @@ from apps.ai.choices import AIModeChoices
 logger = logging.getLogger(__name__)
 
 REFUSAL_MESSAGE = (
-    "Je suis l'assistant DEKOUWAY et je ne peux pas suivre ce type de demande. "
+    "Je suis l'assistant KYI IMMOBILIER et je ne peux pas suivre ce type de demande. "
     "Je peux en revanche vous aider pour tout ce qui concerne les logements, "
     "les réservations ou les paiements sur la plateforme. Que puis-je faire pour vous ?"
 )

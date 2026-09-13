@@ -40,7 +40,19 @@ class ReservationService:
             new_status=ReservationStatusChoices.REQUESTED,
             notes="Demande créée par le client"
         )
-        
+
+        NotificationService.notify_all_admins(
+            title="Nouvelle demande de réservation",
+            message=(
+                f"{client.email} souhaite réserver « {prop.title} » du "
+                f"{check_in.strftime('%d/%m/%Y')} au {check_out.strftime('%d/%m/%Y')} "
+                f"pour {guests} personne(s). Veuillez vérifier la disponibilité puis "
+                f"transmettre le lien de paiement au client."
+            ),
+            link=reverse('dashboard:admin_validate_reservations'),
+            email_template='emails/generic_notification.html',
+        )
+
         logger.info(f"Demande de réservation créée : {req.id} par {client.email}")
         return req
 

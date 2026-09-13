@@ -95,14 +95,14 @@ class GroqService:
             return f'{{"flagged": {str(has_forbidden).lower()}, "reason": "Détection automatique par filtre de sécurité local", "categories": ["pii_leak"]}}'
             
         elif feature == "DESCRIPTION":
-            return "Superbe bien disponible sur DEKOUWAY. Confort exceptionnel, emplacement privilégié et équipements modernes. Idéal pour votre séjour."
+            return "Superbe bien disponible sur KYI IMMOBILIER. Confort exceptionnel, emplacement privilégié et équipements modernes. Idéal pour votre séjour."
             
         elif feature == "SUMMARY":
-            return "Logement confortable et idéalement situé pour vos séjours sur la plateforme DEKOUWAY."
+            return "Logement confortable et idéalement situé pour vos séjours sur la plateforme KYI IMMOBILIER."
 
         return (
-            "Bienvenue sur DEKOUWAY ! Notre assistant enregistre actuellement votre demande. "
-            "Rappelez-vous que sur DEKOUWAY, toutes vos réservations et paiements sont 100% sécurisés. "
+            "Bienvenue sur KYI IMMOBILIER ! Notre assistant enregistre actuellement votre demande. "
+            "Rappelez-vous que sur KYI IMMOBILIER, toutes vos réservations et paiements sont 100% sécurisés. "
             "Comment puis-je vous aider pour votre séjour ?"
         )
 

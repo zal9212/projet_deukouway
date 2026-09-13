@@ -43,7 +43,7 @@ class BookingCreateView(LoginRequiredMixin, View):
             )
             messages.success(
                 request,
-                "Votre demande de réservation a été envoyée ! Elle sera examinée par DEKOUWAY avant transmission à l'hôte."
+                "Votre demande de réservation a été envoyée ! Elle sera examinée par KYI IMMOBILIER avant transmission à l'hôte."
             )
         except (DatesNotAvailable, InvalidWorkflowTransition) as exc:
             messages.error(request, str(exc))

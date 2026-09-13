@@ -1,7 +1,7 @@
 {% extends "layouts/dashboard.html" %}
 
 {% load property_tags %}
-{% block title %}Détail Demande - DEKOUWAY{% endblock %}
+{% block title %}Détail Demande - KYI IMMOBILIER{% endblock %}
 
 {% block content %}
     {% url 'dashboard:owner_requests' as requests_url %}
@@ -111,7 +111,7 @@
                         <span class="font-semibold text-gray-900">{{ reservation_request.property.price }} F {{ reservation_request.property.pricing_period|price_unit }}</span>
                     </div>
                     <div class="mt-4 text-xs text-gray-500">
-                        <i data-lucide="info" class="w-3 h-3 inline mr-1"></i> Le montant définitif (net de la commission DEKOUWAY) sera calculé après le paiement du client et versé après son arrivée.
+                        <i data-lucide="info" class="w-3 h-3 inline mr-1"></i> Le montant définitif (net de la commission KYI IMMOBILIER) sera calculé après le paiement du client et versé après son arrivée.
                     </div>
                 </div>
             </div>

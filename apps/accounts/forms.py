@@ -7,7 +7,7 @@ from apps.core.forms import (
 )
 
 class LoginForm(TailwindFormMixin, forms.Form):
-    """Formulaire de connexion d'un utilisateur sur la plateforme DEKOUWAY."""
+    """Formulaire de connexion d'un utilisateur sur la plateforme KYI IMMOBILIER."""
     email = forms.EmailField(
         label="Adresse e-mail",
         widget=forms.EmailInput(attrs={

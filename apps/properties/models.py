@@ -86,7 +86,7 @@ class Property(BaseModel):
         _('Pourcentage commission (personnalisé)'),
         max_digits=5, decimal_places=2, null=True, blank=True,
         validators=[MinValueValidator(0.00), MaxValueValidator(100.00)],
-        help_text=_("Pourcentage retenu par DEKOUWAY sur ce logement. Laissez vide pour utiliser le pourcentage par défaut de la plateforme.")
+        help_text=_("Pourcentage retenu par KYI IMMOBILIER sur ce logement. Laissez vide pour utiliser le pourcentage par défaut de la plateforme.")
     )
 
     class Meta(BaseModel.Meta):

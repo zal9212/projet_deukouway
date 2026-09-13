@@ -343,7 +343,7 @@ class DashboardSelector:
             insights.append(f"Action prioritaire : {stats['pending_properties']} annonce(s) en attente de validation administrative.")
 
         if not insights:
-            insights.append("Toutes les métriques de la plateforme DEKOUWAY sont stables et à jour.")
+            insights.append("Toutes les métriques de la plateforme KYI IMMOBILIER sont stables et à jour.")
 
         return {
             'predictions': {

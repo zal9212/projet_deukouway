@@ -4,7 +4,7 @@ from apps.ai.prompt_builder import PromptBuilder
 class PromptBuilderTestCase(TestCase):
     def test_prompt_builder_returns_non_empty_strings(self):
         chatbot_prompt = PromptBuilder.get_system_prompt_chatbot("Client")
-        self.assertIn("DEKOUWAY", chatbot_prompt)
+        self.assertIn("KYI IMMOBILIER", chatbot_prompt)
         self.assertIn("Client", chatbot_prompt)
 
         erp_prompt = PromptBuilder.get_system_prompt_erp_admin()

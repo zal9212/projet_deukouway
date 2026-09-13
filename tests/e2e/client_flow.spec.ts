@@ -1,10 +1,10 @@
 import { test, expect } from '@playwright/test';
 
-test.describe('Parcours E2E Client - DEKOUWAY', () => {
+test.describe('Parcours E2E Client - KYI IMMOBILIER', () => {
 
   test('Page d accueil et consultation des annonces', async ({ page }) => {
     await page.goto('/');
-    await expect(page).toHaveTitle(/DEKOUWAY/i);
+    await expect(page).toHaveTitle(/KYI IMMOBILIER/i);
     await expect(page.locator('h1')).toBeVisible();
   });
 
@@ -24,9 +24,9 @@ test.describe('Parcours E2E Client - DEKOUWAY', () => {
     await page.goto('/');
     // Le widget flottant est fermé par défaut (x-show sur $store.chat.open) :
     // il faut ouvrir le FAB avant que le champ de saisie ne soit interactif.
-    await page.locator('[aria-label="Assistant IA DEKOUWAY"]').click();
+    await page.locator('[aria-label="Assistant IA KYI IMMOBILIER"]').click();
 
-    const question = 'Comment réserver un logement sur DEKOUWAY ?';
+    const question = 'Comment réserver un logement sur KYI IMMOBILIER ?';
     const chatInput = page.locator('#floating-message-input');
     await expect(chatInput).toBeVisible();
     await chatInput.fill(question);

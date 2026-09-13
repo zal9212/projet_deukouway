@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{% block title %}Authentification - DEKOUWAY{% endblock %}</title>
+    <title>{% block title %}Authentification - KYI IMMOBILIER{% endblock %}</title>
     
     <!-- Tailwind CSS (compilé localement, voir README pour la commande de build) -->
     <link rel="stylesheet" href="{% static 'css/tailwind.css' %}">
@@ -44,10 +44,10 @@
                         <img src="{{ platform_settings.logo.url }}" alt="{{ platform_settings.site_name }}" class="w-10 h-10 rounded-xl object-cover shadow-lg">
                     {% else %}
                         <div class="w-10 h-10 bg-[#8B1E24] rounded-xl flex items-center justify-center text-white font-bold text-xl shadow-lg">
-                            {{ platform_settings.site_name|default:"DEKOUWAY"|slice:":1" }}
+                            {{ platform_settings.site_name|default:"KYI IMMOBILIER"|slice:":1" }}
                         </div>
                     {% endif %}
-                    <span class="text-2xl font-black text-gray-900 tracking-tight">{{ platform_settings.site_name|default:"DEKOUWAY" }}</span>
+                    <span class="text-2xl font-black text-gray-900 tracking-tight">{{ platform_settings.site_name|default:"KYI IMMOBILIER" }}</span>
                 </a>
                 
                 <!-- Slogan -->
@@ -61,7 +61,7 @@
             
             <!-- Footer de la colonne gauche -->
             <div class="p-12 relative z-10 flex items-center gap-6 text-sm font-medium text-gray-500">
-                <span>© 2026 {{ platform_settings.site_name|default:"DEKOUWAY" }}</span>
+                <span>© 2026 {{ platform_settings.site_name|default:"KYI IMMOBILIER" }}</span>
                 <a href="{% url 'public:privacy' %}" class="hover:text-gray-900 transition-colors">Confidentialité</a>
                 <a href="{% url 'public:terms' %}" class="hover:text-gray-900 transition-colors">Conditions</a>
             </div>
@@ -75,9 +75,9 @@
                 <div class="lg:hidden flex justify-center mb-8">
                     <a href="/" class="flex items-center gap-3 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#8B1E24] rounded-lg">
                         <div class="w-10 h-10 bg-[#8B1E24] rounded-xl flex items-center justify-center text-white font-bold text-xl shadow-lg">
-                            D
+                            K
                         </div>
-                        <span class="text-2xl font-black text-gray-900 tracking-tight">DEKOUWAY</span>
+                        <span class="text-2xl font-black text-gray-900 tracking-tight">KYI IMMOBILIER</span>
                     </a>
                 </div>
                 

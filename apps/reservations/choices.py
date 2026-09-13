@@ -7,7 +7,7 @@ class ReservationStatusChoices(models.TextChoices):
     SENT_TO_OWNER = 'SENT_TO_OWNER', _('Transmis au Propriétaire')
     OWNER_ACCEPTED = 'OWNER_ACCEPTED', _('Accepté par le Propriétaire')
     OWNER_DECLINED = 'OWNER_DECLINED', _('Refusé par le Propriétaire')
-    REJECTED = 'REJECTED', _('Rejeté par DEKOUWAY')
+    REJECTED = 'REJECTED', _('Rejeté par KYI IMMOBILIER')
     PAYMENT_PENDING = 'PAYMENT_PENDING', _('En attente de paiement')
     PAYMENT_LINK_SENT = 'PAYMENT_LINK_SENT', _('Lien de paiement envoyé')
     PAID = 'PAID', _('Payé')

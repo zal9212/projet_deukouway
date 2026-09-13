@@ -1,6 +1,6 @@
 {% extends "layouts/auth_layout.html" %}
 
-{% block title %}Connexion - DEKOUWAY{% endblock %}
+{% block title %}Connexion - KYI IMMOBILIER{% endblock %}
 
 {% block content %}
     {% include "components/auth/auth_header.html" with title="Bon retour !" subtitle="Connectez-vous pour accéder à votre compte." %}
@@ -32,5 +32,5 @@
     {% include "components/auth/social_login.html" %}
 
     {% url 'register_choice' as register_choice_url %}
-    {% include "components/auth/auth_footer.html" with text="Nouveau sur DEKOUWAY ?" link_text="Créer un compte" link_url=register_choice_url %}
+    {% include "components/auth/auth_footer.html" with text="Nouveau sur KYI IMMOBILIER ?" link_text="Créer un compte" link_url=register_choice_url %}
 {% endblock %}
