@@ -8,7 +8,7 @@ class GroqServiceTestCase(TestCase):
         messages = [{'role': 'user', 'content': 'Bonjour, quelles sont vos offres ?'}]
         reply, is_fallback = GroqService.generate_chat_completion(messages, feature="CHAT")
         self.assertTrue(is_fallback)
-        self.assertIn("DEKOUWAY", reply)
+        self.assertIn("KYI IMMOBILIER", reply)
         self.assertTrue(AIUsageLog.objects.filter(feature="CHAT").exists())
 
     def test_moderation_fallback_detection(self):

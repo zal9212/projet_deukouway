@@ -1,6 +1,6 @@
 {% extends "layouts/dashboard.html" %}
 
-{% block title %}Reversement #{{ payout.id|slice:":8" }} - DEKOUWAY ERP{% endblock %}
+{% block title %}Reversement #{{ payout.id|slice:":8" }} - KYI IMMOBILIER ERP{% endblock %}
 
 {% block page_header %}
 <div class="md:flex md:items-center md:justify-between mb-8 mt-2">
@@ -22,8 +22,10 @@
         <div class="bg-white border border-gray-200 rounded-xl p-6 shadow-sm">
             <div class="flex items-center justify-between mb-6">
                 <h3 class="text-sm font-semibold text-gray-900">Détails du reversement</h3>
-                {% if payout.status == 'SUCCESS' %}
+                {% if payout.status == 'COMPLETED' %}
                     {% include "components/dashboard/status_badge.html" with status="success" label="Transféré" %}
+                {% elif payout.status == 'FAILED' %}
+                    {% include "components/dashboard/status_badge.html" with status="error" label="Échec" %}
                 {% else %}
                     {% include "components/dashboard/status_badge.html" with status="pending" label=payout.get_status_display %}
                 {% endif %}
@@ -74,6 +76,25 @@
     </div>
 
     <div class="space-y-6">
+        {% if payout.status == 'PENDING' or payout.status == 'PROCESSING' %}
+        <div class="bg-white border border-gray-200 rounded-xl p-6 shadow-sm">
+            <h3 class="text-sm font-semibold text-gray-900 mb-4">Reverser au propriétaire</h3>
+            <form method="POST">
+                {% csrf_token %}
+                <input type="hidden" name="action" value="send_payout">
+                <label for="payout_method" class="block text-xs font-medium text-gray-700 mb-1">Méthode de reversement</label>
+                <select id="payout_method" name="method" class="block w-full rounded-md border-0 py-1.5 mb-4 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-[#8B1E24] sm:text-sm">
+                    <option value="WAVE" {% if payout.method == 'WAVE' %}selected{% endif %}>Wave</option>
+                    <option value="ORANGE_MONEY" {% if payout.method == 'ORANGE_MONEY' %}selected{% endif %}>Orange Money</option>
+                    <option value="BANK_TRANSFER" {% if payout.method == 'BANK_TRANSFER' %}selected{% endif %}>Virement Bancaire</option>
+                </select>
+                <button type="submit" class="w-full inline-flex items-center justify-center rounded-md bg-[#8B1E24] px-4 py-2.5 text-sm font-semibold text-white shadow-sm hover:bg-[#6F171C]">
+                    <i data-lucide="send" class="w-4 h-4 mr-1.5"></i> Reverser {{ payout.amount }} {{ payout.currency }}
+                </button>
+            </form>
+        </div>
+        {% endif %}
+
         <div class="bg-white border border-gray-200 rounded-xl p-6 shadow-sm">
             <h3 class="text-sm font-semibold text-gray-900 mb-4">Partenaire</h3>
             <a href="{% url 'dashboard:admin_owner_detail' payout.owner.id %}" class="text-sm font-medium text-[#8B1E24] hover:underline flex items-center">

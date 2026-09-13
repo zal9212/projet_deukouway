@@ -11,8 +11,10 @@ ACTIVE_REQUEST_STATUSES = [
     ReservationStatusChoices.SENT_TO_OWNER,
     ReservationStatusChoices.OWNER_ACCEPTED,
     ReservationStatusChoices.PAYMENT_PENDING,
+    ReservationStatusChoices.PAYMENT_LINK_SENT,
     ReservationStatusChoices.PAID,
     ReservationStatusChoices.CONFIRMED,
+    ReservationStatusChoices.OWNER_CONTACTED,
 ]
 
 # Statuts d'une réservation ferme qui occupent réellement le logement.
@@ -133,7 +135,7 @@ class ReservationSelector:
         from django.db.models import Q
         qs = Reservation.objects.filter(
             is_deleted=False
-        ).select_related('client', 'property', 'property__owner')
+        ).select_related('client', 'property', 'property__owner', 'request')
         if search_query:
             qs = qs.filter(
                 Q(code__icontains=search_query) |

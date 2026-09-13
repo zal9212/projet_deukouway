@@ -14,7 +14,7 @@
                         <i data-lucide="shield-check" class="text-white w-6 h-6"></i>
                     </div>
                 {% endif %}
-                <span x-show="!sidebarCollapsed" x-transition class="text-xl font-bold tracking-tight text-gray-900 truncate">{{ platform_settings.site_name|default:"DEKOUWAY" }}</span>
+                <span x-show="!sidebarCollapsed" x-transition class="text-xl font-bold tracking-tight text-gray-900 truncate">{{ platform_settings.site_name|default:"KYI IMMOBILIER" }}</span>
             </a>
             <!-- Bouton pour réduire la sidebar -->
             <button @click="sidebarCollapsed = !sidebarCollapsed; localStorage.setItem('sidebarCollapsed', sidebarCollapsed)" 

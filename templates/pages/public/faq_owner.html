@@ -1,7 +1,7 @@
 {% extends "layouts/public.html" %}
 
-{% block title %}FAQ Hôte — DEKOUWAY{% endblock %}
-{% block meta_description %}Toutes les réponses aux questions des propriétaires : vérification KYC, publication d'annonces, réservations et reversements sur DEKOUWAY.{% endblock %}
+{% block title %}FAQ Hôte — KYI IMMOBILIER{% endblock %}
+{% block meta_description %}Toutes les réponses aux questions des propriétaires : vérification KYC, publication d'annonces, réservations et reversements sur KYI IMMOBILIER.{% endblock %}
 
 {% block content %}
 <section class="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
@@ -12,7 +12,7 @@
         </span>
         <h1 class="text-3xl font-bold text-[#1F2937] mb-4">FAQ Hôte</h1>
         <p class="text-sm text-[#6B7280]">
-            Les réponses aux questions les plus fréquentes des propriétaires partenaires DEKOUWAY.
+            Les réponses aux questions les plus fréquentes des propriétaires partenaires KYI IMMOBILIER.
             Vous ne trouvez pas votre réponse ? <a href="{% url 'public:contact' %}" class="text-[#8B1E24] font-semibold hover:underline">Contactez-nous</a>.
         </p>
     </div>
@@ -114,13 +114,13 @@
                     <i data-lucide="chevron-down" class="w-4 h-4 text-[#6B7280] transition-transform flex-shrink-0" :class="active === 1 ? 'rotate-180' : ''"></i>
                 </button>
                 <div class="px-4 pb-4 text-xs text-[#6B7280] leading-relaxed" x-show="active === 1" x-transition x-cloak>
-                    Le montant net (après déduction de la commission DEKOUWAY) vous est reversé dès le début effectif du séjour du voyageur,
+                    Le montant net (après déduction de la commission KYI IMMOBILIER) vous est reversé dès le début effectif du séjour du voyageur,
                     via Wave, Orange Money ou virement bancaire.
                 </div>
             </div>
             <div class="bg-white border border-[#E5E7EB] rounded-xl">
                 <button @click="active !== 2 ? active = 2 : active = null" class="flex w-full items-center justify-between text-left p-4 focus:outline-none">
-                    <span class="text-sm font-semibold text-[#1F2937]">Quelle commission DEKOUWAY applique-t-elle ?</span>
+                    <span class="text-sm font-semibold text-[#1F2937]">Quelle commission KYI IMMOBILIER applique-t-elle ?</span>
                     <i data-lucide="chevron-down" class="w-4 h-4 text-[#6B7280] transition-transform flex-shrink-0" :class="active === 2 ? 'rotate-180' : ''"></i>
                 </button>
                 <div class="px-4 pb-4 text-xs text-[#6B7280] leading-relaxed" x-show="active === 2" x-transition x-cloak>

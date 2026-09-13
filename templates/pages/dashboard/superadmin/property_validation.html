@@ -20,7 +20,7 @@
 {% block content %}
 {% if pending_properties %}
 <div class="grid grid-cols-1 xl:grid-cols-4 gap-8">
-    
+
     <!-- File d'attente (Sidebar gauche) -->
     <div class="xl:col-span-1 border border-gray-200 bg-white rounded-xl shadow-sm overflow-hidden xl:h-[calc(100vh-16rem)] h-auto flex flex-col">
         <div class="px-4 py-4 border-b border-gray-200 bg-gray-50">
@@ -57,7 +57,7 @@
     <!-- Zone d'Analyse Centrale -->
     <div class="xl:col-span-3">
         <div class="bg-white border border-gray-200 rounded-xl shadow-sm overflow-hidden flex flex-col xl:h-[calc(100vh-16rem)] h-auto">
-            
+
             <div class="border-b border-gray-200 px-6 py-5 flex items-center justify-between bg-white">
                 <div class="flex items-center">
                     <h3 class="text-xl font-bold leading-6 text-gray-900">{{ active_prop.title }}</h3>
@@ -164,7 +164,7 @@
             </div>
 
             <!-- Barre de décision ERP -->
-            <div class="border-t border-gray-200 px-6 py-4 bg-white flex justify-between items-center">
+            <div class="border-t border-gray-200 px-6 py-4 bg-white flex justify-between items-center gap-4">
                 <form method="POST" class="inline">
                     {% csrf_token %}
                     <input type="hidden" name="property_id" value="{{ active_prop.id }}">
@@ -173,11 +173,17 @@
                         <i data-lucide="ban" class="w-4 h-4 mr-1.5"></i> Rejeter l'annonce
                     </button>
                 </form>
-                
-                <form method="POST" class="inline">
+
+                <form method="POST" class="flex items-center gap-3">
                     {% csrf_token %}
                     <input type="hidden" name="property_id" value="{{ active_prop.id }}">
                     <input type="hidden" name="action" value="approve">
+                    <label class="flex items-center gap-2 text-sm text-gray-600">
+                        <span class="whitespace-nowrap">Commission %</span>
+                        <input type="number" name="commission_percentage_override" step="0.01" min="0" max="100"
+                               placeholder="défaut plateforme"
+                               class="w-28 rounded-md border border-gray-300 px-2 py-1.5 text-sm text-gray-900 shadow-sm focus:border-blue-500 focus:ring-1 focus:ring-blue-500">
+                    </label>
                     <button type="submit" class="rounded-md bg-green-600 px-4 py-2 text-sm font-semibold text-white shadow-sm hover:bg-green-500 flex items-center">
                         <i data-lucide="check-circle-2" class="w-4 h-4 mr-1.5"></i> Publier l'annonce
                     </button>

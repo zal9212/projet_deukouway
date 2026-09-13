@@ -11,7 +11,7 @@ def send_transactional_email(subject: str, recipient_email: str, template_name: 
     """
     try:
         html_message = render_to_string(template_name, context)
-        plain_message = f"{subject}\n\nMerci d'utiliser DEKOUWAY."
+        plain_message = f"{subject}\n\nMerci d'utiliser KYI IMMOBILIER."
         send_mail(
             subject=subject,
             message=plain_message,

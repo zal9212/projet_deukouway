@@ -1,6 +1,6 @@
 import { test, expect } from '@playwright/test';
 
-test.describe('Parcours E2E SuperAdmin ERP - DEKOUWAY', () => {
+test.describe('Parcours E2E SuperAdmin ERP - KYI IMMOBILIER', () => {
 
   test('Connexion Administration Django', async ({ page }) => {
     await page.goto('/admin/');

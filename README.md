@@ -1,4 +1,4 @@
-# DEKOUWAY
+# KYI IMMOBILIER
 
 Plateforme SaaS de location immobilière au Sénégal (Django 5.2 + PostgreSQL), avec un tableau de bord dédié pour les voyageurs, les propriétaires et le SuperAdmin, un assistant IA (Groq), et un flux complet d'inscription/vérification KYC des propriétaires.
 

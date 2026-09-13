@@ -71,8 +71,8 @@ def validate_phone_number(value: str) -> str:
 
     return '+' + digits_only
 
-def validate_max_file_size(file_obj, max_size_mb: float = 5.0):
-    """Validateur pour vérifier que le fichier ne dépasse pas la taille maximale (ex: 5 Mo)."""
+def validate_max_file_size(file_obj, max_size_mb: float = 15.0):
+    """Validateur pour vérifier que le fichier ne dépasse pas la taille maximale (ex: 15 Mo)."""
     if file_obj and hasattr(file_obj, 'size'):
         max_bytes = max_size_mb * 1024 * 1024
         if file_obj.size > max_bytes:

@@ -41,7 +41,7 @@ class CustomLoginView(ViewExceptionHandlingMixin, LoginView):
     redirect_authenticated_user = True
 
     def form_valid(self, form):
-        messages.success(self.request, "Connexion réussie. Bienvenue sur DEKOUWAY !")
+        messages.success(self.request, "Connexion réussie. Bienvenue sur KYI IMMOBILIER !")
         return super().form_valid(form)
 
     def form_invalid(self, form):

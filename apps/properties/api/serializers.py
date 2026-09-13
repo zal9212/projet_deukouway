@@ -2,7 +2,7 @@ from rest_framework import serializers
 from decimal import Decimal
 from apps.properties.models import (
     Property, PropertyCategory, PropertyType, PropertyImage,
-    PropertyAmenity, PropertyRule, PropertyFavorite
+    PropertyAmenity, PropertyRule, PropertyFavorite, PropertyReview
 )
 
 class PropertyCategorySerializer(serializers.ModelSerializer):
@@ -95,3 +95,21 @@ class PropertyFavoriteSerializer(serializers.ModelSerializer):
     class Meta:
         model = PropertyFavorite
         fields = ['id', 'property', 'created_at']
+
+
+class PropertyReviewSerializer(serializers.ModelSerializer):
+    user_email = serializers.EmailField(source='user.email', read_only=True)
+    user_name = serializers.SerializerMethodField()
+
+    class Meta:
+        model = PropertyReview
+        fields = ['id', 'user_email', 'user_name', 'rating', 'comment', 'created_at']
+
+    def get_user_name(self, obj):
+        return obj.user.get_full_name() or obj.user.email
+
+
+class PropertyReviewCreateSerializer(serializers.Serializer):
+    rating = serializers.IntegerField(min_value=1, max_value=5)
+    comment = serializers.CharField(required=False, allow_blank=True)
+    reservation_id = serializers.UUIDField(required=False, allow_null=True)

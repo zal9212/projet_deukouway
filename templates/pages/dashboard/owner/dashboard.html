@@ -1,6 +1,6 @@
 {% extends "layouts/dashboard.html" %}
 
-{% block title %}Dashboard Partenaire - DEKOUWAY{% endblock %}
+{% block title %}Dashboard Partenaire - KYI IMMOBILIER{% endblock %}
 
 {% block page_header %}
 <div class="md:flex md:items-center md:justify-between mb-8 mt-2">
@@ -9,7 +9,7 @@
             Bonjour, {{ request.user.profile.first_name|default:request.user.email }} 👋
         </h2>
         <p class="mt-1 text-sm text-gray-500">
-            Voici l'activité récente de vos logements sur DEKOUWAY.
+            Voici l'activité récente de vos logements sur KYI IMMOBILIER.
         </p>
     </div>
     
@@ -119,10 +119,10 @@
     <div class="grid grid-cols-1 gap-8 lg:grid-cols-3">
         <!-- Section Centrale (Demandes & Versements) -->
         <div class="lg:col-span-2 space-y-8">
-            <!-- Nouvelles Demandes DEKOUWAY -->
+            <!-- Nouvelles Demandes KYI IMMOBILIER -->
             <section class="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
                 <div class="border-b border-gray-200 px-6 py-5 flex items-center justify-between">
-                    <h3 class="text-base font-semibold leading-6 text-gray-900">Demandes de DEKOUWAY</h3>
+                    <h3 class="text-base font-semibold leading-6 text-gray-900">Demandes de KYI IMMOBILIER</h3>
                     <a href="{% url 'dashboard:owner_requests' %}" class="text-sm font-medium text-[#8B1E24] hover:text-[#6F171C]">Tout voir</a>
                 </div>
                 <div class="divide-y divide-gray-200">
@@ -163,7 +163,7 @@
             <!-- Derniers versements -->
             <section class="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
                 <div class="border-b border-gray-200 px-6 py-5 flex items-center justify-between">
-                    <h3 class="text-base font-semibold leading-6 text-gray-900">Derniers versements DEKOUWAY</h3>
+                    <h3 class="text-base font-semibold leading-6 text-gray-900">Derniers versements KYI IMMOBILIER</h3>
                     <a href="{% url 'dashboard:owner_payouts' %}" class="text-sm font-medium text-[#8B1E24] hover:text-[#6F171C]">Tout voir</a>
                 </div>
                 <ul role="list" class="divide-y divide-gray-100">
@@ -200,7 +200,7 @@
             <section>
                 <h3 class="text-sm font-semibold leading-6 text-gray-900 mb-4">Actions Rapides</h3>
                 <div class="grid grid-cols-1 gap-4">
-                    {% include "components/dashboard/quick_action.html" with title="Envoyer un message" description="Contacter le support DEKOUWAY" icon="message-square" link_url="dashboard:owner_support" %}
+                    {% include "components/dashboard/quick_action.html" with title="Envoyer un message" description="Contacter le support KYI IMMOBILIER" icon="message-square" link_url="dashboard:owner_support" %}
                     {% include "components/dashboard/quick_action.html" with title="Configurer les versements" description="Modifier votre compte Wave/Orange Money" icon="banknote" link_url="dashboard:owner_settings" %}
                 </div>
             </section>
@@ -214,7 +214,7 @@
                 <div class="flow-root">
                     {% if properties %}
                         {% for prop in properties|slice:":3" %}
-                            {% include "components/dashboard/activity_card.html" with icon="home" user=prop.title action=prop.get_status_display date=prop.created_at|date:"d M Y" description="Plateforme DEKOUWAY" icon_type="info" is_last=forloop.last %}
+                            {% include "components/dashboard/activity_card.html" with icon="home" user=prop.title action=prop.get_status_display date=prop.created_at|date:"d M Y" description="Plateforme KYI IMMOBILIER" icon_type="info" is_last=forloop.last %}
                         {% endfor %}
                     {% else %}
                         {% include "components/empty_state.html" with title="Aucune annonce en cours" description="Vos annonces et leurs statuts de validation s'afficheront ici." icon="home" %}

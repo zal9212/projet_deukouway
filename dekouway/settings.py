@@ -263,8 +263,8 @@ SIMPLE_JWT = {
 
 # OpenAPI 3.0 / Swagger Documentation (drf-spectacular)
 SPECTACULAR_SETTINGS = {
-    'TITLE': 'DEKOUWAY SaaS API',
-    'DESCRIPTION': 'API REST complète de la plateforme SaaS immobilière DEKOUWAY (Clean Architecture / DDD).',
+    'TITLE': 'KYI IMMOBILIER SaaS API',
+    'DESCRIPTION': 'API REST complète de la plateforme SaaS immobilière KYI IMMOBILIER (Clean Architecture / DDD).',
     'VERSION': '1.0.0',
     'SERVE_INCLUDE_SCHEMA': False,
     'COMPONENT_SPLIT_REQUEST': True,

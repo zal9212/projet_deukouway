@@ -77,7 +77,7 @@ class PropertyService:
     def add_images(prop: Property, image_files: list, cover_index: int = 0) -> list:
         for image_file in image_files:
             validate_allowed_file_extensions(image_file, ('jpg', 'jpeg', 'png', 'webp'))
-            validate_max_file_size(image_file, max_size_mb=8.0)
+            validate_max_file_size(image_file, max_size_mb=15.0)
         created = []
         for index, image_file in enumerate(image_files):
             created.append(PropertyImage.objects.create(

@@ -19,6 +19,7 @@ from apps.accounts.services.services import AccountService
 from apps.accounts.services.exceptions import UserAlreadyExists
 from apps.properties.services.services import PropertyService
 from apps.reservations.services.services import ReservationService
+from apps.reservations.services.exceptions import InvalidWorkflowTransition
 from apps.payments.services.services import PaymentService
 from apps.support.services.services import SupportService
 
@@ -92,6 +93,19 @@ class AdminValidatePropertiesView(AdminRequiredMixin, ViewExceptionHandlingMixin
             raise Http404("Logement non trouvé.")
 
         if action == 'approve':
+            override_raw = request.POST.get('commission_percentage_override', '').strip()
+            from decimal import Decimal as _Decimal, InvalidOperation as _InvalidOperation
+            if override_raw:
+                try:
+                    value = _Decimal(override_raw)
+                    if value < 0 or value > 100:
+                        messages.error(request, "Le pourcentage de commission doit être entre 0 et 100.")
+                        return redirect('dashboard:admin_validate_properties')
+                    prop.commission_percentage_override = value
+                    prop.save(update_fields=['commission_percentage_override'])
+                except (_InvalidOperation, ValueError):
+                    messages.error(request, "Pourcentage de commission invalide.")
+                    return redirect('dashboard:admin_validate_properties')
             PropertyService.approve_property(prop, admin_user=request.user)
             PropertyService.publish_property(prop, owner=prop.owner)
             messages.success(request, f"Le logement '{prop.title}' a été approuvé et publié sur la plateforme.")
@@ -226,6 +240,12 @@ class AdminValidateReservationsView(AdminRequiredMixin, ViewExceptionHandlingMix
         if action == 'approve':
             ReservationService.admin_validate(req, admin_user=request.user)
             messages.success(request, f"La demande de {req.client.email} a été transmise au propriétaire.")
+        elif action == 'send_payment_link':
+            try:
+                ReservationService.admin_send_payment_link(req, admin_user=request.user)
+                messages.success(request, f"Le lien de paiement a été envoyé à {req.client.email}.")
+            except InvalidWorkflowTransition as exc:
+                messages.error(request, str(exc))
         elif action == 'reject':
             ReservationService.admin_reject(req, admin_user=request.user, reason=reason)
             messages.warning(request, f"La demande de {req.client.email} a été rejetée.")
@@ -245,6 +265,26 @@ class AdminReservationsView(AdminRequiredMixin, ViewExceptionHandlingMixin, List
         context = super().get_context_data(**kwargs)
         context['stats'] = DashboardSelector.get_admin_stats()
         return context
+
+    def post(self, request, *args, **kwargs):
+        request_id = request.POST.get('request_id')
+        action = request.POST.get('action')
+
+        if action == 'contact_owner':
+            req = ReservationSelector.get_request_by_id(request_id)
+            if not req:
+                raise Http404("Demande de réservation non trouvée.")
+            try:
+                reservation = ReservationService.contact_owner(req, admin_user=request.user)
+                messages.success(
+                    request,
+                    f"Le client {req.client.email} et le propriétaire {req.property.owner.email} ont été mis en contact. "
+                    f"Réservation {reservation.confirmation_code} confirmée."
+                )
+            except InvalidWorkflowTransition as exc:
+                messages.error(request, str(exc))
+
+        return redirect('dashboard:admin_reservations')
 
 class AdminPropertiesView(AdminRequiredMixin, ViewExceptionHandlingMixin, ListView):
     template_name = 'pages/dashboard/superadmin/properties.html'
@@ -313,6 +353,28 @@ class AdminPayoutDetailView(AdminRequiredMixin, ViewExceptionHandlingMixin, Temp
             raise Http404("Reversement introuvable.")
         context['payout'] = payout
         return context
+
+    def post(self, request, *args, **kwargs):
+        import uuid
+        from apps.payments.choices import PaymentMethodChoices
+        from apps.payments.services.exceptions import PayoutAlreadyProcessed
+
+        payout = PaymentSelector.get_payout_by_id(self.kwargs.get('pk'))
+        if not payout:
+            raise Http404("Reversement introuvable.")
+
+        if request.POST.get('action') == 'send_payout':
+            method = request.POST.get('method')
+            if method in PaymentMethodChoices.values and method != payout.method:
+                payout.method = method
+                payout.save(update_fields=['method'])
+            try:
+                PaymentService.send_money_to_owner(payout, gateway_transaction_id=str(uuid.uuid4()))
+                messages.success(request, f"Le reversement de {payout.amount} F a été transféré à {payout.owner.email}.")
+            except PayoutAlreadyProcessed as exc:
+                messages.error(request, str(exc))
+
+        return redirect('dashboard:admin_payout_detail', pk=payout.id)
 
 class AdminDocumentsView(AdminRequiredMixin, ViewExceptionHandlingMixin, ListView):
     template_name = 'pages/dashboard/superadmin/documents.html'

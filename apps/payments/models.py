@@ -53,8 +53,8 @@ class Commission(BaseModel):
     service_fee = models.DecimalField(_('Frais de service (Fixe)'), max_digits=12, decimal_places=2, default=0.00, validators=[MinValueValidator(0.00)])
     
     class Meta(BaseModel.Meta):
-        verbose_name = _('Commission DEKOUWAY')
-        verbose_name_plural = _('Commissions DEKOUWAY')
+        verbose_name = _('Commission KYI IMMOBILIER')
+        verbose_name_plural = _('Commissions KYI IMMOBILIER')
         db_table = 'payments_commission'
 
     def __str__(self) -> str:
@@ -156,7 +156,7 @@ class PlatformSettings(BaseModel):
     """
     commission_percentage = models.DecimalField(
         _('Commission Propriétaire (%)'),
-        max_digits=5, decimal_places=2, default=Decimal('15.00'),
+        max_digits=5, decimal_places=2, default=Decimal('10.00'),
         validators=[MinValueValidator(Decimal('0.00')), MaxValueValidator(Decimal('100.00'))]
     )
     client_service_fee = models.DecimalField(
@@ -164,7 +164,7 @@ class PlatformSettings(BaseModel):
         max_digits=12, decimal_places=2, default=Decimal('5000.00'),
         validators=[MinValueValidator(Decimal('0.00'))]
     )
-    site_name = models.CharField(_('Nom du site'), max_length=100, default='DEKOUWAY')
+    site_name = models.CharField(_('Nom du site'), max_length=100, default='KYI IMMOBILIER')
     logo = models.ImageField(_('Logo'), upload_to='branding/', blank=True, null=True)
     hero_image = models.ImageField(_("Image Hero (page d'accueil)"), upload_to='branding/', blank=True, null=True)
 
