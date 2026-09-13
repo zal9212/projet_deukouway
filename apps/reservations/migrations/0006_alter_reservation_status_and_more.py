@@ -1,0 +1,31 @@
+from django.db import migrations, models
+
+
+class Migration(migrations.Migration):
+
+    dependencies = [
+        ('reservations', '0005_alter_reservation_status_and_more'),
+    ]
+
+    operations = [
+        migrations.AlterField(
+            model_name='reservation',
+            name='status',
+            field=models.CharField(choices=[('REQUESTED', 'Demandé'), ('UNDER_REVIEW', 'En cours de révision (SuperAdmin)'), ('SENT_TO_OWNER', 'Transmis au Propriétaire'), ('OWNER_ACCEPTED', 'Accepté par le Propriétaire'), ('OWNER_DECLINED', 'Refusé par le Propriétaire'), ('REJECTED', 'Rejeté par KYI IMMOBILIER'), ('PAYMENT_PENDING', 'En attente de paiement'), ('PAYMENT_LINK_SENT', 'Lien de paiement envoyé'), ('PAID', 'Payé'), ('CONFIRMED', 'Confirmé'), ('OWNER_CONTACTED', 'Propriétaire contacté'), ('CHECKIN', 'Check-in'), ('CHECKOUT', 'Check-out'), ('COMPLETED', 'Terminé'), ('CANCELLED', 'Annulé')], db_index=True, default='CONFIRMED', max_length=20, verbose_name='Statut de la réservation'),
+        ),
+        migrations.AlterField(
+            model_name='reservationrequest',
+            name='status',
+            field=models.CharField(choices=[('REQUESTED', 'Demandé'), ('UNDER_REVIEW', 'En cours de révision (SuperAdmin)'), ('SENT_TO_OWNER', 'Transmis au Propriétaire'), ('OWNER_ACCEPTED', 'Accepté par le Propriétaire'), ('OWNER_DECLINED', 'Refusé par le Propriétaire'), ('REJECTED', 'Rejeté par KYI IMMOBILIER'), ('PAYMENT_PENDING', 'En attente de paiement'), ('PAYMENT_LINK_SENT', 'Lien de paiement envoyé'), ('PAID', 'Payé'), ('CONFIRMED', 'Confirmé'), ('OWNER_CONTACTED', 'Propriétaire contacté'), ('CHECKIN', 'Check-in'), ('CHECKOUT', 'Check-out'), ('COMPLETED', 'Terminé'), ('CANCELLED', 'Annulé')], db_index=True, default='REQUESTED', max_length=20, verbose_name='Statut de la demande'),
+        ),
+        migrations.AlterField(
+            model_name='reservationstatushistory',
+            name='new_status',
+            field=models.CharField(choices=[('REQUESTED', 'Demandé'), ('UNDER_REVIEW', 'En cours de révision (SuperAdmin)'), ('SENT_TO_OWNER', 'Transmis au Propriétaire'), ('OWNER_ACCEPTED', 'Accepté par le Propriétaire'), ('OWNER_DECLINED', 'Refusé par le Propriétaire'), ('REJECTED', 'Rejeté par KYI IMMOBILIER'), ('PAYMENT_PENDING', 'En attente de paiement'), ('PAYMENT_LINK_SENT', 'Lien de paiement envoyé'), ('PAID', 'Payé'), ('CONFIRMED', 'Confirmé'), ('OWNER_CONTACTED', 'Propriétaire contacté'), ('CHECKIN', 'Check-in'), ('CHECKOUT', 'Check-out'), ('COMPLETED', 'Terminé'), ('CANCELLED', 'Annulé')], max_length=20, verbose_name='Nouveau statut'),
+        ),
+        migrations.AlterField(
+            model_name='reservationstatushistory',
+            name='old_status',
+            field=models.CharField(choices=[('REQUESTED', 'Demandé'), ('UNDER_REVIEW', 'En cours de révision (SuperAdmin)'), ('SENT_TO_OWNER', 'Transmis au Propriétaire'), ('OWNER_ACCEPTED', 'Accepté par le Propriétaire'), ('OWNER_DECLINED', 'Refusé par le Propriétaire'), ('REJECTED', 'Rejeté par KYI IMMOBILIER'), ('PAYMENT_PENDING', 'En attente de paiement'), ('PAYMENT_LINK_SENT', 'Lien de paiement envoyé'), ('PAID', 'Payé'), ('CONFIRMED', 'Confirmé'), ('OWNER_CONTACTED', 'Propriétaire contacté'), ('CHECKIN', 'Check-in'), ('CHECKOUT', 'Check-out'), ('COMPLETED', 'Terminé'), ('CANCELLED', 'Annulé')], max_length=20, verbose_name='Ancien statut'),
+        ),
+    ]
