@@ -58,7 +58,7 @@
         </section>
 
         <!-- Pièce d'identité + Selfie -->
-        <section class="bg-white p-6 border border-gray-200 rounded-xl shadow-sm">
+        <section class="bg-white p-6 border border-gray-200 rounded-xl shadow-sm" x-data="documentLightbox()" x-init="collectItems($el)">
             <h4 class="text-sm font-semibold text-gray-900 mb-4 border-b border-gray-100 pb-2">Pièce d'identité soumise</h4>
             {% if identity_document %}
                 <div class="grid grid-cols-2 gap-6 mb-4">
@@ -72,27 +72,48 @@
                     </div>
                 </div>
                 <div class="grid grid-cols-2 gap-4">
-                    <a href="{% url 'accounts:identity_document_file' identity_document.id 'recto' %}" target="_blank" rel="noopener"
-                       class="flex flex-col items-center justify-center border border-gray-200 rounded-lg p-4 text-center hover:bg-gray-50 transition-colors">
+                    {% if '.pdf' in identity_document.file.name|lower %}
+                    <button type="button" data-lightbox-item data-type="pdf" data-url="{% url 'accounts:identity_document_file' identity_document.id 'recto' %}" data-label="Recto (PDF)"
+                            @click="openLightbox($event.currentTarget)"
+                            class="flex flex-col items-center justify-center border border-gray-200 rounded-lg p-4 text-center hover:bg-gray-50 transition-colors">
+                        <i data-lucide="file-text" class="w-8 h-8 text-[#8B1E24] mb-2"></i>
+                        <span class="text-xs font-semibold text-gray-900">Voir le recto (PDF)</span>
+                    </button>
+                    {% else %}
+                    <button type="button" data-lightbox-item data-url="{% url 'accounts:identity_document_file' identity_document.id 'recto' %}" data-label="Recto"
+                            @click="openLightbox($event.currentTarget)"
+                            class="flex flex-col items-center justify-center border border-gray-200 rounded-lg p-4 text-center hover:bg-gray-50 transition-colors">
                         <i data-lucide="file-text" class="w-8 h-8 text-[#8B1E24] mb-2"></i>
                         <span class="text-xs font-semibold text-gray-900">Voir le recto</span>
-                    </a>
+                    </button>
+                    {% endif %}
                     {% if identity_document.file_back %}
-                    <a href="{% url 'accounts:identity_document_file' identity_document.id 'verso' %}" target="_blank" rel="noopener"
-                       class="flex flex-col items-center justify-center border border-gray-200 rounded-lg p-4 text-center hover:bg-gray-50 transition-colors">
-                        <i data-lucide="file-text" class="w-8 h-8 text-[#8B1E24] mb-2"></i>
-                        <span class="text-xs font-semibold text-gray-900">Voir le verso</span>
-                    </a>
+                        {% if '.pdf' in identity_document.file_back.name|lower %}
+                        <button type="button" data-lightbox-item data-type="pdf" data-url="{% url 'accounts:identity_document_file' identity_document.id 'verso' %}" data-label="Verso (PDF)"
+                                @click="openLightbox($event.currentTarget)"
+                                class="flex flex-col items-center justify-center border border-gray-200 rounded-lg p-4 text-center hover:bg-gray-50 transition-colors">
+                            <i data-lucide="file-text" class="w-8 h-8 text-[#8B1E24] mb-2"></i>
+                            <span class="text-xs font-semibold text-gray-900">Voir le verso (PDF)</span>
+                        </button>
+                        {% else %}
+                        <button type="button" data-lightbox-item data-url="{% url 'accounts:identity_document_file' identity_document.id 'verso' %}" data-label="Verso"
+                                @click="openLightbox($event.currentTarget)"
+                                class="flex flex-col items-center justify-center border border-gray-200 rounded-lg p-4 text-center hover:bg-gray-50 transition-colors">
+                            <i data-lucide="file-text" class="w-8 h-8 text-[#8B1E24] mb-2"></i>
+                            <span class="text-xs font-semibold text-gray-900">Voir le verso</span>
+                        </button>
+                        {% endif %}
                     {% elif identity_document.document_type == 'CNI' %}
                     <div class="flex items-center justify-center border border-red-200 bg-red-50 rounded-lg p-4 text-center">
                         <span class="text-xs font-semibold text-red-700">Aucun verso fourni</span>
                     </div>
                     {% endif %}
                     {% if identity_document.selfie_file %}
-                    <a href="{% url 'accounts:identity_document_file' identity_document.id 'selfie' %}" target="_blank" rel="noopener"
-                       class="block border border-gray-200 rounded-lg overflow-hidden hover:opacity-90 transition-opacity">
+                    <button type="button" data-lightbox-item data-url="{% url 'accounts:identity_document_file' identity_document.id 'selfie' %}" data-label="Selfie de vérification"
+                            @click="openLightbox($event.currentTarget)"
+                            class="block border border-gray-200 rounded-lg overflow-hidden hover:opacity-90 transition-opacity">
                         <img src="{% url 'accounts:identity_document_file' identity_document.id 'selfie' %}" alt="Selfie de vérification" class="w-full h-32 object-cover">
-                    </a>
+                    </button>
                     {% else %}
                     <div class="flex items-center justify-center border border-red-200 bg-red-50 rounded-lg p-4 text-center">
                         <span class="text-xs font-semibold text-red-700">Aucun selfie fourni</span>
@@ -105,6 +126,7 @@
                     Aucun document d'identité soumis.
                 </p>
             {% endif %}
+            {% include "components/dashboard/document_lightbox.html" %}
         </section>
 
         <!-- Parc immobilier -->

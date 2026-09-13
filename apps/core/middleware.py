@@ -8,13 +8,21 @@ class SecurityHeadersMiddleware:
     """
     Middleware injectant les en-têtes de sécurité renforcés (OWASP Security Headers).
     """
+    # Endpoints exemptés de frame-ancestors 'none' : chacun sert un fichier en
+    # lecture seule protégé par sa propre vérification de permission (jamais une
+    # action d'état), et doit pouvoir s'afficher dans une iframe same-origin —
+    # la visionneuse de documents KYC en superposition (recto/verso PDF).
+    FRAMEABLE_PATH_PREFIXES = ('/auth/documents-identite/',)
+
     def __init__(self, get_response):
         self.get_response = get_response
 
     def __call__(self, request):
         response = self.get_response(request)
+        frameable = any(request.path.startswith(p) for p in self.FRAMEABLE_PATH_PREFIXES)
+        frame_ancestors = "'self'" if frameable else "'none'"
         response['X-Content-Type-Options'] = 'nosniff'
-        response['X-Frame-Options'] = 'DENY'
+        response['X-Frame-Options'] = 'SAMEORIGIN' if frameable else 'DENY'
         response['X-XSS-Protection'] = '1; mode=block'
         response['Referrer-Policy'] = 'strict-origin-when-cross-origin'
         # default-src 'self' https: autorisait n'importe quelle origine HTTPS (scripts
@@ -35,7 +43,7 @@ class SecurityHeadersMiddleware:
             "connect-src 'self'; "
             "object-src 'none'; "
             "base-uri 'self'; "
-            "frame-ancestors 'none';"
+            f"frame-ancestors {frame_ancestors};"
         )
         return response
 
