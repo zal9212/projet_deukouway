@@ -1,6 +1,6 @@
 {% extends "layouts/dashboard.html" %}
 
-{% block title %}{% if property %}Modifier le logement{% else %}Ajouter un logement{% endif %} - DEKOUWAY{% endblock %}
+{% block title %}{% if property %}Modifier le logement{% else %}Ajouter un logement{% endif %} - KYI IMMOBILIER{% endblock %}
 
 {% block extra_head %}
 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="" />
@@ -336,7 +336,7 @@
                     <label for="property-images" class="flex flex-col items-center justify-center gap-2 rounded-xl border-2 border-dashed border-gray-300 p-8 cursor-pointer hover:border-[#8B1E24] transition-colors">
                         <i data-lucide="image-plus" class="w-8 h-8 text-gray-400"></i>
                         <span class="text-sm font-semibold text-gray-900">{% if property %}Cliquez pour ajouter d'autres photos{% else %}Cliquez pour ajouter des photos{% endif %}</span>
-                        <span class="text-xs text-gray-500">JPG, PNG, WEBP — 5 Mo max par photo.{% if not property %} La première photo sera la couverture. Optionnel si vous enregistrez comme brouillon.{% endif %}</span>
+                        <span class="text-xs text-gray-500">JPG, PNG, WEBP — 15 Mo max par photo.{% if not property %} La première photo sera la couverture. Optionnel si vous enregistrez comme brouillon.{% endif %}</span>
                         <input id="property-images" type="file" name="images" multiple accept=".jpg,.jpeg,.png,.webp"
                                class="sr-only" @change="onImagesChange($event)">
                     </label>
@@ -370,7 +370,7 @@
                                     <p>Vos modifications seront enregistrées immédiatement et n'affectent pas le statut de validation actuel du logement.</p>
                                 </div>
                                 {% else %}
-                                <h3 class="text-sm font-medium text-blue-800">Processus de validation DEKOUWAY</h3>
+                                <h3 class="text-sm font-medium text-blue-800">Processus de validation KYI IMMOBILIER</h3>
                                 <div class="mt-2 text-sm text-blue-700">
                                     <p>Une fois soumis, votre logement sera analysé par un SuperAdmin. Il ne sera pas visible par les clients tant qu'il n'aura pas été officiellement validé (sous 48h).</p>
                                 </div>

@@ -75,11 +75,12 @@ class PaymentProcessView(LoginRequiredMixin, View):
         payment = PaymentService.create_payment(reservation, request.user, amount_charged, payment_method)
         PaymentService.verify_payment(payment, gateway_transaction_id=str(uuid_lib.uuid4()))
         PaymentService.create_commission(payment)
+        PaymentService.create_payout(reservation, reservation.property.owner, method=PaymentMethodChoices.BANK_TRANSFER)
 
         messages.success(
             request,
             f"Paiement de {amount_charged} FCFA reçu avec succès ! Votre réservation est enregistrée. "
-            f"Un membre de l'équipe DEKOUWAY va vous mettre en contact avec l'hôte pour l'organisation de votre séjour."
+            f"Un membre de l'équipe KYI IMMOBILIER va vous mettre en contact avec l'hôte pour l'organisation de votre séjour."
         )
         return redirect('payment_receipt', booking_id=reservation.id)
 

@@ -93,6 +93,19 @@ class AdminValidatePropertiesView(AdminRequiredMixin, ViewExceptionHandlingMixin
             raise Http404("Logement non trouvé.")
 
         if action == 'approve':
+            override_raw = request.POST.get('commission_percentage_override', '').strip()
+            from decimal import Decimal as _Decimal, InvalidOperation as _InvalidOperation
+            if override_raw:
+                try:
+                    value = _Decimal(override_raw)
+                    if value < 0 or value > 100:
+                        messages.error(request, "Le pourcentage de commission doit être entre 0 et 100.")
+                        return redirect('dashboard:admin_validate_properties')
+                    prop.commission_percentage_override = value
+                    prop.save(update_fields=['commission_percentage_override'])
+                except (_InvalidOperation, ValueError):
+                    messages.error(request, "Pourcentage de commission invalide.")
+                    return redirect('dashboard:admin_validate_properties')
             PropertyService.approve_property(prop, admin_user=request.user)
             PropertyService.publish_property(prop, owner=prop.owner)
             messages.success(request, f"Le logement '{prop.title}' a été approuvé et publié sur la plateforme.")
@@ -340,6 +353,28 @@ class AdminPayoutDetailView(AdminRequiredMixin, ViewExceptionHandlingMixin, Temp
             raise Http404("Reversement introuvable.")
         context['payout'] = payout
         return context
+
+    def post(self, request, *args, **kwargs):
+        import uuid
+        from apps.payments.choices import PaymentMethodChoices
+        from apps.payments.services.exceptions import PayoutAlreadyProcessed
+
+        payout = PaymentSelector.get_payout_by_id(self.kwargs.get('pk'))
+        if not payout:
+            raise Http404("Reversement introuvable.")
+
+        if request.POST.get('action') == 'send_payout':
+            method = request.POST.get('method')
+            if method in PaymentMethodChoices.values and method != payout.method:
+                payout.method = method
+                payout.save(update_fields=['method'])
+            try:
+                PaymentService.send_money_to_owner(payout, gateway_transaction_id=str(uuid.uuid4()))
+                messages.success(request, f"Le reversement de {payout.amount} F a été transféré à {payout.owner.email}.")
+            except PayoutAlreadyProcessed as exc:
+                messages.error(request, str(exc))
+
+        return redirect('dashboard:admin_payout_detail', pk=payout.id)
 
 class AdminDocumentsView(AdminRequiredMixin, ViewExceptionHandlingMixin, ListView):
     template_name = 'pages/dashboard/superadmin/documents.html'
