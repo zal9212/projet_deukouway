@@ -513,4 +513,7 @@
             </div>
         </form>
     </div>
+
+    {% url 'login' as login_url %}
+    {% include "components/auth/auth_footer.html" with text="Vous avez déjà un compte partenaire ?" link_text="Connectez-vous" link_url=login_url %}
 {% endblock %}

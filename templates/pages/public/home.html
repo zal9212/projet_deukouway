@@ -82,6 +82,28 @@
         </a>
     </div>
 
+    <!-- CTA Voyageur / Propriétaire -->
+    {% if not user.is_authenticated %}
+    <div class="px-4">
+        <div class="grid grid-cols-1 gap-3">
+            <a href="{% url 'register_client' %}" class="flex items-center justify-between bg-[#1F2937] text-white rounded-2xl px-5 py-4 shadow-sm">
+                <div>
+                    <p class="text-sm font-bold">Je veux un logement</p>
+                    <p class="text-[11px] text-white/70 mt-0.5">Créez votre compte voyageur</p>
+                </div>
+                <i data-lucide="arrow-right" class="w-5 h-5 text-white/80 flex-shrink-0"></i>
+            </a>
+            <a href="{% url 'register_owner' %}" class="flex items-center justify-between bg-[#8B1E24] text-white rounded-2xl px-5 py-4 shadow-sm">
+                <div>
+                    <p class="text-sm font-bold">Je suis propriétaire</p>
+                    <p class="text-[11px] text-white/70 mt-0.5">Publiez votre annonce</p>
+                </div>
+                <i data-lucide="arrow-right" class="w-5 h-5 text-white/80 flex-shrink-0"></i>
+            </a>
+        </div>
+    </div>
+    {% endif %}
+
     <!-- Recommended Listings Section -->
     <div class="space-y-4">
         <div class="flex items-center justify-between px-4">
@@ -271,6 +293,30 @@
             </div>
         </div>
     </section>
+
+    <!-- CTA Voyageur / Propriétaire -->
+    {% if not user.is_authenticated %}
+    <section class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 pb-12">
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-6">
+            <a href="{% url 'register_client' %}" class="group relative overflow-hidden rounded-3xl bg-[#1F2937] p-8 text-white shadow-sm hover:shadow-md transition-all">
+                <i data-lucide="search" class="w-8 h-8 mb-4 text-white/90"></i>
+                <h3 class="text-xl font-bold mb-2">Je veux un logement</h3>
+                <p class="text-sm text-white/70 mb-6">Créez votre compte en un clic avec Google, ou inscrivez-vous par email pour réserver votre prochain séjour.</p>
+                <span class="inline-flex items-center text-sm font-bold text-white group-hover:translate-x-1 transition-transform">
+                    Commencer <i data-lucide="arrow-right" class="w-4 h-4 ml-1.5"></i>
+                </span>
+            </a>
+            <a href="{% url 'register_owner' %}" class="group relative overflow-hidden rounded-3xl bg-[#8B1E24] p-8 text-white shadow-sm hover:shadow-md transition-all">
+                <i data-lucide="key" class="w-8 h-8 mb-4 text-white/90"></i>
+                <h3 class="text-xl font-bold mb-2">Je suis propriétaire</h3>
+                <p class="text-sm text-white/70 mb-6">Publiez vos annonces et accueillez des voyageurs en toute sécurité, après vérification de votre identité.</p>
+                <span class="inline-flex items-center text-sm font-bold text-white group-hover:translate-x-1 transition-transform">
+                    Devenir hôte <i data-lucide="arrow-right" class="w-4 h-4 ml-1.5"></i>
+                </span>
+            </a>
+        </div>
+    </section>
+    {% endif %}
 
     <!-- Categories rapides desktop — style identique mobile -->
     <section class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 pb-4">
