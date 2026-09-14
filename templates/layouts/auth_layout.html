@@ -68,8 +68,13 @@
         </div>
 
         <!-- Colonne Droite : Formulaire (défile indépendamment de la colonne gauche) -->
-        <div class="flex w-full flex-col justify-center overflow-y-auto px-4 py-12 sm:px-6 lg:w-1/2 lg:flex-none xl:px-24">
-            <div class="mx-auto w-full max-w-sm sm:max-w-md lg:max-w-sm xl:max-w-md">
+        <!-- Pas de justify-center ici : combiné à overflow-y-auto, ça coupait le haut du
+             contenu (impossible de scroller assez haut pour le voir) dès qu'un formulaire
+             (ex: inscription multi-étapes) dépassait la hauteur de l'écran. À la place,
+             m-auto sur le bloc interne centre quand le contenu tient, et s'aligne en haut
+             avec un scroll normal sinon — sur desktop comme sur mobile. -->
+        <div class="flex w-full flex-col overflow-y-auto px-4 py-12 sm:px-6 lg:w-1/2 lg:flex-none xl:px-24">
+            <div class="m-auto w-full max-w-sm sm:max-w-md lg:max-w-sm xl:max-w-md">
                 
                 <!-- Logo (Mobile uniquement) -->
                 <div class="lg:hidden flex justify-center mb-8">
