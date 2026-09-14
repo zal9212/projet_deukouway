@@ -1,4 +1,5 @@
 from django.db import transaction
+from django.urls import reverse
 from apps.accounts.models import User
 from apps.support.models import Ticket, TicketMessage, SupportCategory, ContactMessage
 from apps.support.services.exceptions import TicketAlreadyClosed, UnauthorizedTicketAction
@@ -7,6 +8,20 @@ import logging
 logger = logging.getLogger(__name__)
 
 class SupportService:
+
+    @staticmethod
+    def _moderate_and_flag(text: str, on_flagged) -> None:
+        """
+        Modération automatique best-effort : un échec de l'appel IA ne doit jamais
+        empêcher l'envoi d'un message de contact ou d'une réponse de ticket.
+        """
+        try:
+            from apps.ai.services.moderation_service import ModerationService
+            result = ModerationService.moderate_text(text)
+            if result.get('flagged'):
+                on_flagged(result.get('reason', ''))
+        except Exception as e:
+            logger.error(f"Modération IA indisponible, message laissé non signalé : {e}")
 
     @staticmethod
     @transaction.atomic
@@ -19,6 +34,20 @@ class SupportService:
             user=user if (user and user.is_authenticated) else None,
         )
         logger.info(f"Message de contact reçu de {email} : {subject}")
+
+        def _flag(reason):
+            contact_message.is_flagged = True
+            contact_message.moderation_reason = reason
+            contact_message.save(update_fields=['is_flagged', 'moderation_reason'])
+            logger.warning(f"Message de contact signalé par la modération IA : {contact_message.id} ({reason})")
+            from apps.notifications.services.services import NotificationService
+            NotificationService.notify_all_admins(
+                title="Message de contact signalé par la modération IA",
+                message=f"Le message de {email} (« {subject} ») a été signalé : {reason}",
+                email_template='emails/generic_notification.html',
+            )
+
+        SupportService._moderate_and_flag(message, _flag)
         return contact_message
 
     @staticmethod
@@ -46,12 +75,31 @@ class SupportService:
             content=content,
             is_internal=is_internal
         )
-        
+
+        is_admin_sender = getattr(sender, 'is_superadmin', False) or sender.is_superuser or sender.is_staff
+
         # Mettre à jour le statut du ticket si un admin répond
-        if getattr(sender, 'is_superadmin', False) or sender.is_superuser or sender.is_staff:
+        if is_admin_sender:
             ticket.status = 'IN_PROGRESS'
             ticket.save(update_fields=['status'])
-            
+
+        # Modération automatique des messages client/propriétaire uniquement (pas les
+        # réponses internes de l'équipe) : signale sans jamais bloquer l'envoi.
+        if not is_admin_sender and not is_internal:
+            def _flag(reason):
+                message.is_flagged = True
+                message.moderation_reason = reason
+                message.save(update_fields=['is_flagged', 'moderation_reason'])
+                logger.warning(f"Message de ticket signalé par la modération IA : {message.id} ({reason})")
+                from apps.notifications.services.services import NotificationService
+                NotificationService.notify_all_admins(
+                    title="Message de ticket signalé par la modération IA",
+                    message=f"Un message de {sender.email} sur le ticket « {ticket.subject} » a été signalé : {reason}",
+                    link=reverse('dashboard:admin_support') + f"?ticket={ticket.id}",
+                    email_template='emails/generic_notification.html',
+                )
+            SupportService._moderate_and_flag(content, _flag)
+
         logger.info(f"Réponse ajoutée au ticket : {ticket.id} par {sender.email}")
         return message
 

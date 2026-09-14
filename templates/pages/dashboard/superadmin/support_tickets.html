@@ -102,6 +102,11 @@
             <div class="flex {% if message.sender_id == active_ticket.user_id %}justify-start{% else %}justify-end{% endif %}">
                 <div class="flex items-end">
                     <div class="max-w-lg {% if message.sender_id == active_ticket.user_id %}bg-white border border-gray-200 rounded-bl-none{% else %}bg-[#8B1E24] text-white rounded-br-none{% endif %} rounded-2xl px-5 py-3 shadow-sm">
+                        {% if message.is_flagged %}
+                        <div class="mb-2 flex items-center gap-1.5 text-[10px] font-bold uppercase tracking-wide text-red-600 bg-red-50 rounded px-2 py-1">
+                            <i data-lucide="shield-alert" class="w-3.5 h-3.5"></i> Signalé par la modération IA{% if message.moderation_reason %} — {{ message.moderation_reason }}{% endif %}
+                        </div>
+                        {% endif %}
                         <p class="text-sm {% if message.sender_id == active_ticket.user_id %}text-gray-800{% else %}text-white{% endif %}">{{ message.content }}</p>
                         <span class="text-[10px] {% if message.sender_id == active_ticket.user_id %}text-gray-400{% else %}text-white/70{% endif %} mt-2 block">{{ message.sender.email }} • {{ message.created_at|date:"d M Y H:i" }}</span>
                     </div>

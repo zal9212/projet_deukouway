@@ -37,6 +37,8 @@ class ContactMessage(BaseModel):
         related_name='contact_messages', verbose_name=_('Utilisateur (si connecté)')
     )
     is_processed = models.BooleanField(_('Traité'), default=False)
+    is_flagged = models.BooleanField(_('Signalé par la modération IA'), default=False, db_index=True)
+    moderation_reason = models.CharField(_('Motif du signalement'), max_length=255, blank=True)
 
     class Meta(BaseModel.Meta):
         verbose_name = _('Message de Contact')
@@ -82,6 +84,8 @@ class TicketMessage(BaseModel):
     sender = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='ticket_messages', verbose_name=_('Expéditeur'))
     content = models.TextField(_('Contenu du message'))
     is_internal = models.BooleanField(_('Message interne (SuperAdmin)'), default=False, help_text="Visible uniquement par les SuperAdmins")
+    is_flagged = models.BooleanField(_('Signalé par la modération IA'), default=False, db_index=True)
+    moderation_reason = models.CharField(_('Motif du signalement'), max_length=255, blank=True)
 
     class Meta(BaseModel.Meta):
         verbose_name = _('Message de Ticket')
