@@ -91,8 +91,8 @@
                             </div>
                             <p class="mt-2 text-xs text-gray-500" x-show="selectedCategorySlug" x-cloak
                                x-text="isPrivateRoom
-                                   ? 'Vous proposez une chambre au sein de votre logement : les espaces communs peuvent être partagés avec vous ou d\'autres voyageurs.'
-                                   : 'Vous proposez l\'intégralité du logement, réservé exclusivement à vos voyageurs.'"></p>
+                                   ? 'Vous proposez une chambre au sein de votre logement : les espaces communs peuvent être partagés avec vous ou d\'autres locataires.'
+                                   : 'Vous proposez l\'intégralité du logement, réservé exclusivement à vos locataires.'"></p>
                         </div>
 
                         <div class="sm:col-span-6">
@@ -305,7 +305,7 @@
                     <div class="mt-2">
                         <input type="text" name="extra_rule" x-model="extra_rule"
                                class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-[#8B1E24] sm:text-sm sm:leading-6"
-                               placeholder="Ex: Ménage à la charge du voyageur">
+                               placeholder="Ex: Ménage à la charge du locataire">
                     </div>
                     <div class="mt-8 flex justify-between">
                         <button type="button" @click="step = 4" class="text-sm font-semibold text-gray-900">Précédent</button>

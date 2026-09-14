@@ -87,6 +87,26 @@
                     </div>
                 {% else %}
                     {% include "components/empty_state.html" with title="Aucun logement trouvé" description="Aucune annonce ne correspond à vos critères de recherche pour le moment." icon="home" %}
+
+                    {% if ai_recommendation %}
+                    <div class="mt-8 bg-[#FAFAFA] border border-[#E5E7EB] rounded-2xl p-6">
+                        <div class="flex items-start gap-3 mb-2">
+                            <i data-lucide="sparkles" class="w-5 h-5 text-[#8B1E24] shrink-0 mt-0.5"></i>
+                            <div>
+                                <h3 class="text-sm font-bold text-[#1F2937]">Suggestion de notre assistant</h3>
+                                <p class="text-sm text-[#4B5563] mt-1">{{ ai_recommendation.ai_advice }}</p>
+                            </div>
+                        </div>
+
+                        {% if ai_recommendation.suggested_properties %}
+                        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 mt-6">
+                            {% for property in ai_recommendation.suggested_properties %}
+                                {% include "components/property_card.html" with property=property %}
+                            {% endfor %}
+                        </div>
+                        {% endif %}
+                    </div>
+                    {% endif %}
                 {% endif %}
             </div>
         </div>

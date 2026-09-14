@@ -9,8 +9,9 @@
 
 
     <!-- Hero Mobile plein écran -->
-    <section class="relative w-full h-screen bg-cover bg-center flex flex-col items-center justify-center text-center select-none"
-             style="background-image: url('{% if platform_settings.hero_image %}{{ platform_settings.hero_image.url }}{% else %}{% static 'img/hero_bg.png' %}{% endif %}');">
+    <section
+        class="relative w-full h-screen bg-cover bg-center flex flex-col items-center justify-center text-center select-none"
+        style="background-image: url('{% if platform_settings.hero_image %}{{ platform_settings.hero_image.url }}{% else %}{% static 'img/hero_bg.png' %}{% endif %}');">
         <div class="absolute inset-0 bg-[#1F2937]/45 z-0"></div>
 
         <!-- Contenu centré -->
@@ -19,22 +20,22 @@
                 <h2 class="text-3xl font-extrabold tracking-tight text-white leading-tight drop-shadow-sm">
                     Trouvez votre logement<br>au Sénégal
                 </h2>
-                <p class="text-white/75 text-sm font-medium">Villas, appartements, studios — vérifiés et disponibles.</p>
+                <p class="text-white/75 text-sm font-medium">Villas, appartements, studios — vérifiés et disponibles.
+                </p>
             </div>
 
             <!-- Barre de recherche rapide -->
             <form action="{% url 'properties_list' %}" method="get"
-                  class="w-full max-w-sm bg-white rounded-2xl shadow-lg overflow-hidden">
+                class="w-full max-w-sm bg-white rounded-2xl shadow-lg overflow-hidden">
                 <div class="flex items-center px-4 py-3 border-b border-[#E5E7EB]">
                     <i data-lucide="search" class="w-4 h-4 text-[#9CA3AF] flex-shrink-0"></i>
-                    <input type="text" name="search"
-                           placeholder="Où souhaitez-vous loger ?"
-                           class="w-full bg-transparent border-none text-sm focus:ring-0 focus:outline-none placeholder-[#9CA3AF] text-[#1F2937] ml-2">
+                    <input type="text" name="search" placeholder="Où souhaitez-vous loger ?"
+                        class="w-full bg-transparent border-none text-sm focus:ring-0 focus:outline-none placeholder-[#9CA3AF] text-[#1F2937] ml-2">
                 </div>
                 <div class="flex items-center px-4 py-3">
                     <i data-lucide="home" class="w-4 h-4 text-[#9CA3AF] flex-shrink-0"></i>
                     <select name="type"
-                            class="w-full bg-transparent border-none text-sm focus:ring-0 focus:outline-none text-[#6B7280] ml-2 cursor-pointer">
+                        class="w-full bg-transparent border-none text-sm focus:ring-0 focus:outline-none text-[#6B7280] ml-2 cursor-pointer">
                         <option value="">Tous les types</option>
                         <option value="apartment">Appartement</option>
                         <option value="studio">Studio</option>
@@ -43,9 +44,8 @@
                     </select>
                 </div>
                 <div class="px-3 pb-3">
-                    <button type="submit"
-                            aria-label="Rechercher des logements"
-                            class="w-full py-3 bg-[#8B1E24] hover:bg-[#6F171C] text-white text-xs font-bold rounded-xl transition-colors flex items-center justify-center space-x-2">
+                    <button type="submit" aria-label="Rechercher des logements"
+                        class="w-full py-3 bg-[#8B1E24] hover:bg-[#6F171C] text-white text-xs font-bold rounded-xl transition-colors flex items-center justify-center space-x-2">
                         <i data-lucide="search" class="w-3.5 h-3.5"></i>
                         <span>Rechercher</span>
                     </button>
@@ -57,43 +57,50 @@
     <!-- Categories slider list -->
     <div class="px-4 overflow-x-auto flex space-x-4 pb-1 scrollbar-none">
         <a href="{% url 'properties_list' %}?type=villa" class="flex flex-col items-center space-y-1.5 flex-shrink-0">
-            <span class="p-3.5 bg-white border border-[#E5E7EB] rounded-2xl text-[#1F2937] hover:bg-[#FAFAFA] transition-colors">
+            <span
+                class="p-3.5 bg-white border border-[#E5E7EB] rounded-2xl text-[#1F2937] hover:bg-[#FAFAFA] transition-colors">
                 <i data-lucide="home" class="w-4 h-4"></i>
             </span>
             <span class="text-[9px] font-bold text-[#6B7280] uppercase tracking-wider">Villa</span>
         </a>
-        <a href="{% url 'properties_list' %}?type=apartment" class="flex flex-col items-center space-y-1.5 flex-shrink-0">
-            <span class="p-3.5 bg-white border border-[#E5E7EB] rounded-2xl text-[#1F2937] hover:bg-[#FAFAFA] transition-colors">
+        <a href="{% url 'properties_list' %}?type=apartment"
+            class="flex flex-col items-center space-y-1.5 flex-shrink-0">
+            <span
+                class="p-3.5 bg-white border border-[#E5E7EB] rounded-2xl text-[#1F2937] hover:bg-[#FAFAFA] transition-colors">
                 <i data-lucide="building" class="w-4 h-4"></i>
             </span>
             <span class="text-[9px] font-bold text-[#6B7280] uppercase tracking-wider">Appartement</span>
         </a>
         <a href="{% url 'properties_list' %}?type=studio" class="flex flex-col items-center space-y-1.5 flex-shrink-0">
-            <span class="p-3.5 bg-white border border-[#E5E7EB] rounded-2xl text-[#1F2937] hover:bg-[#FAFAFA] transition-colors">
+            <span
+                class="p-3.5 bg-white border border-[#E5E7EB] rounded-2xl text-[#1F2937] hover:bg-[#FAFAFA] transition-colors">
                 <i data-lucide="layout-grid" class="w-4 h-4"></i>
             </span>
             <span class="text-[9px] font-bold text-[#6B7280] uppercase tracking-wider">Studio</span>
         </a>
         <a href="{% url 'properties_list' %}?type=room" class="flex flex-col items-center space-y-1.5 flex-shrink-0">
-            <span class="p-3.5 bg-white border border-[#E5E7EB] rounded-2xl text-[#1F2937] hover:bg-[#FAFAFA] transition-colors">
+            <span
+                class="p-3.5 bg-white border border-[#E5E7EB] rounded-2xl text-[#1F2937] hover:bg-[#FAFAFA] transition-colors">
                 <i data-lucide="bed" class="w-4 h-4"></i>
             </span>
             <span class="text-[9px] font-bold text-[#6B7280] uppercase tracking-wider">Chambre</span>
         </a>
     </div>
 
-    <!-- CTA Voyageur / Propriétaire -->
+    <!-- CTA Locaraire / Propriétaire -->
     {% if not user.is_authenticated %}
     <div class="px-4">
         <div class="grid grid-cols-1 gap-3">
-            <a href="{% url 'register_client' %}" class="flex items-center justify-between bg-[#1F2937] text-white rounded-2xl px-5 py-4 shadow-sm">
+            <a href="{% url 'register_client' %}"
+                class="flex items-center justify-between bg-[#1F2937] text-white rounded-2xl px-5 py-4 shadow-sm">
                 <div>
                     <p class="text-sm font-bold">Je veux un logement</p>
-                    <p class="text-[11px] text-white/70 mt-0.5">Créez votre compte voyageur</p>
+                    <p class="text-[11px] text-white/70 mt-0.5">Créez votre compte locataire</p>
                 </div>
                 <i data-lucide="arrow-right" class="w-5 h-5 text-white/80 flex-shrink-0"></i>
             </a>
-            <a href="{% url 'register_owner' %}" class="flex items-center justify-between bg-[#8B1E24] text-white rounded-2xl px-5 py-4 shadow-sm">
+            <a href="{% url 'register_owner' %}"
+                class="flex items-center justify-between bg-[#8B1E24] text-white rounded-2xl px-5 py-4 shadow-sm">
                 <div>
                     <p class="text-sm font-bold">Je suis propriétaire</p>
                     <p class="text-[11px] text-white/70 mt-0.5">Publiez votre annonce</p>
@@ -108,54 +115,62 @@
     <div class="space-y-4">
         <div class="flex items-center justify-between px-4">
             <h3 class="text-xs font-bold text-[#1F2937] uppercase tracking-wider">Logements recommandés</h3>
-            <a href="{% url 'properties_list' %}" class="text-[10px] font-bold text-[#8B1E24] hover:underline uppercase tracking-wider">Voir tout</a>
+            <a href="{% url 'properties_list' %}"
+                class="text-[10px] font-bold text-[#8B1E24] hover:underline uppercase tracking-wider">Voir tout</a>
         </div>
 
         <div class="px-4 overflow-x-auto flex space-x-4 pb-2 scrollbar-none">
             {% for property in featured_properties %}
-                <div class="relative w-64 flex-shrink-0">
-                    <a href="{% url 'public:property_detail' property.id %}" class="block bg-white border border-[#E5E7EB] rounded-2xl overflow-hidden shadow-sm flex flex-col justify-between h-80">
-                        <div class="relative h-36 bg-[#FAFAFA]">
-                            {% if property.images.all %}
-                                <img src="{{ property.images.first.image.url }}" alt="{{ property.title }}" class="w-full h-full object-cover" loading="lazy">
-                            {% else %}
-                                <img src="{% placeholder_image property.id %}" alt="{{ property.title }}" class="w-full h-full object-cover" loading="lazy">
-                            {% endif %}
+            <div class="relative w-64 flex-shrink-0">
+                <a href="{% url 'public:property_detail' property.id %}"
+                    class="block bg-white border border-[#E5E7EB] rounded-2xl overflow-hidden shadow-sm flex flex-col justify-between h-80">
+                    <div class="relative h-36 bg-[#FAFAFA]">
+                        {% if property.images.all %}
+                        <img src="{{ property.images.first.image.url }}" alt="{{ property.title }}"
+                            class="w-full h-full object-cover" loading="lazy">
+                        {% else %}
+                        <img src="{% placeholder_image property.id %}" alt="{{ property.title }}"
+                            class="w-full h-full object-cover" loading="lazy">
+                        {% endif %}
+                    </div>
+                    <div class="p-4 flex-grow flex flex-col justify-between">
+                        <div>
+                            <span class="text-[8px] font-bold text-[#8B1E24] uppercase tracking-wider">
+                                {{ property.property_type.name }}
+                            </span>
+                            <h4 class="font-bold text-xs text-[#1F2937] leading-tight truncate mt-0.5">
+                                {{ property.title }}
+                            </h4>
+                            <p class="text-[9px] text-[#6B7280] flex items-center mt-1">
+                                <i data-lucide="map-pin" class="w-3 h-3 mr-0.5 text-[#9CA3AF]"></i>
+                                {{ property.district }}
+                            </p>
                         </div>
-                        <div class="p-4 flex-grow flex flex-col justify-between">
-                            <div>
-                                <span class="text-[8px] font-bold text-[#8B1E24] uppercase tracking-wider">
-                                    {{ property.property_type.name }}
-                                </span>
-                                <h4 class="font-bold text-xs text-[#1F2937] leading-tight truncate mt-0.5">
-                                    {{ property.title }}
-                                </h4>
-                                <p class="text-[9px] text-[#6B7280] flex items-center mt-1">
-                                    <i data-lucide="map-pin" class="w-3 h-3 mr-0.5 text-[#9CA3AF]"></i>
-                                    {{ property.district }}
-                                </p>
-                            </div>
-                            <div class="flex items-center justify-between pt-2 border-t border-[#E5E7EB]">
-                                <span class="text-xs font-bold text-[#1F2937]">{{ property.price }} F <span class="text-[8px] font-normal text-[#6B7280]">{{ property.pricing_period|price_unit }}</span></span>
-                            </div>
+                        <div class="flex items-center justify-between pt-2 border-t border-[#E5E7EB]">
+                            <span class="text-xs font-bold text-[#1F2937]">{{ property.price }} F <span
+                                    class="text-[8px] font-normal text-[#6B7280]">{{ property.pricing_period|price_unit
+                                    }}</span></span>
                         </div>
-                    </a>
-                    {% if request.user.is_authenticated and request.user.is_client %}
-                    <form method="POST" action="{% url 'public:favorite_toggle' property.id %}" class="absolute top-2.5 right-2.5 z-10"
-                          hx-post="{% url 'public:favorite_toggle' property.id %}" hx-swap="none"
-                          x-data="{ favorited: {% if property.id in user_favorite_ids %}true{% else %}false{% endif %} }">
-                        {% csrf_token %}
-                        <button type="submit" @click="favorited = !favorited"
-                                :aria-label="favorited ? 'Retirer des favoris' : 'Ajouter aux favoris'"
-                                class="p-1.5 bg-white border border-[#E5E7EB] rounded-full text-[#6B7280] hover:text-[#8B1E24] shadow-sm">
-                            <span x-show="!favorited" x-cloak><i data-lucide="heart" class="w-3.5 h-3.5"></i></span>
-                            <span x-show="favorited" x-cloak><i data-lucide="heart" class="w-3.5 h-3.5 fill-current text-[#8B1E24]"></i></span>
-                        </button>
-                    </form>
-                    {% endif %}
-                </div>
+                    </div>
+                </a>
+                {% if request.user.is_authenticated and request.user.is_client %}
+                <form method="POST" action="{% url 'public:favorite_toggle' property.id %}"
+                    class="absolute top-2.5 right-2.5 z-10" hx-post="{% url 'public:favorite_toggle' property.id %}"
+                    hx-swap="none"
+                    x-data="{ favorited: {% if property.id in user_favorite_ids %}true{% else %}false{% endif %} }">
+                    {% csrf_token %}
+                    <button type="submit" @click="favorited = !favorited"
+                        :aria-label="favorited ? 'Retirer des favoris' : 'Ajouter aux favoris'"
+                        class="p-1.5 bg-white border border-[#E5E7EB] rounded-full text-[#6B7280] hover:text-[#8B1E24] shadow-sm">
+                        <span x-show="!favorited" x-cloak><i data-lucide="heart" class="w-3.5 h-3.5"></i></span>
+                        <span x-show="favorited" x-cloak><i data-lucide="heart"
+                                class="w-3.5 h-3.5 fill-current text-[#8B1E24]"></i></span>
+                    </button>
+                </form>
+                {% endif %}
+            </div>
             {% empty %}
-                <div class="w-full text-center py-6 text-xs text-[#9CA3AF]">Aucun bien disponible.</div>
+            <div class="w-full text-center py-6 text-xs text-[#9CA3AF]">Aucun bien disponible.</div>
             {% endfor %}
         </div>
     </div>
@@ -164,20 +179,21 @@
 <!-- DESKTOP LAYOUT (hidden md:block) -->
 <div class="hidden md:block bg-[#FAFAFA] min-h-screen pb-16">
     <!-- Hero Banner (Modern Mockup Reome Structure) -->
-    <section class="relative w-full h-[500px] bg-cover bg-center flex flex-col items-center justify-center text-center select-none" 
-             style="background-image: url('{% if platform_settings.hero_image %}{{ platform_settings.hero_image.url }}{% else %}{% static 'img/hero_bg.png' %}{% endif %}');">
+    <section
+        class="relative w-full h-[500px] bg-cover bg-center flex flex-col items-center justify-center text-center select-none"
+        style="background-image: url('{% if platform_settings.hero_image %}{{ platform_settings.hero_image.url }}{% else %}{% static 'img/hero_bg.png' %}{% endif %}');">
         <!-- Backdrop mask layer -->
         <div class="absolute inset-0 bg-[#1F2937]/35 z-0"></div>
-        
+
         <!-- Texts content -->
         <div class="relative z-10 max-w-4xl mx-auto px-4 space-y-6">
-            <h1 class="text-4xl sm:text-6xl font-extrabold tracking-tight text-white leading-tight drop-shadow-sm font-sans">
+            <h1
+                class="text-4xl sm:text-6xl font-extrabold tracking-tight text-white leading-tight drop-shadow-sm font-sans">
                 Trouvez des Maisons, Appartements<br>& Locations en toute Simplicité
             </h1>
             <div class="pt-2">
-                <a href="{% url 'properties_list' %}" 
-                   aria-label="Explorer tous les logements disponibles"
-                   class="inline-flex px-6 py-2.5 border border-white text-white hover:bg-white hover:text-[#1F2937] text-xs font-bold rounded-full transition-all">
+                <a href="{% url 'properties_list' %}" aria-label="Explorer tous les logements disponibles"
+                    class="inline-flex px-6 py-2.5 border border-white text-white hover:bg-white hover:text-[#1F2937] text-xs font-bold rounded-full transition-all">
                     Explorer tous les biens
                 </a>
             </div>
@@ -185,15 +201,16 @@
 
         <!-- Floating Pill Search Bar (overlapping bottom edge) -->
         <div class="absolute bottom-0 translate-y-1/2 w-full max-w-5xl px-4 z-20">
-            <form action="{% url 'properties_list' %}" method="get" 
-                  class="w-full bg-white border border-[#E5E7EB] rounded-full p-2 shadow-lg flex items-center justify-between gap-2">
+            <form action="{% url 'properties_list' %}" method="get"
+                class="w-full bg-white border border-[#E5E7EB] rounded-full p-2 shadow-lg flex items-center justify-between gap-2">
                 <!-- Field: Recherche -->
                 <div class="flex-grow flex items-center space-x-3 px-5 py-2 border-r border-[#E5E7EB] min-w-0">
                     <i data-lucide="search" class="w-4 h-4 text-[#8B1E24] flex-shrink-0"></i>
                     <div class="w-full text-left">
-                        <span class="block text-[8px] uppercase font-bold text-[#6B7280] tracking-wider select-none">Recherche</span>
+                        <span
+                            class="block text-[8px] uppercase font-bold text-[#6B7280] tracking-wider select-none">Recherche</span>
                         <input type="text" name="search" placeholder="Mot-clé, titre..."
-                               class="w-full bg-transparent border-none p-0 text-xs focus:ring-0 placeholder-[#9CA3AF] focus:outline-none text-[#1F2937] font-semibold">
+                            class="w-full bg-transparent border-none p-0 text-xs focus:ring-0 placeholder-[#9CA3AF] focus:outline-none text-[#1F2937] font-semibold">
                     </div>
                 </div>
 
@@ -201,9 +218,11 @@
                 <div class="flex-grow flex items-center space-x-3 px-5 py-2 border-r border-[#E5E7EB] min-w-0">
                     <i data-lucide="map-pin" class="w-4 h-4 text-[#8B1E24] flex-shrink-0"></i>
                     <div class="w-full text-left">
-                        <span class="block text-[8px] uppercase font-bold text-[#6B7280] tracking-wider select-none">Ville / Quartier</span>
+                        <span
+                            class="block text-[8px] uppercase font-bold text-[#6B7280] tracking-wider select-none">Ville
+                            / Quartier</span>
                         <input type="text" name="location" placeholder="Dakar, Ngor, Almadies..."
-                               class="w-full bg-transparent border-none p-0 text-xs focus:ring-0 placeholder-[#9CA3AF] focus:outline-none text-[#1F2937] font-semibold">
+                            class="w-full bg-transparent border-none p-0 text-xs focus:ring-0 placeholder-[#9CA3AF] focus:outline-none text-[#1F2937] font-semibold">
                     </div>
                 </div>
 
@@ -211,18 +230,22 @@
                 <div class="flex-grow flex items-center space-x-3 px-5 py-2 border-r border-[#E5E7EB] min-w-0">
                     <i data-lucide="wallet" class="w-4 h-4 text-[#8B1E24] flex-shrink-0"></i>
                     <div class="w-full text-left">
-                        <span class="block text-[8px] uppercase font-bold text-[#6B7280] tracking-wider select-none">Budget Max</span>
-                        <input type="number" name="price_max" placeholder="Prix maximum" 
-                               class="w-full bg-transparent border-none p-0 text-xs focus:ring-0 placeholder-[#9CA3AF] focus:outline-none text-[#1F2937] font-semibold">
+                        <span
+                            class="block text-[8px] uppercase font-bold text-[#6B7280] tracking-wider select-none">Budget
+                            Max</span>
+                        <input type="number" name="price_max" placeholder="Prix maximum"
+                            class="w-full bg-transparent border-none p-0 text-xs focus:ring-0 placeholder-[#9CA3AF] focus:outline-none text-[#1F2937] font-semibold">
                     </div>
                 </div>
-                
+
                 <!-- Field: Type -->
                 <div class="flex-grow flex items-center space-x-3 px-5 py-2 min-w-0">
                     <i data-lucide="home" class="w-4 h-4 text-[#8B1E24] flex-shrink-0"></i>
                     <div class="w-full text-left">
-                        <span class="block text-[8px] uppercase font-bold text-[#6B7280] tracking-wider select-none">Type</span>
-                        <select name="type" class="w-full bg-transparent border-none p-0 text-xs focus:ring-0 focus:outline-none text-[#1F2937] font-semibold cursor-pointer">
+                        <span
+                            class="block text-[8px] uppercase font-bold text-[#6B7280] tracking-wider select-none">Type</span>
+                        <select name="type"
+                            class="w-full bg-transparent border-none p-0 text-xs focus:ring-0 focus:outline-none text-[#1F2937] font-semibold cursor-pointer">
                             <option value="">Tous les types</option>
                             <option value="apartment">Appartement</option>
                             <option value="studio">Studio</option>
@@ -231,12 +254,11 @@
                         </select>
                     </div>
                 </div>
-                
+
                 <!-- Action Submit -->
                 <div class="flex-shrink-0">
-                    <button type="submit" 
-                            aria-label="Rechercher des logements"
-                            class="px-7 py-3.5 bg-[#8B1E24] hover:bg-[#6F171C] text-white text-xs font-bold rounded-full transition-colors flex items-center space-x-2 focus:outline-none cursor-pointer">
+                    <button type="submit" aria-label="Rechercher des logements"
+                        class="px-7 py-3.5 bg-[#8B1E24] hover:bg-[#6F171C] text-white text-xs font-bold rounded-full transition-colors flex items-center space-x-2 focus:outline-none cursor-pointer">
                         <i data-lucide="search" class="w-3.5 h-3.5"></i>
                         <span>Rechercher</span>
                     </button>
@@ -247,10 +269,12 @@
 
     <!-- Overlapping Features highlight block -->
     <section class="pt-20 pb-12 max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div class="bg-white border border-[#E5E7EB] p-8 rounded-3xl shadow-sm grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 select-none">
+        <div
+            class="bg-white border border-[#E5E7EB] p-8 rounded-3xl shadow-sm grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 select-none">
             <!-- Feature 1 -->
             <div class="flex items-center space-x-3.5">
-                <span class="p-3 bg-[#FAFAFA] border border-[#E5E7EB] text-[#8B1E24] rounded-full flex items-center justify-center">
+                <span
+                    class="p-3 bg-[#FAFAFA] border border-[#E5E7EB] text-[#8B1E24] rounded-full flex items-center justify-center">
                     <i data-lucide="shield-check" class="w-5 h-5"></i>
                 </span>
                 <div>
@@ -258,10 +282,12 @@
                     <p class="text-[10px] text-[#6B7280] font-semibold mt-0.5">Visites & contrôles manuels.</p>
                 </div>
             </div>
-            
+
             <!-- Feature 2 -->
-            <div class="flex items-center space-x-3.5 border-t sm:border-t-0 sm:border-l border-[#E5E7EB] pt-4 sm:pt-0 sm:pl-4">
-                <span class="p-3 bg-[#FAFAFA] border border-[#E5E7EB] text-[#8B1E24] rounded-full flex items-center justify-center">
+            <div
+                class="flex items-center space-x-3.5 border-t sm:border-t-0 sm:border-l border-[#E5E7EB] pt-4 sm:pt-0 sm:pl-4">
+                <span
+                    class="p-3 bg-[#FAFAFA] border border-[#E5E7EB] text-[#8B1E24] rounded-full flex items-center justify-center">
                     <i data-lucide="calendar" class="w-5 h-5"></i>
                 </span>
                 <div>
@@ -269,10 +295,12 @@
                     <p class="text-[10px] text-[#6B7280] font-semibold mt-0.5">Zéro intermédiaire de trop.</p>
                 </div>
             </div>
-            
+
             <!-- Feature 3 -->
-            <div class="flex items-center space-x-3.5 border-t lg:border-t-0 lg:border-l border-[#E5E7EB] pt-4 lg:pt-0 lg:pl-4">
-                <span class="p-3 bg-[#FAFAFA] border border-[#E5E7EB] text-[#8B1E24] rounded-full flex items-center justify-center">
+            <div
+                class="flex items-center space-x-3.5 border-t lg:border-t-0 lg:border-l border-[#E5E7EB] pt-4 lg:pt-0 lg:pl-4">
+                <span
+                    class="p-3 bg-[#FAFAFA] border border-[#E5E7EB] text-[#8B1E24] rounded-full flex items-center justify-center">
                     <i data-lucide="smartphone" class="w-5 h-5"></i>
                 </span>
                 <div>
@@ -280,10 +308,12 @@
                     <p class="text-[10px] text-[#6B7280] font-semibold mt-0.5">Wave & Orange Money.</p>
                 </div>
             </div>
-            
+
             <!-- Feature 4 -->
-            <div class="flex items-center space-x-3.5 border-t lg:border-t-0 lg:border-l border-[#E5E7EB] pt-4 lg:pt-0 lg:pl-4">
-                <span class="p-3 bg-[#FAFAFA] border border-[#E5E7EB] text-[#8B1E24] rounded-full flex items-center justify-center">
+            <div
+                class="flex items-center space-x-3.5 border-t lg:border-t-0 lg:border-l border-[#E5E7EB] pt-4 lg:pt-0 lg:pl-4">
+                <span
+                    class="p-3 bg-[#FAFAFA] border border-[#E5E7EB] text-[#8B1E24] rounded-full flex items-center justify-center">
                     <i data-lucide="map" class="w-5 h-5"></i>
                 </span>
                 <div>
@@ -294,23 +324,29 @@
         </div>
     </section>
 
-    <!-- CTA Voyageur / Propriétaire -->
+    <!-- CTA Locataire / Propriétaire -->
     {% if not user.is_authenticated %}
     <section class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 pb-12">
         <div class="grid grid-cols-1 sm:grid-cols-2 gap-6">
-            <a href="{% url 'register_client' %}" class="group relative overflow-hidden rounded-3xl bg-[#1F2937] p-8 text-white shadow-sm hover:shadow-md transition-all">
+            <a href="{% url 'register_client' %}"
+                class="group relative overflow-hidden rounded-3xl bg-[#1F2937] p-8 text-white shadow-sm hover:shadow-md transition-all">
                 <i data-lucide="search" class="w-8 h-8 mb-4 text-white/90"></i>
                 <h3 class="text-xl font-bold mb-2">Je veux un logement</h3>
-                <p class="text-sm text-white/70 mb-6">Créez votre compte en un clic avec Google, ou inscrivez-vous par email pour réserver votre prochain séjour.</p>
-                <span class="inline-flex items-center text-sm font-bold text-white group-hover:translate-x-1 transition-transform">
+                <p class="text-sm text-white/70 mb-6">Créez votre compte en un clic avec Google, ou inscrivez-vous par
+                    email pour réserver votre prochain séjour.</p>
+                <span
+                    class="inline-flex items-center text-sm font-bold text-white group-hover:translate-x-1 transition-transform">
                     Commencer <i data-lucide="arrow-right" class="w-4 h-4 ml-1.5"></i>
                 </span>
             </a>
-            <a href="{% url 'register_owner' %}" class="group relative overflow-hidden rounded-3xl bg-[#8B1E24] p-8 text-white shadow-sm hover:shadow-md transition-all">
+            <a href="{% url 'register_owner' %}"
+                class="group relative overflow-hidden rounded-3xl bg-[#8B1E24] p-8 text-white shadow-sm hover:shadow-md transition-all">
                 <i data-lucide="key" class="w-8 h-8 mb-4 text-white/90"></i>
                 <h3 class="text-xl font-bold mb-2">Je suis propriétaire</h3>
-                <p class="text-sm text-white/70 mb-6">Publiez vos annonces et accueillez des voyageurs en toute sécurité, après vérification de votre identité.</p>
-                <span class="inline-flex items-center text-sm font-bold text-white group-hover:translate-x-1 transition-transform">
+                <p class="text-sm text-white/70 mb-6">Publiez vos annonces et accueillez des locataires en toute
+                    sécurité, après vérification de votre identité.</p>
+                <span
+                    class="inline-flex items-center text-sm font-bold text-white group-hover:translate-x-1 transition-transform">
                     Devenir hôte <i data-lucide="arrow-right" class="w-4 h-4 ml-1.5"></i>
                 </span>
             </a>
@@ -321,36 +357,36 @@
     <!-- Categories rapides desktop — style identique mobile -->
     <section class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 pb-4">
         <div class="flex items-center space-x-4">
-            <a href="{% url 'properties_list' %}?type=villa"
-               class="flex flex-col items-center space-y-1.5 group">
-                <span class="p-4 bg-white border border-[#E5E7EB] rounded-2xl text-[#1F2937] group-hover:border-[#8B1E24] group-hover:text-[#8B1E24] transition-colors shadow-sm">
+            <a href="{% url 'properties_list' %}?type=villa" class="flex flex-col items-center space-y-1.5 group">
+                <span
+                    class="p-4 bg-white border border-[#E5E7EB] rounded-2xl text-[#1F2937] group-hover:border-[#8B1E24] group-hover:text-[#8B1E24] transition-colors shadow-sm">
                     <i data-lucide="home" class="w-5 h-5"></i>
                 </span>
                 <span class="text-[9px] font-bold text-[#6B7280] uppercase tracking-wider">Villa</span>
             </a>
-            <a href="{% url 'properties_list' %}?type=apartment"
-               class="flex flex-col items-center space-y-1.5 group">
-                <span class="p-4 bg-white border border-[#E5E7EB] rounded-2xl text-[#1F2937] group-hover:border-[#8B1E24] group-hover:text-[#8B1E24] transition-colors shadow-sm">
+            <a href="{% url 'properties_list' %}?type=apartment" class="flex flex-col items-center space-y-1.5 group">
+                <span
+                    class="p-4 bg-white border border-[#E5E7EB] rounded-2xl text-[#1F2937] group-hover:border-[#8B1E24] group-hover:text-[#8B1E24] transition-colors shadow-sm">
                     <i data-lucide="building" class="w-5 h-5"></i>
                 </span>
                 <span class="text-[9px] font-bold text-[#6B7280] uppercase tracking-wider">Appartement</span>
             </a>
-            <a href="{% url 'properties_list' %}?type=studio"
-               class="flex flex-col items-center space-y-1.5 group">
-                <span class="p-4 bg-white border border-[#E5E7EB] rounded-2xl text-[#1F2937] group-hover:border-[#8B1E24] group-hover:text-[#8B1E24] transition-colors shadow-sm">
+            <a href="{% url 'properties_list' %}?type=studio" class="flex flex-col items-center space-y-1.5 group">
+                <span
+                    class="p-4 bg-white border border-[#E5E7EB] rounded-2xl text-[#1F2937] group-hover:border-[#8B1E24] group-hover:text-[#8B1E24] transition-colors shadow-sm">
                     <i data-lucide="layout-grid" class="w-5 h-5"></i>
                 </span>
                 <span class="text-[9px] font-bold text-[#6B7280] uppercase tracking-wider">Studio</span>
             </a>
-            <a href="{% url 'properties_list' %}?type=room"
-               class="flex flex-col items-center space-y-1.5 group">
-                <span class="p-4 bg-white border border-[#E5E7EB] rounded-2xl text-[#1F2937] group-hover:border-[#8B1E24] group-hover:text-[#8B1E24] transition-colors shadow-sm">
+            <a href="{% url 'properties_list' %}?type=room" class="flex flex-col items-center space-y-1.5 group">
+                <span
+                    class="p-4 bg-white border border-[#E5E7EB] rounded-2xl text-[#1F2937] group-hover:border-[#8B1E24] group-hover:text-[#8B1E24] transition-colors shadow-sm">
                     <i data-lucide="bed" class="w-5 h-5"></i>
                 </span>
                 <span class="text-[9px] font-bold text-[#6B7280] uppercase tracking-wider">Chambre</span>
             </a>
             <a href="{% url 'properties_list' %}"
-               class="flex items-center space-x-1.5 ml-auto text-xs font-bold text-[#8B1E24] hover:text-[#6F171C] transition-colors">
+                class="flex items-center space-x-1.5 ml-auto text-xs font-bold text-[#8B1E24] hover:text-[#6F171C] transition-colors">
                 <span>Voir tout</span>
                 <i data-lucide="arrow-right" class="w-3.5 h-3.5"></i>
             </a>
@@ -366,44 +402,52 @@
 
         <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
             {% for property in properties %}
-                {% include "components/property_card.html" with property=property %}
+            {% include "components/property_card.html" with property=property %}
             {% empty %}
-                <div class="col-span-full text-center py-6 text-xs text-[#9CA3AF]">
-                    Aucun logement disponible pour le moment.
-                </div>
+            <div class="col-span-full text-center py-6 text-xs text-[#9CA3AF]">
+                Aucun logement disponible pour le moment.
+            </div>
             {% endfor %}
         </div>
 
         {% if is_paginated %}
         <nav class="flex items-center justify-center gap-2 pt-4" aria-label="Pagination">
             {% if page_obj.has_previous %}
-                <a href="?page={{ page_obj.previous_page_number }}" class="inline-flex items-center justify-center h-9 w-9 rounded-full border border-[#E5E7EB] text-[#1F2937] hover:border-[#8B1E24] hover:text-[#8B1E24] transition-colors">
-                    <i data-lucide="chevron-left" class="w-4 h-4"></i>
-                    <span class="sr-only">Précédent</span>
-                </a>
+            <a href="?page={{ page_obj.previous_page_number }}"
+                class="inline-flex items-center justify-center h-9 w-9 rounded-full border border-[#E5E7EB] text-[#1F2937] hover:border-[#8B1E24] hover:text-[#8B1E24] transition-colors">
+                <i data-lucide="chevron-left" class="w-4 h-4"></i>
+                <span class="sr-only">Précédent</span>
+            </a>
             {% else %}
-                <span class="inline-flex items-center justify-center h-9 w-9 rounded-full border border-[#E5E7EB] text-[#D1D5DB] cursor-not-allowed">
-                    <i data-lucide="chevron-left" class="w-4 h-4"></i>
-                </span>
+            <span
+                class="inline-flex items-center justify-center h-9 w-9 rounded-full border border-[#E5E7EB] text-[#D1D5DB] cursor-not-allowed">
+                <i data-lucide="chevron-left" class="w-4 h-4"></i>
+            </span>
             {% endif %}
 
             {% for page_num in page_obj.paginator.page_range %}
-                {% if page_num == page_obj.number %}
-                    <span aria-current="page" class="inline-flex items-center justify-center h-9 w-9 rounded-full bg-[#8B1E24] text-white text-xs font-bold">{{ page_num }}</span>
-                {% else %}
-                    <a href="?page={{ page_num }}" class="inline-flex items-center justify-center h-9 w-9 rounded-full border border-[#E5E7EB] text-[#1F2937] text-xs font-bold hover:border-[#8B1E24] hover:text-[#8B1E24] transition-colors">{{ page_num }}</a>
-                {% endif %}
+            {% if page_num == page_obj.number %}
+            <span aria-current="page"
+                class="inline-flex items-center justify-center h-9 w-9 rounded-full bg-[#8B1E24] text-white text-xs font-bold">{{
+                page_num }}</span>
+            {% else %}
+            <a href="?page={{ page_num }}"
+                class="inline-flex items-center justify-center h-9 w-9 rounded-full border border-[#E5E7EB] text-[#1F2937] text-xs font-bold hover:border-[#8B1E24] hover:text-[#8B1E24] transition-colors">{{
+                page_num }}</a>
+            {% endif %}
             {% endfor %}
 
             {% if page_obj.has_next %}
-                <a href="?page={{ page_obj.next_page_number }}" class="inline-flex items-center justify-center h-9 w-9 rounded-full border border-[#E5E7EB] text-[#1F2937] hover:border-[#8B1E24] hover:text-[#8B1E24] transition-colors">
-                    <i data-lucide="chevron-right" class="w-4 h-4"></i>
-                    <span class="sr-only">Suivant</span>
-                </a>
+            <a href="?page={{ page_obj.next_page_number }}"
+                class="inline-flex items-center justify-center h-9 w-9 rounded-full border border-[#E5E7EB] text-[#1F2937] hover:border-[#8B1E24] hover:text-[#8B1E24] transition-colors">
+                <i data-lucide="chevron-right" class="w-4 h-4"></i>
+                <span class="sr-only">Suivant</span>
+            </a>
             {% else %}
-                <span class="inline-flex items-center justify-center h-9 w-9 rounded-full border border-[#E5E7EB] text-[#D1D5DB] cursor-not-allowed">
-                    <i data-lucide="chevron-right" class="w-4 h-4"></i>
-                </span>
+            <span
+                class="inline-flex items-center justify-center h-9 w-9 rounded-full border border-[#E5E7EB] text-[#D1D5DB] cursor-not-allowed">
+                <i data-lucide="chevron-right" class="w-4 h-4"></i>
+            </span>
             {% endif %}
         </nav>
         {% endif %}

@@ -22,7 +22,11 @@ class PromptBuilder:
             "internes que tu ne partages pas, et propose ton aide sur l'utilisation de la plateforme.\n"
             "- Ne réponds jamais à une question en inventant une information que tu ne connais pas réellement. "
             "Si une question sort de ton périmètre (logements, réservations, paiements, compte utilisateur) ou "
-            "que tu n'as pas l'information, dis-le clairement plutôt que d'improviser une réponse plausible mais fausse."
+            "que tu n'as pas l'information, dis-le clairement plutôt que d'improviser une réponse plausible mais fausse.\n"
+            "- Réponds toujours en texte brut, sans aucune mise en forme Markdown (pas d'astérisques pour le gras/italique, "
+            "pas de dièses pour les titres, pas de tirets de séparation, pas de listes à puces avec '-' ou '*'). "
+            "Le texte est affiché tel quel dans l'interface, donc les symboles Markdown apparaîtraient littéralement. "
+            "Pour une liste, numérote simplement les éléments (1., 2., 3.) sur des lignes séparées si besoin."
         )
 
     @staticmethod
@@ -77,7 +81,9 @@ class PromptBuilder:
         return (
             "Tu es un expert en rédaction immobilière de prestige. "
             "À partir des caractéristiques du bien (type, ville, quartier, prix, équipements, surface), "
-            "génère un titre accrocheur, une description valorisante et la liste des points forts du logement."
+            "génère un titre accrocheur, une description valorisante et la liste des points forts du logement. "
+            "Réponds toujours en texte brut, sans aucune mise en forme Markdown (pas d'astérisques, pas de dièses, "
+            "pas de tirets de séparation) : le texte est affiché tel quel dans l'interface."
         )
 
     @staticmethod
@@ -86,5 +92,7 @@ class PromptBuilder:
             "Tu es un moteur de recommandation immobilière. "
             "En fonction des préférences de recherche de l'utilisateur (budget, ville, quartier, nombre de personnes), "
             "analyse les logements disponibles et génère une liste de recommandations pertinentes ou des suggestions de repli "
-            "(quartiers voisins, ajustements légers de budget)."
+            "(quartiers voisins, ajustements légers de budget). "
+            "Réponds en 2 à 3 phrases courtes, en texte brut, sans aucune mise en forme Markdown (pas d'astérisques, "
+            "pas de dièses, pas de tirets de séparation, pas de listes à puces) : le texte est affiché tel quel dans l'interface."
         )

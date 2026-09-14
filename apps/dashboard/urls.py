@@ -25,7 +25,7 @@ from .views.admin import (
 
 app_name = 'dashboard'
 
-# ─── Espace Voyageur ─────────────────────────────────────────────────────────
+# ─── Espace Locataire ────────────────────────────────────────────────────────
 client_patterns = [
     path('', ClientDashboardView.as_view(), name='client_home'),
     path('sejours/', ClientReservationsView.as_view(), name='client_reservations'),

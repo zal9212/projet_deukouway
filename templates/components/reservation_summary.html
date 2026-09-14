@@ -58,7 +58,7 @@
         <span x-text="total.toLocaleString('fr-FR') + ' FCFA'"></span>
     </div>
     {% elif request.user.is_authenticated %}
-    <p class="text-sm text-gray-600 text-center py-4">Seuls les comptes voyageurs peuvent réserver un logement.</p>
+    <p class="text-sm text-gray-600 text-center py-4">Seuls les comptes locataires peuvent réserver un logement.</p>
     {% else %}
     <a href="{% url 'accounts:login' %}?next={{ request.path }}" class="block w-full py-3.5 bg-[#8B1E24] hover:bg-[#6F171C] text-white font-bold rounded-xl shadow-md transition-colors text-center focus:outline-none focus:ring-2 focus:ring-[#8B1E24] focus:ring-offset-2 mb-4">
         Se connecter pour réserver
