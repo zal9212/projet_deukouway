@@ -24,7 +24,7 @@ class SocialAccountAdapter(DefaultSocialAccountAdapter):
     - un rôle (is_client/is_owner) obligatoire ;
     - un UserProfile séparé (prénom/nom) requis par le reste de l'app.
 
-    Un nouveau compte créé via Google est toujours un compte VOYAGEUR
+    Un nouveau compte créé via Google est toujours un compte LOCATAIRE
     (is_client=True). Devenir hôte reste un choix explicite via le formulaire
     dédié (apps/accounts/views/auth.py:OwnerRegisterView), qui déclenche en
     plus un vrai parcours de vérification KYC — on ne veut pas qu'un simple

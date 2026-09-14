@@ -17,7 +17,7 @@ class BookingCreateView(LoginRequiredMixin, View):
 
     def post(self, request, property_id):
         if not getattr(request.user, 'is_client', False):
-            messages.error(request, "Seuls les voyageurs peuvent effectuer des réservations.")
+            messages.error(request, "Seuls les locataires peuvent effectuer des réservations.")
             return redirect('public:property_detail', pk=property_id)
 
         property_obj = PropertySelector.get_property_by_id(property_id)

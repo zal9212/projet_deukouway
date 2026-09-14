@@ -92,7 +92,7 @@
                         {% csrf_token %}
                         <input type="hidden" name="property_id" value="{{ property.id }}">
                         <input type="hidden" name="action" value="archive">
-                        <button type="submit" onclick="return confirm('Archiver ce logement ? Il ne sera plus visible par les voyageurs.');" class="w-full rounded-md bg-white px-3 py-2 text-sm font-semibold text-red-600 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50 text-center flex items-center justify-center">
+                        <button type="submit" onclick="return confirm('Archiver ce logement ? Il ne sera plus visible par les locataires.');" class="w-full rounded-md bg-white px-3 py-2 text-sm font-semibold text-red-600 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50 text-center flex items-center justify-center">
                             <i data-lucide="archive" class="w-4 h-4 mr-1"></i> Archiver
                         </button>
                     </form>
