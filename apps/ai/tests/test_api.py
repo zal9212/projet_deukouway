@@ -39,7 +39,10 @@ class AIAPITestCase(APITestCase):
         self.assertIn('summary', response.data)
 
     def test_description_gen_api(self):
-        self.client.force_authenticate(user=self.user)
+        # Endpoint reservé aux propriétaires (permission IsOwner) : un simple compte
+        # client n'y a pas accès, voir test_description_gen_api_forbidden_for_client.
+        owner = User.objects.create_user(email='owner_desc@dekouway.sn', password='Password123!', is_owner=True)
+        self.client.force_authenticate(user=owner)
         response = self.client.post('/api/v1/ai/description/', {
             'title': 'Studio Mermoz',
             'property_type': 'Studio',
@@ -52,6 +55,20 @@ class AIAPITestCase(APITestCase):
         })
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertIn('generated_description', response.data)
+
+    def test_description_gen_api_forbidden_for_client(self):
+        self.client.force_authenticate(user=self.user)
+        response = self.client.post('/api/v1/ai/description/', {
+            'title': 'Studio Mermoz',
+            'property_type': 'Studio',
+            'city': 'Dakar',
+            'district': 'Mermoz',
+            'price': '50000.00',
+            'surface': 50,
+            'bedrooms': 1,
+            'bathrooms': 1
+        })
+        self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
 
     def test_conversation_history_api(self):
         self.client.force_authenticate(user=self.user)

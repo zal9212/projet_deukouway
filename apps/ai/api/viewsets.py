@@ -3,6 +3,7 @@ from rest_framework.decorators import action
 from rest_framework.response import Response
 from drf_spectacular.utils import extend_schema
 
+from apps.core.api.permissions import IsOwner
 from apps.ai.services.chatbot_service import ChatbotService
 from apps.ai.services.recommendation_engine import RecommendationEngine
 from apps.ai.services.moderation_service import ModerationService
@@ -99,7 +100,7 @@ class DescriptionGenViewSet(viewsets.ViewSet):
     """
     API REST de génération automatique de description d'annonce pour le propriétaire.
     """
-    permission_classes = [permissions.IsAuthenticated]
+    permission_classes = [permissions.IsAuthenticated, IsOwner]
 
     @extend_schema(request=DescriptionGenRequestSerializer)
     def create(self, request):
