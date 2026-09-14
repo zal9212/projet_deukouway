@@ -77,7 +77,7 @@ INSTALLED_APPS = [
 
 # Groq LLM Configuration
 GROQ_API_KEY = env('GROQ_API_KEY', default='')
-GROQ_MODEL = env('GROQ_MODEL', default='llama-3.3-70b-versatile')
+GROQ_MODEL = env('GROQ_MODEL', default='openai/gpt-oss-120b')
 GROQ_TIMEOUT = env.float('GROQ_TIMEOUT', default=10.0)
 
 # Email : par défaut la console (visible dans les logs, aucune dépendance externe

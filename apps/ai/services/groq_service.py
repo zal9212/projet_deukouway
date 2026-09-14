@@ -30,7 +30,7 @@ class GroqService:
         Génère une réponse LLM via Groq API.
         Retourne un tuple (contenu_réponse, est_fallback_utilisé).
         """
-        selected_model = model or getattr(settings, 'GROQ_MODEL', 'llama-3.3-70b-versatile')
+        selected_model = model or getattr(settings, 'GROQ_MODEL', 'openai/gpt-oss-120b')
         api_key = getattr(settings, 'GROQ_API_KEY', '')
         timeout = getattr(settings, 'GROQ_TIMEOUT', 10.0)
 
