@@ -40,7 +40,10 @@ class PaymentServiceTests(TestCase):
         self.assertEqual(payment.status, PaymentStatusChoices.SUCCESS)
         
         # 3. Create Commission
-        commission = PaymentService.create_commission(payment)
+        # Pourcentage passé explicitement : le laisser implicite ferait dépendre ce test
+        # de PlatformSettings.commission_percentage (configurable par le SuperAdmin,
+        # cf. AdminConfigurationView), une valeur ambiante hors du contrôle du test.
+        commission = PaymentService.create_commission(payment, percentage=Decimal('15.00'))
         self.assertEqual(commission.amount, Decimal('30.00')) # 15% of 200
         
         # 4. Create Payout

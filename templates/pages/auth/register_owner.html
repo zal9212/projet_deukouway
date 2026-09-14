@@ -16,6 +16,7 @@
         step: 1,
         documentType: '{{ form.document_type.value|default:'CNI' }}',
         errors: {},
+        formTick: 0,
         goToStep(current, next) {
             this.validateStep(current);
             this.step = next;
@@ -63,11 +64,13 @@
         get isStep1Valid() { const e={}; const f=n=>document.querySelector('[name='+n+']'); const fn=f('first_name'); if(!fn?.value?.trim()) e.first_name=1; const ln=f('last_name'); if(!ln?.value?.trim()) e.last_name=1; const em=f('email'); if(!em?.value?.trim()||!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(em.value.trim())) e.email=1; const ph=f('phone'); if(!ph?.value?.trim()) e.phone=1; const ct=f('city'); if(!ct?.value?.trim()) e.city=1; const ad=f('address'); if(!ad?.value?.trim()) e.address=1; const pw=f('password1'); if(!pw?.value||pw.value.length<8) e.password1=1; const pw2=f('password2'); if(!pw2?.value||pw2.value.length<8) e.password2=1; if(!e.password1&&!e.password2&&pw?.value&&pw2?.value&&pw.value!==pw2.value) e.password2=1; return Object.keys(e).length===0; },
         get isStep2Valid() { const e={}; const f=n=>document.querySelector('[name='+n+']'); const dt=f('document_type'); if(!dt?.value) e.document_type=1; const dn=f('document_number'); if(!dn?.value?.trim()) e.document_number=1; const idf=f('identity_file'); if(!idf?.files?.length) e.identity_file=1; if(this.documentType==='CNI'){const idb=f('identity_file_back'); if(!idb?.files?.length) e.identity_file_back=1;} return Object.keys(e).length===0; },
         get isStep3Valid() { const e={}; const f=n=>document.querySelector('[name='+n+']'); const sf=f('selfie_with_id_file'); if(!sf?.files?.length) e.selfie_with_id_file=1; const at=f('accept_terms'); if(!at?.checked) e.accept_terms=1; return Object.keys(e).length===0; },
-        get canSubmit() { return this.isStep1Valid && this.isStep2Valid && this.isStep3Valid; }
+        get canSubmit() { this.formTick; return this.isStep1Valid && this.isStep2Valid && this.isStep3Valid; }
     }">
         {% include "components/auth/progress_steps.html" %}
 
-        <form method="POST" enctype="multipart/form-data" class="mt-8" @submit.prevent="validateStep(1); validateStep(2); validateStep(3); if(canSubmit) $el.submit()">
+        <form method="POST" enctype="multipart/form-data" class="mt-8"
+              @input="formTick++" @change="formTick++"
+              @submit.prevent="validateStep(1); validateStep(2); validateStep(3); if(canSubmit) $el.submit()">
             {% csrf_token %}
 
             {% if form.errors %}
@@ -513,4 +516,7 @@
             </div>
         </form>
     </div>
+
+    {% url 'login' as login_url %}
+    {% include "components/auth/auth_footer.html" with text="Vous avez déjà un compte partenaire ?" link_text="Connectez-vous" link_url=login_url %}
 {% endblock %}
