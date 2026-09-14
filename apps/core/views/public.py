@@ -10,6 +10,7 @@ from apps.properties.models import PropertyReview, PropertyFavorite
 from apps.properties.services.selectors import PropertySelector
 from apps.support.services.selectors import TicketSelector
 from apps.support.services.services import SupportService
+from apps.ai.services.recommendation_engine import RecommendationEngine
 
 class HomeView(ViewExceptionHandlingMixin, ListView):
     template_name = 'pages/public/home.html'
@@ -73,11 +74,15 @@ class SearchView(ViewExceptionHandlingMixin, ListView):
             except ValueError:
                 return None
 
+        self._search_location = location
+        self._search_min_price = _to_float(min_price)
+        self._search_max_price = _to_float(max_price)
+
         return PropertySelector.search_properties(
             query=query,
             location=location,
-            min_price=_to_float(min_price),
-            max_price=_to_float(max_price),
+            min_price=self._search_min_price,
+            max_price=self._search_max_price,
             property_type=property_type,
             sort_by=sort_by,
             min_bedrooms=_to_int(bedrooms),
@@ -92,6 +97,25 @@ class SearchView(ViewExceptionHandlingMixin, ListView):
         context['user_favorite_ids'] = PropertySelector.get_user_favorite_ids(
             self.request.user.id if self.request.user.is_authenticated else None
         )
+        # Recherche sans résultat direct : suggestions intelligentes (logements de repli
+        # + conseil généré par l'IA) plutôt qu'un simple message "aucun résultat".
+        paginator = context.get('paginator')
+        has_results = paginator.count > 0 if paginator else bool(context['properties'])
+        if not has_results:
+            recommendation = RecommendationEngine.get_recommendations(
+                user=self.request.user if self.request.user.is_authenticated else None,
+                city=self._search_location,
+                min_price=self._search_min_price,
+                max_price=self._search_max_price,
+            )
+            suggested_ids = recommendation.get('suggested_properties_ids', [])
+            properties_by_id = {
+                str(p.id): p for p in PropertySelector.get_published_properties().filter(id__in=suggested_ids)
+            }
+            recommendation['suggested_properties'] = [
+                properties_by_id[pid] for pid in suggested_ids if pid in properties_by_id
+            ]
+            context['ai_recommendation'] = recommendation
         return context
 
 class SearchResultsView(SearchView):
