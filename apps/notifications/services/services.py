@@ -1,5 +1,4 @@
 from django.db import transaction
-from django.template.loader import render_to_string
 from django.utils import timezone
 from apps.accounts.models import User
 from apps.notifications.models import Notification, NotificationPreference, NotificationHistory
