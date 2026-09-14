@@ -4,6 +4,7 @@ from apps.accounts.models import User
 from apps.ai.prompt_builder import PromptBuilder
 from apps.ai.sanitizer import AISanitizer
 from apps.ai.services.groq_service import GroqService
+from apps.ai.services.platform_context import PlatformContextBuilder
 from apps.ai.choices import AIModeChoices
 
 logger = logging.getLogger(__name__)
@@ -45,6 +46,11 @@ class ChatbotService:
         elif getattr(user, 'is_owner', False):
             role_context = "Propriétaire"
             system_prompt = PromptBuilder.get_system_prompt_owner_assistant()
+
+        # Ancrage factuel : le modèle n'a par défaut aucune connaissance du catalogue
+        # réel ni des règles de la plateforme. On lui injecte cette "mémoire" à chaque
+        # message pour qu'il réponde à partir de données vraies plutôt que d'inventer.
+        system_prompt += "\n\n" + PlatformContextBuilder.build()
 
         messages_payload = []
         if history:
